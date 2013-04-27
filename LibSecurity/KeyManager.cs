@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using LibTrace;
 using LibConfig;
+using LibUtil;
 
 namespace LibSecurity
 {
@@ -42,6 +43,13 @@ namespace LibSecurity
             rsa.FromXmlString(System.IO.File.ReadAllText(filename));
             Log.Verbose("Loaded rsa key from file " + filename);
             return new KeyManager(rsa);
+        }
+
+        public string GetFingerprint()
+        {
+            SHA1CryptoServiceProvider sha = new SHA1CryptoServiceProvider();
+            byte[] pubkey = Encoding.ASCII.GetBytes(rsa.ToXmlString(false));
+            return Util.BytesToHexString(sha.ComputeHash(pubkey));
         }
     }
 }
