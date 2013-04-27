@@ -16,9 +16,14 @@ namespace LibTrace
 
         public Trace(string sourceName)
         {
-            s = new TraceSource(sourceName, SourceLevels.All);
+// ReSharper disable UseObjectOrCollectionInitializer
+            s = new TraceSource(sourceName);
+// ReSharper restore UseObjectOrCollectionInitializer
+            s.Switch.Level = SourceLevels.All; //Bug in Mono. If you do this in the constructor it does not work.
+            Console.WriteLine(s.Switch.Level.ToString());
             s.Listeners.Clear();
             GetAllListeners(sourceName).ForEach(l => s.Listeners.Add(l));
+            Verbose("Logging started.");
         }
 
         public void Critical(string message)
@@ -44,6 +49,13 @@ namespace LibTrace
         public void Verbose(string message)
         {
             DoLog(message, TraceEventType.Verbose);
+        }
+
+        public void Close()
+        {
+            foreach (TraceListener t in s.Listeners)
+                t.Flush();
+            s.Close();
         }
 
         private void DoLog(string message, TraceEventType type)
