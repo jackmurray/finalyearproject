@@ -14,7 +14,9 @@ namespace LibConfig
         private static XmlDocument xml;
 
         //List of config keys.
-        public const string LOG_PATH = "logPath";
+        public const string LOG_PATH = "logPath"; //Path for logfiles.
+        public const string CRYPTO_PATH = "cryptoPath"; //Path to store cryptographic material in.
+        public const string DEVICE_PRIVATEKEY_FILE = "devPrivateKey";
 
         public static string Get(string key)
         {
@@ -24,6 +26,8 @@ namespace LibConfig
             try
             {
                 XmlNode n = xml.SelectSingleNode("/config/" + key);
+                if (n == null)
+                    throw new ConfigException("Missing config key: " + key);
                 return n.InnerText;
             }
             catch (Exception ex)
