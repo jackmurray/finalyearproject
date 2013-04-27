@@ -35,7 +35,7 @@ namespace SpeakerReceiver
             }
             else
             {
-                Console.WriteLine("Generating key...");
+                Console.WriteLine("Generating key. This takes several minutes on the RPi.");
                 KeyManager.Create().WriteKeyToFile(privateKeyFile);
             }
 
