@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using LibConfig;
 
 namespace LibTrace
 {
@@ -95,7 +96,9 @@ namespace LibTrace
 
         private string GetLogName(string sourceName, SourceLevels level)
         {
-            return sourceName + "_" + Enum.GetName(typeof(SourceLevels), level) + ".log";
+            string path = Config.Get(Config.LOG_PATH);
+            string name = sourceName + "_" + Enum.GetName(typeof(SourceLevels), level) + ".log";
+            return System.IO.Path.Combine(path, name);
         }
     }
 }

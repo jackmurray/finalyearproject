@@ -42,6 +42,12 @@
     <Compile Include="Trace.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LibConfig\LibConfig.csproj">
+      <Project>{37be8328-6872-494f-9458-d3540d7dc44f}</Project>
+      <Name>LibConfig</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
