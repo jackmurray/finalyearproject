@@ -13,20 +13,53 @@ namespace SpeakerReceiver
 {
     class Program
     {
+        private static Trace Log = new Trace("SpeakerReceiver");
+
         static void Main(string[] args)
         {
-            Trace Log = new Trace("SpeakerReceiver");
-            string privateKeyFile = System.IO.Path.Combine(Config.Get(Config.CRYPTO_PATH), Config.Get(Config.DEVICE_PRIVATEKEY_FILE));
+            Setup();
+            KeyManager key = GetKey();
+            if (key == null)
+                Exit();
 
+            Console.WriteLine("Key fingerprint: " + key.GetFingerprint());
+
+            Cleanup();
+        }
+
+        private static void Setup()
+        {
+            CreateDirs();
+        }
+
+        private static void Cleanup()
+        {
+            Log.Close();
+        }
+
+        private static void Exit()
+        {
+            Cleanup();
+            Environment.Exit(1);
+        }
+
+        private static void CreateDirs()
+        {
             if (!System.IO.Directory.Exists(Config.Get(Config.CRYPTO_PATH)))
                 System.IO.Directory.CreateDirectory(Config.Get(Config.CRYPTO_PATH));
+        }
+
+        private static KeyManager GetKey()
+        {
+            string privateKeyFile = System.IO.Path.Combine(Config.Get(Config.CRYPTO_PATH), Config.Get(Config.DEVICE_PRIVATEKEY_FILE));
+            KeyManager key = null;
 
             if (System.IO.File.Exists(privateKeyFile))
             {
                 Console.WriteLine("Not generating key as we already have one.");
                 try
                 {
-                    KeyManager rsa = KeyManager.LoadKeyFromFile(privateKeyFile);
+                    key = KeyManager.LoadKeyFromFile(privateKeyFile);
                 }
                 catch (CryptographicException ex)
                 {
@@ -35,11 +68,18 @@ namespace SpeakerReceiver
             }
             else
             {
-                Console.WriteLine("Generating key. This takes several minutes on the RPi.");
-                KeyManager.Create().WriteKeyToFile(privateKeyFile);
+                try
+                {
+                    Console.WriteLine("Generating key. This takes several minutes on the RPi.");
+                    key = KeyManager.Create();
+                    key.WriteKeyToFile(privateKeyFile);
+                }
+                catch (Exception ex)
+                {
+                    Log.Critical("Failed to generate key: " + ex.Message);
+                }
             }
-
-            Log.Close();
+            return key;
         }
     }
 }
