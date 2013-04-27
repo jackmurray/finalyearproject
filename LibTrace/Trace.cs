@@ -21,7 +21,6 @@ namespace LibTrace
             s = new TraceSource(sourceName);
 // ReSharper restore UseObjectOrCollectionInitializer
             s.Switch.Level = SourceLevels.All; //Bug in Mono. If you do this in the constructor it does not work.
-            Console.WriteLine(s.Switch.Level.ToString());
             s.Listeners.Clear();
             GetAllListeners(sourceName).ForEach(l => s.Listeners.Add(l));
             Verbose("Logging started.");
