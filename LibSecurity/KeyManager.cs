@@ -54,7 +54,7 @@ namespace LibSecurity
 
         public byte[] Sign(byte[] hash)
         {
-            return rsa.SignHash(hash, Config.Get(Config.HASH_ALGORITHM));
+            return rsa.SignHash(hash, Hasher.HashOIDMap[Config.Get(Config.HASH_ALGORITHM)]); //Microsoft .NET will accept the algorithm name here, but mono (correctly, I suppose - IntelliSense says OID but MS.NET accepts name anyway) only accepts the OID.
         }
     }
 }
