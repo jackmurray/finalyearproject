@@ -36,6 +36,7 @@ namespace LibSSDP
             packet.AppendFormat("USN: fingerprint:{0}\r\n", fingerprint);
             packet.AppendFormat("NTS: {0}\r\n", Nts);
             packet.AppendFormat("NT: {0}\r\n", NT);
+            packet.AppendFormat("Date: {0}\r\n", LibUtil.Util.FormatDate(DateTime.Now));
             if (Location != null)
                 packet.AppendFormat("Location: {0}\r\n", Location);
             if (Signature != null)
