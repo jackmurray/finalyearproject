@@ -23,6 +23,7 @@ namespace SpeakerReceiver
                 Exit();
 
             Console.WriteLine("Key fingerprint: " + key.GetFingerprint());
+            new LibSSDP.SSDPService(key).Start();
 
             Cleanup();
         }
