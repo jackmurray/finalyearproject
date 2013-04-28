@@ -12,5 +12,10 @@ namespace LibUtil
         {
             return BitConverter.ToString(data).Replace("-", String.Empty).ToLower();
         }
+
+        public static string BytesToBase64String(byte[] data)
+        {
+            return Convert.ToBase64String(data);
+        }
     }
 }
