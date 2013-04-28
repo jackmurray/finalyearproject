@@ -51,5 +51,10 @@ namespace LibSecurity
             byte[] pubkey = Encoding.ASCII.GetBytes(rsa.ToXmlString(false));
             return Util.BytesToHexString(sha.ComputeHash(pubkey));
         }
+
+        public byte[] Sign(byte[] hash)
+        {
+            return rsa.SignHash(hash, Config.Get(Config.HASH_ALGORITHM));
+        }
     }
 }
