@@ -17,5 +17,18 @@ namespace LibUtil
         {
             return Convert.ToBase64String(data);
         }
+
+        public static void MkDir(string path)
+        {
+            if (!System.IO.Directory.Exists(path))
+                System.IO.Directory.CreateDirectory(path);
+        }
+
+        public static string FormatDate(DateTime dt)
+        {
+            DateTime utc = dt.ToUniversalTime();
+            return String.Format("{0:d4}-{1:d2}-{2:d2} {3:d2}:{4:d2}:{5:d2}", utc.Year, utc.Month, utc.Day, utc.Hour, utc.Minute,
+                                 utc.Second);
+        }
     }
 }
