@@ -7,13 +7,14 @@ using System.Threading.Tasks;
 using LibSecurity;
 using LibTrace;
 using LibConfig;
+using LibUtil;
 
 
 namespace SpeakerReceiver
 {
     class Program
     {
-        private static Trace Log = new Trace("SpeakerReceiver");
+        private static Trace Log;
 
         static void Main(string[] args)
         {
@@ -31,6 +32,7 @@ namespace SpeakerReceiver
         private static void Setup()
         {
             CreateDirs();
+            Log = new Trace("SpeakerReceiver"); //Do this after we create the log dir.
         }
 
         private static void Cleanup()
@@ -46,8 +48,9 @@ namespace SpeakerReceiver
 
         private static void CreateDirs()
         {
-            if (!System.IO.Directory.Exists(Config.Get(Config.CRYPTO_PATH)))
-                System.IO.Directory.CreateDirectory(Config.Get(Config.CRYPTO_PATH));
+            Util.MkDir(Config.Get(Config.LOG_PATH));
+            Util.MkDir(Config.Get(Config.CRYPTO_PATH));
+            Util.MkDir(System.IO.Path.Combine(Config.Get(Config.CRYPTO_PATH), "trustedKeys"));
         }
 
         private static KeyManager GetKey()
