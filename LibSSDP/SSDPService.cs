@@ -6,23 +6,24 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using LibTrace;
+using LibSecurity;
 
 namespace LibSSDP
 {
     public class SSDPService
     {
-        private Guid guid;
+        private KeyManager key;
         private Trace Log = new Trace("SSDPService");
 
-        public SSDPService(Guid guid)
+        public SSDPService(KeyManager key)
         {
-            this.guid = guid;
+            this.key = key;
         }
 
         private void Announce()
         {
             UdpClient client = Util.GetClient();
-            SSDPPacket.BuildAnnouncePacket(guid).Send(client);
+            SSDPPacket.BuildAnnouncePacket(key).Send(client);
             client.Close();
         }
 
@@ -65,8 +66,6 @@ namespace LibSSDP
             Announce();
             Thread t = new Thread(ResponderThreadProc);
             t.Start();
-            Log.Error("[not an error] Starting up.");
-            Log.Warning("[not a warning] starting up.");
         }
     }
 }
