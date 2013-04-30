@@ -47,9 +47,9 @@ namespace LibSecurity
             return hasher.ComputeHash(data);
         }
 
-        public string HashBase64(byte[] data)
+        public string HashHex(byte[] data)
         {
-            return Util.BytesToBase64String(Hash(data));
+            return Util.BytesToHexString(Hash(data));
         }
     }
 }
