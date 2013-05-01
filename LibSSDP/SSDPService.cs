@@ -23,7 +23,7 @@ namespace LibSSDP
         private void Announce()
         {
             UdpClient client = Util.GetClient();
-            SSDPPacket.BuildAnnouncePacket(key).Send(client);
+            SSDPAnnouncePacket.BuildAnnouncePacket(key).Send(client);
             client.Close();
         }
 

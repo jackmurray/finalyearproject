@@ -10,18 +10,13 @@ using LibSecurity;
 
 namespace LibSSDP
 {
-    public class SSDPPacket
+    public abstract class SSDPPacket
     {
         public static IPEndPoint RemoteEndpoint = new IPEndPoint(IPAddress.Parse("239.255.255.250"), 1900); //Standard SSDP address.
         public static IPEndPoint LocalEndpoint = new IPEndPoint(IPAddress.Any, 1900); //Standard SSDP address.
-        private const string NT = "urn:multicastspeakers:speaker";
-        public string fingerprint, Nts, Location, Signature;
+        protected const string ServiceType = "urn:multicastspeakers:speaker";
+        public string fingerprint, Location, Signature;
         public Method Method;
-
-        private SSDPPacket()
-        {
-            
-        }
 
         public void Send(UdpClient c)
         {
@@ -29,62 +24,58 @@ namespace LibSSDP
             c.Send(data, data.Length, RemoteEndpoint);
         }
 
-        private byte[] Serialize()
+        protected byte[] Serialize()
         {
             StringBuilder packet = new StringBuilder();
-            packet.AppendFormat("{0} * HTTP/1.1\r\n", Method.ToPacketString());
+            packet.AppendFormat("{0}\r\n", Method.ToPacketString());
             packet.AppendFormat("USN: fingerprint:{0}\r\n", fingerprint);
-            packet.AppendFormat("NTS: {0}\r\n", Nts);
-            packet.AppendFormat("NT: {0}\r\n", NT);
             packet.AppendFormat("Date: {0}\r\n", LibUtil.Util.FormatDate(DateTime.Now));
+            packet.Append(GetSpecificHeaders()); //Get any specific headers for different packet types.
+
             if (Location != null)
                 packet.AppendFormat("Location: {0}\r\n", Location);
             if (Signature != null)
                 packet.AppendFormat("x-signature: {0}\r\n", Signature);
+
             return Encoding.ASCII.GetBytes(packet.ToString());
         }
 
-        private byte[] GetHash()
+        protected abstract string GetSpecificHeaders();
+
+        protected byte[] GetHash()
         {
             return Hasher.Create().Hash(Serialize());
         }
 
-        private string GetSignature(KeyManager key)
+        protected string GetSignature(KeyManager key)
         {
             return LibUtil.Util.BytesToBase64String(key.Sign(GetHash()));
         }
 
-        private static string GetOurControlURL()
-        {
-            IPAddress ourip =
-                Dns.GetHostEntry(Dns.GetHostName())
-                   .AddressList.First(a => a.AddressFamily == AddressFamily.InterNetwork);
-            return String.Format("http://{0}:10451/Control.svc", ourip);
-        }
-
-        public static SSDPPacket BuildAnnouncePacket(KeyManager key)
-        {
-            string fingerprint = key.GetFingerprint();
-            SSDPPacket packet = new SSDPPacket()
-            {
-                    Method = Method.Announce,
-                    fingerprint = fingerprint,
-                    Nts = "ssdp:alive",
-                    Location = GetOurControlURL()
-            };
-            packet.Signature = packet.GetSignature(key);
-            return packet;
-        }
-
         public static SSDPPacket Parse(string s)
         {
-            SSDPPacket p = new SSDPPacket();
+            SSDPPacket p;
             string[] lines = s.Split(new string[]{"\r\n"}, StringSplitOptions.RemoveEmptyEntries);
 
             try
             {
-                p.Method = Util.Lookup(lines[0]);
-                bool checkedNT = false;
+                Method m = Util.Lookup(lines[0]);
+                switch (m)
+                {
+                    case Method.Announce:
+                        p = new SSDPAnnouncePacket();
+                        break;
+                    case Method.Respond:
+                        p = new SSDPResponsePacket();
+                        break;
+                    case Method.Search:
+                        p = new SSDPSearchPacket();
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException("Invalid HTTP method in received packet.");
+                }
+
+                bool checkedServiceType = false;
                 for (int i = 1; i < lines.Length; i++)
                 {
                     string line = lines[i];
@@ -99,12 +90,11 @@ namespace LibSSDP
                         case "USN":
                             p.fingerprint = headerval.Replace("fingerprint:", "");
                             break;
-                        case "NTS":
-                            p.Nts = headerval;
-                            break;
-                        case "NT":
-                            if (headerval == SSDPPacket.NT)
-                                checkedNT = true;
+                        case "NT": //Announce uses NT
+                        case "ST": //Discovery/Reponse uses ST.
+                            //We're actually more liberal here than we should be. The protocol spec dictates which packet types should use which header, but we don't care as much - so long as we get *something* it's cool.
+                            if (headerval == SSDPPacket.ServiceType)
+                                checkedServiceType = true;
                             break;
                         case "Location":
                             p.Location = headerval;
@@ -112,7 +102,7 @@ namespace LibSSDP
                     }
                 }
 
-                if (checkedNT != true)
+                if (checkedServiceType != true)
                     return null;
 
                 return p;
