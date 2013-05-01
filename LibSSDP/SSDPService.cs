@@ -47,6 +47,18 @@ namespace LibSSDP
                             Log.Information("We got an SSDP packet, but it's not one of ours. Ignoring...");
                             continue;
                         }
+                        else //Got a valid packet.
+                        {
+                            if (p.Method == Method.Search) //If someone is looking for us, respond. We don't care about other announcers.
+                            {
+                                //TODO
+                            }
+                            else
+                            {
+                                Log.Information("Got an SSDP announce message. Don't care.");
+                                continue;
+                            }
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -55,7 +67,7 @@ namespace LibSSDP
                 }
                 catch (SocketException ex)
                 {
-                    Log.Critical("SSDP responder thread died!");
+                    Log.Critical("SSDP socket operation failed: " + ex.Message);
                     Thread.CurrentThread.Abort();
                 }
             }

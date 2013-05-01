@@ -83,8 +83,7 @@ namespace LibSSDP
 
             try
             {
-                string method = lines[0].Split(new char[] { ' ' })[0];
-                p.Method = Util.Lookup(method);
+                p.Method = Util.Lookup(lines[0]);
                 bool checkedNT = false;
                 for (int i = 1; i < lines.Length; i++)
                 {
@@ -130,6 +129,7 @@ namespace LibSSDP
     public enum Method
     {
         Announce,
-        Search
+        Search,
+        Respond
     };
 }

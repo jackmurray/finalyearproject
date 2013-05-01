@@ -22,9 +22,11 @@ namespace LibSSDP
             switch (m)
             {
                 case Method.Announce:
-                    return "NOTIFY";
+                    return "NOTIFY * HTTP/1.1";
                 case Method.Search:
-                    return "M-SEARCH";
+                    return "M-SEARCH * HTTP/1.1";
+                case Method.Respond:
+                    return "HTTP/1.1 200 OK";
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -34,10 +36,12 @@ namespace LibSSDP
         {
             switch (s)
             {
-                case "NOTIFY":
+                case "NOTIFY * HTTP/1.1":
                     return Method.Announce;
-                case "M-SEARCH":
+                case "M-SEARCH * HTTP/1.1":
                     return Method.Search;
+                case "HTTP/1.1 200 OK":
+                    return Method.Respond;
                 default:
                     throw new ArgumentOutOfRangeException();
             } 
