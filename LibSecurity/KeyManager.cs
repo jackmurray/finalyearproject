@@ -45,6 +45,10 @@ namespace LibSecurity
             return new KeyManager(rsa);
         }
 
+        /// <summary>
+        /// Gets the SHA1 hash of the public part of this key.
+        /// </summary>
+        /// <returns></returns>
         public string GetFingerprint()
         {
             SHA1CryptoServiceProvider sha = new SHA1CryptoServiceProvider();
