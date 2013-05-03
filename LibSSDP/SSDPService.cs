@@ -15,6 +15,11 @@ namespace LibSSDP
         private KeyManager key;
         private Trace Log = new Trace("SSDPService");
 
+        /// <summary>
+        /// When we receive a packet, the IP gets put in here.
+        /// </summary>
+        private IPEndPoint remoteEP;
+
         public SSDPService(KeyManager key)
         {
             this.key = key;
@@ -23,7 +28,7 @@ namespace LibSSDP
         private void Announce()
         {
             UdpClient client = Util.GetClient();
-            SSDPAnnouncePacket.BuildAnnouncePacket(key).Send(client);
+            SSDPAnnouncePacket.Build(key).Send(client);
             client.Close();
         }
 
@@ -38,7 +43,7 @@ namespace LibSSDP
             {
                 try
                 {
-                    data = client.Receive(ref SSDPPacket.LocalEndpoint);
+                    data = client.Receive(ref remoteEP);
                     try
                     {
                         SSDPPacket p = SSDPPacket.Parse(Encoding.ASCII.GetString(data));
@@ -51,11 +56,12 @@ namespace LibSSDP
                         {
                             if (p.Method == Method.Search) //If someone is looking for us, respond. We don't care about other announcers.
                             {
-                                //TODO
+                                SSDPResponsePacket response = SSDPResponsePacket.Build(key);
+                                response.Send(remoteEP);
                             }
                             else
                             {
-                                Log.Information("Got an SSDP announce message. Don't care.");
+                                Log.Information("Got an SSDP announce/response message. Don't care.");
                                 continue;
                             }
                         }

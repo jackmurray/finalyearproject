@@ -10,6 +10,11 @@ namespace LibSSDP
 {
     public class SSDPAnnouncePacket : SSDPPacket
     {
+        internal SSDPAnnouncePacket()
+        {
+            Method = LibSSDP.Method.Announce;
+        }
+
         protected override string GetSpecificHeaders()
         {
             StringBuilder sb = new StringBuilder();
@@ -19,20 +24,11 @@ namespace LibSSDP
             return sb.ToString();
         }
 
-        protected static string GetOurControlURL()
-        {
-            IPAddress ourip =
-                Dns.GetHostEntry(Dns.GetHostName())
-                   .AddressList.First(a => a.AddressFamily == AddressFamily.InterNetwork);
-            return String.Format("http://{0}:10451/Control.svc", ourip);
-        }
-
-        public static SSDPAnnouncePacket BuildAnnouncePacket(KeyManager key)
+        internal static SSDPAnnouncePacket Build(KeyManager key)
         {
             string fingerprint = key.GetFingerprint();
             SSDPAnnouncePacket packet = new SSDPAnnouncePacket()
             {
-                Method = Method.Announce,
                 fingerprint = fingerprint
             };
             packet.Signature = packet.GetSignature(key);

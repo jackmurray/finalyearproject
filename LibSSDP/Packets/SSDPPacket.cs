@@ -93,11 +93,14 @@ namespace LibSSDP
                         case "NT": //Announce uses NT
                         case "ST": //Discovery/Reponse uses ST.
                             //We're actually more liberal here than we should be. The protocol spec dictates which packet types should use which header, but we don't care as much - so long as we get *something* it's cool.
-                            if (headerval == SSDPPacket.ServiceType)
+                            if (headerval == ServiceType)
                                 checkedServiceType = true;
                             break;
                         case "Location":
                             p.Location = headerval;
+                            break;
+                        case "x-signature":
+                            p.Signature = headerval;
                             break;
                     }
                 }
@@ -112,6 +115,14 @@ namespace LibSSDP
                 Trace.TraceWarning("SSDPacket.Parse() failed: " + ex.Message);
                 throw;
             }
+        }
+
+        protected static string GetOurControlURL()
+        {
+            IPAddress ourip =
+                Dns.GetHostEntry(Dns.GetHostName())
+                   .AddressList.First(a => a.AddressFamily == AddressFamily.InterNetwork);
+            return String.Format("http://{0}:10451/Control.svc", ourip);
         }
     }
 
