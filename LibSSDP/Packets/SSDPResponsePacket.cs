@@ -18,7 +18,9 @@ namespace LibSSDP
 
         protected override string GetSpecificHeaders()
         {
-            return "";
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("ST: {0}\r\n", ServiceType);
+            return sb.ToString();
         }
 
         internal static SSDPResponsePacket Build(KeyManager key)
