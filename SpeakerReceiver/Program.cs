@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using System.ServiceModel.Description;
 using System.Text;
 using System.Threading.Tasks;
+using System.ServiceModel;
 using LibSecurity;
 using LibTrace;
 using LibConfig;
@@ -32,6 +34,19 @@ namespace SpeakerReceiver
 
             Console.WriteLine("Key fingerprint: " + key.GetFingerprint());
             new LibSSDP.SSDPService(key).Start();
+
+            Uri uri = Util.GetOurControlURL(false); //Get URI that we're going to run on.
+            ServiceHost host = new ServiceHost(typeof (ReceiverService), uri);
+            ServiceMetadataBehavior smb = new ServiceMetadataBehavior
+            {
+                    HttpGetEnabled = true
+            };
+            host.Description.Behaviors.Add(smb);
+            ServiceEndpoint endpoint = host.AddServiceEndpoint(typeof (IReceiverService), new BasicHttpBinding(), uri);
+            host.Open();
+            Console.WriteLine("Service started on " + uri);
+            Console.ReadLine();
+            host.Close();
 
             Cleanup();
         }
