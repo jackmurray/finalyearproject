@@ -16,12 +16,19 @@ namespace SpeakerReceiver
     {
         private static Trace Log;
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             Setup();
-            KeyManager key = GetKey();
-            if (key == null)
+            KeyManager key = null;
+            try
+            {
+                key = KeyManager.GetKey();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Failed to load key. Exiting. " + ex.Message);
                 Exit();
+            }
 
             Console.WriteLine("Key fingerprint: " + key.GetFingerprint());
             new LibSSDP.SSDPService(key).Start();
@@ -31,7 +38,7 @@ namespace SpeakerReceiver
 
         private static void Setup()
         {
-            CreateDirs();
+            Util.CreateDirs();
             Log = new Trace("SpeakerReceiver"); //Do this after we create the log dir.
         }
 
@@ -44,46 +51,6 @@ namespace SpeakerReceiver
         {
             Cleanup();
             Environment.Exit(1);
-        }
-
-        private static void CreateDirs()
-        {
-            Util.MkDir(Config.Get(Config.LOG_PATH));
-            Util.MkDir(Config.Get(Config.CRYPTO_PATH));
-            Util.MkDir(System.IO.Path.Combine(Config.Get(Config.CRYPTO_PATH), "trustedKeys"));
-        }
-
-        private static KeyManager GetKey()
-        {
-            string privateKeyFile = System.IO.Path.Combine(Config.Get(Config.CRYPTO_PATH), Config.Get(Config.DEVICE_PRIVATEKEY_FILE));
-            KeyManager key = null;
-
-            if (System.IO.File.Exists(privateKeyFile))
-            {
-                Console.WriteLine("Not generating key as we already have one.");
-                try
-                {
-                    key = KeyManager.LoadKeyFromFile(privateKeyFile);
-                }
-                catch (CryptographicException ex)
-                {
-                    Log.Critical("Failed to load key: " + ex.Message);
-                }
-            }
-            else
-            {
-                try
-                {
-                    Console.WriteLine("Generating key. This takes several minutes on the RPi.");
-                    key = KeyManager.Create();
-                    key.WriteKeyToFile(privateKeyFile);
-                }
-                catch (Exception ex)
-                {
-                    Log.Critical("Failed to generate key: " + ex.Message);
-                }
-            }
-            return key;
         }
     }
 }

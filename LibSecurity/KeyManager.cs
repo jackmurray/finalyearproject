@@ -60,5 +60,44 @@ namespace LibSecurity
         {
             return rsa.SignHash(hash, Hasher.HashOIDMap[Config.Get(Config.HASH_ALGORITHM)]); //Microsoft .NET will accept the algorithm name here, but mono (correctly, I suppose - IntelliSense says OID but MS.NET accepts name anyway) only accepts the OID.
         }
+
+        /// <summary>
+        /// Loads our key from storage, or if we don't have one, create a new one.
+        /// </summary>
+        /// <returns></returns>
+        public static KeyManager GetKey()
+        {
+            string privateKeyFile = System.IO.Path.Combine(Config.Get(Config.CRYPTO_PATH), Config.Get(Config.DEVICE_PRIVATEKEY_FILE));
+            KeyManager key = null;
+
+            if (System.IO.File.Exists(privateKeyFile))
+            {
+                Log.Information("Not generating key as we already have one.");
+                try
+                {
+                    key = KeyManager.LoadKeyFromFile(privateKeyFile);
+                }
+                catch (CryptographicException ex)
+                {
+                    Log.Critical("Failed to load key: " + ex.Message);
+                }
+            }
+            else
+            {
+                try
+                {
+                    Log.Information("Generating key. This takes several minutes on the RPi.");
+                    key = KeyManager.Create();
+                    key.WriteKeyToFile(privateKeyFile);
+                    Log.Information("Key generated.");
+                }
+                catch (Exception ex)
+                {
+                    Log.Critical("Failed to generate key: " + ex.Message);
+                    throw;
+                }
+            }
+            return key;
+        }
     }
 }
