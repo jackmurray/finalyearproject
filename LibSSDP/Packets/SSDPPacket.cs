@@ -116,14 +116,6 @@ namespace LibSSDP
                 throw;
             }
         }
-
-        protected static string GetOurControlURL()
-        {
-            IPAddress ourip =
-                Dns.GetHostEntry(Dns.GetHostName())
-                   .AddressList.First(a => a.AddressFamily == AddressFamily.InterNetwork);
-            return String.Format("http://{0}:10451/Control.svc", ourip);
-        }
     }
 
     //Make sure to update the extension methods.

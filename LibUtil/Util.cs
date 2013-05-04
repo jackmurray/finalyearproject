@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using LibConfig;
@@ -37,6 +39,14 @@ namespace LibUtil
             Util.MkDir(Config.Get(Config.LOG_PATH));
             Util.MkDir(Config.Get(Config.CRYPTO_PATH));
             Util.MkDir(System.IO.Path.Combine(Config.Get(Config.CRYPTO_PATH), "trustedKeys"));
+        }
+
+        public static Uri GetOurControlURL(bool isController)
+        {
+            IPAddress ourip =
+                Dns.GetHostEntry(Dns.GetHostName())
+                   .AddressList.First(a => a.AddressFamily == AddressFamily.InterNetwork);
+            return new Uri(String.Format("http://{0}:10451/Control.svc", ourip));
         }
     }
 }

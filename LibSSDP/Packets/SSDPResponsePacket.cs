@@ -12,7 +12,7 @@ namespace LibSSDP
     {
         internal SSDPResponsePacket()
         {
-            Location = GetOurControlURL();
+            Location = LibUtil.Util.GetOurControlURL(false).ToString();
             Method = LibSSDP.Method.Respond;
         }
 
