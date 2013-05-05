@@ -42,7 +42,13 @@ namespace SpeakerReceiver
                     HttpGetEnabled = true
             };
             host.Description.Behaviors.Add(smb);
-            ServiceEndpoint endpoint = host.AddServiceEndpoint(typeof (IReceiverService), new BasicHttpBinding(), uri);
+            
+            //App EP
+            host.AddServiceEndpoint(typeof (IReceiverService), new BasicHttpBinding(), uri);
+            //MEX EP
+            host.AddServiceEndpoint(ServiceMetadataBehavior.MexContractName,
+                                    MetadataExchangeBindings.CreateMexHttpBinding(), "mex");
+
             host.Open();
             Console.WriteLine("Service started on " + uri);
             Console.ReadLine();
