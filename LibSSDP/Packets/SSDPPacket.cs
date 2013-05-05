@@ -42,14 +42,9 @@ namespace LibSSDP
 
         protected abstract string GetSpecificHeaders();
 
-        protected byte[] GetHash()
-        {
-            return Hasher.Create().Hash(Serialize());
-        }
-
         protected string GetSignature(KeyManager key)
         {
-            return LibUtil.Util.BytesToBase64String(key.Sign(GetHash()));
+            return Signer.Create(key).SignBase64(Serialize());
         }
 
         public static SSDPPacket Parse(string s)

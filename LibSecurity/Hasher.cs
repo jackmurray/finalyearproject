@@ -2,54 +2,28 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Security.Cryptography;
-using LibTrace;
-using LibConfig;
-using LibUtil;
+using Org.BouncyCastle.Crypto;
 
 namespace LibSecurity
 {
     public class Hasher
     {
-        private static Trace Log = new Trace("LibSecurity");
-        private HashAlgorithm hasher;
-
-        public static Dictionary<string, string> HashOIDMap = new Dictionary<string, string>
-            {
-                {"MD5", "1.2.840.113549.2.5"},
-                {"SHA1", "1.3.14.3.2.26"},
-                {"SHA256", "2.16.840.1.101.3.4.2.1"},
-                {"SHA384", "2.16.840.1.101.3.4.2.2"},
-                {"SHA512", "2.16.840.1.101.3.4.2.3"}
-            };
-
-        private Hasher(HashAlgorithm hasher)
+        public static byte[] Hash(IDigest algorithm, byte[] data)
         {
-            this.hasher = hasher;
+            algorithm.BlockUpdate(data, 0, data.Length);
+            byte[] hash = new byte[algorithm.GetDigestSize()];
+            algorithm.DoFinal(hash, 0);
+            return hash;
         }
 
-        public static Hasher Create()
+        public static string HashBase64(IDigest algorithm, byte[] data)
         {
-            string confHashAlgorithm = Config.Get(Config.HASH_ALGORITHM);
-            HashAlgorithm hasher = HashAlgorithm.Create(confHashAlgorithm);
-            if (hasher == null)
-            {
-                Log.Critical("Unable to find hash algorithm: " + confHashAlgorithm);
-                throw new CryptographicException("Unable to find hash algorithm: " + confHashAlgorithm);
-            }
-
-            return new Hasher(hasher);
+            return LibUtil.Util.BytesToBase64String(Hash(algorithm, data));
         }
 
-        public byte[] Hash(byte[] data)
+        public static string HashHex(IDigest algorithm, byte[] data)
         {
-            return hasher.ComputeHash(data);
-        }
-
-        public string HashHex(byte[] data)
-        {
-            return Util.BytesToHexString(Hash(data));
+            return LibUtil.Util.BytesToHexString(Hash(algorithm, data));
         }
     }
 }

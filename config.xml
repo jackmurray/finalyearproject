@@ -2,6 +2,4 @@
 <config>
 	<logPath>logs</logPath>
 	<cryptoPath>crypto</cryptoPath>
-	<devPrivateKey>private.key</devPrivateKey>
-	<hashAlgorithm>SHA256</hashAlgorithm>
 </config>

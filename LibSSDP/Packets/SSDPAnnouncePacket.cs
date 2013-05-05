@@ -24,9 +24,9 @@ namespace LibSSDP
             return sb.ToString();
         }
 
-        internal static SSDPAnnouncePacket Build(KeyManager key)
+        internal static SSDPAnnouncePacket Build(KeyManager key, CertManager cert)
         {
-            string fingerprint = key.GetFingerprint();
+            string fingerprint = cert.Fingerprint;
             SSDPAnnouncePacket packet = new SSDPAnnouncePacket()
             {
                 fingerprint = fingerprint

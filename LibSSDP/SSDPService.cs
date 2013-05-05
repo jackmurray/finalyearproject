@@ -13,6 +13,7 @@ namespace LibSSDP
     public class SSDPService
     {
         private KeyManager key;
+        private CertManager cert;
         private Trace Log = new Trace("SSDPService");
 
         /// <summary>
@@ -20,15 +21,16 @@ namespace LibSSDP
         /// </summary>
         private IPEndPoint remoteEP;
 
-        public SSDPService(KeyManager key)
+        public SSDPService(KeyManager key, CertManager cert)
         {
             this.key = key;
+            this.cert = cert;
         }
 
         private void Announce()
         {
             UdpClient client = Util.GetClient();
-            SSDPAnnouncePacket.Build(key).Send(client);
+            SSDPAnnouncePacket.Build(key, cert).Send(client);
             client.Close();
         }
 
@@ -56,7 +58,7 @@ namespace LibSSDP
                         {
                             if (p.Method == Method.Search) //If someone is looking for us, respond. We don't care about other announcers.
                             {
-                                SSDPResponsePacket response = SSDPResponsePacket.Build(key);
+                                SSDPResponsePacket response = SSDPResponsePacket.Build(key, cert);
                                 response.Send(remoteEP);
                             }
                             else

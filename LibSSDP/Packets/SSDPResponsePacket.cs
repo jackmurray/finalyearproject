@@ -23,9 +23,9 @@ namespace LibSSDP
             return sb.ToString();
         }
 
-        internal static SSDPResponsePacket Build(KeyManager key)
+        internal static SSDPResponsePacket Build(KeyManager key, CertManager cert)
         {
-            string fingerprint = key.GetFingerprint();
+            string fingerprint = cert.Fingerprint;
             SSDPResponsePacket packet = new SSDPResponsePacket()
             {
                     fingerprint = fingerprint

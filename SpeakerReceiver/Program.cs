@@ -22,18 +22,20 @@ namespace SpeakerReceiver
         {
             Setup();
             KeyManager key = null;
+            CertManager cert = null;
             try
             {
                 key = KeyManager.GetKey();
+                cert = CertManager.GetCert(key);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Failed to load key. Exiting. " + ex.Message);
+                Console.WriteLine("Failed to load key/cert. Exiting. " + ex.Message);
                 Exit();
             }
 
-            Console.WriteLine("Key fingerprint: " + key.GetFingerprint());
-            new LibSSDP.SSDPService(key).Start();
+            Console.WriteLine("Key loaded.");
+            new LibSSDP.SSDPService(key, cert).Start();
 
             Uri uri = Util.GetOurControlURL(false); //Get URI that we're going to run on.
             ServiceHost host = new ServiceHost(typeof (ReceiverService), uri);

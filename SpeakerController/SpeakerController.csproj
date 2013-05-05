@@ -31,6 +31,14 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Release\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -80,13 +88,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="Service References\ReceiverService\Control.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\ReceiverService\Control1.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\ReceiverService\service.wsdl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -126,10 +127,20 @@
     <None Include="Service References\ReceiverService\configuration.svcinfo" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Service References\ReceiverService\Control2.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\ReceiverService\Control21.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\ReceiverService\ReceiverService.wsdl" />
     <None Include="Service References\ReceiverService\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\ReceiverService\Control.disco" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

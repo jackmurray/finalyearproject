@@ -16,8 +16,6 @@ namespace LibConfig
         //List of config keys.
         public const string LOG_PATH = "logPath"; //Path for logfiles.
         public const string CRYPTO_PATH = "cryptoPath"; //Path to store cryptographic material in.
-        public const string DEVICE_PRIVATEKEY_FILE = "devPrivateKey";
-        public const string HASH_ALGORITHM = "hashAlgorithm";
 
         public static string Get(string key)
         {
