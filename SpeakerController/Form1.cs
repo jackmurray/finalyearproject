@@ -9,6 +9,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.ServiceModel;
 using LibSSDP;
 
 namespace SpeakerController
@@ -30,6 +31,16 @@ namespace SpeakerController
         void c_OnResponsePacketReceived(object sender, ResponsePacketReceivedArgs args)
         {
             MessageBox.Show("Got a packet for " + args.Packet.Location);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(GetClient("http://10.0.1.6:10451/Control.svc").GetVersion().ToString());
+        }
+
+        private ReceiverService.ReceiverServiceClient GetClient(string uri)
+        {
+            return new ReceiverService.ReceiverServiceClient(new BasicHttpBinding(), new EndpointAddress(uri));
         }
     }
 }
