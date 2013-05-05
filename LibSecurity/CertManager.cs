@@ -32,6 +32,12 @@ namespace LibSecurity
             }
         }
 
+        public string Subject
+        {
+            //Gotta be careful here that if we ever change the cert subject we'll break this.
+            get { return Cert.SubjectDN.GetValueList()[0].ToString(); }
+        }
+
         private CertManager(X509Certificate cert)
         {
             Cert = cert;
@@ -41,9 +47,10 @@ namespace LibSecurity
         {
             X509V3CertificateGenerator gen = new X509V3CertificateGenerator();
             BigInteger serial = BigInteger.ValueOf(Math.Abs(new SecureRandom().NextLong())); //securerandom can return negative numbers
+            Guid certGuid = Guid.NewGuid();
             gen.SetSerialNumber(serial);
-            gen.SetSubjectDN(new Org.BouncyCastle.Asn1.X509.X509Name("CN=" + serial));
-            gen.SetIssuerDN(new Org.BouncyCastle.Asn1.X509.X509Name("CN=" + serial)); //Same issuer and subject.
+            gen.SetSubjectDN(new Org.BouncyCastle.Asn1.X509.X509Name("CN=" + certGuid));
+            gen.SetIssuerDN(new Org.BouncyCastle.Asn1.X509.X509Name("CN=" + certGuid)); //Same issuer and subject.
             gen.SetNotBefore(new DateTime(2013, 1, 1, 0, 0, 0));
             gen.SetNotAfter(new DateTime(2050, 1, 1, 0, 0, 0)); //valid for basically ever
             gen.SetPublicKey(key.Public);

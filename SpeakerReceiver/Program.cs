@@ -26,15 +26,16 @@ namespace SpeakerReceiver
             try
             {
                 key = KeyManager.GetKey();
+                Console.WriteLine("Key loaded.");
                 cert = CertManager.GetCert(key);
+                Console.WriteLine(cert.Subject);
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Failed to load key/cert. Exiting. " + ex.Message);
                 Exit();
             }
-
-            Console.WriteLine("Key loaded.");
+            
             new LibSSDP.SSDPService(key, cert).Start();
 
             Uri uri = Util.GetOurControlURL(false); //Get URI that we're going to run on.
