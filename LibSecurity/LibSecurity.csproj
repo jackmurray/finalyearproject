@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto">
+      <HintPath>..\packages\BouncyCastle.1.7.0\lib\Net40-Client\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -40,9 +43,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CertManager.cs" />
     <Compile Include="Hasher.cs" />
     <Compile Include="KeyManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Signer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LibConfig\LibConfig.csproj">
@@ -57,6 +62,9 @@
       <Project>{85997238-2a70-41b1-9a58-dcd4ce5606bc}</Project>
       <Name>LibUtil</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
