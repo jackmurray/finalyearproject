@@ -9,21 +9,28 @@ using LibConfig;
 
 namespace LibTrace
 {
-    public class Trace
+    public class Trace : IDisposable
     {
         private TraceSource s;
         private int id = 0;
         private readonly object tracelock = new object();
+        private static readonly Dictionary<string, TraceSource> Sources = new Dictionary<string, TraceSource>();
 
         public Trace(string sourceName)
         {
-// ReSharper disable UseObjectOrCollectionInitializer
-            s = new TraceSource(sourceName);
-// ReSharper restore UseObjectOrCollectionInitializer
-            s.Switch.Level = SourceLevels.All; //Bug in Mono. If you do this in the constructor it does not work.
-            s.Listeners.Clear();
-            GetAllListeners(sourceName).ForEach(l => s.Listeners.Add(l));
-            Verbose("Logging started.");
+            if (Sources.ContainsKey(sourceName))
+                s = Sources[sourceName];
+            else
+            {
+                // ReSharper disable UseObjectOrCollectionInitializer
+                s = new TraceSource(sourceName);
+                // ReSharper restore UseObjectOrCollectionInitializer
+                s.Switch.Level = SourceLevels.All; //Bug in Mono. If you do this in the constructor it does not work.
+                s.Listeners.Clear();
+                GetAllListeners(sourceName).ForEach(l => s.Listeners.Add(l));
+                Verbose("Logging started.");
+                Sources.Add(sourceName, s);
+            }
         }
 
         public void Critical(string message)
@@ -98,6 +105,11 @@ namespace LibTrace
             string path = Config.Get(Config.LOG_PATH);
             string name = sourceName + "_" + Enum.GetName(typeof(SourceLevels), level) + ".log";
             return System.IO.Path.Combine(path, name);
+        }
+
+        public void Dispose()
+        {
+            Close();
         }
     }
 }
