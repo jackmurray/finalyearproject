@@ -12,6 +12,7 @@ using Org.BouncyCastle.Math;
 using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.X509;
+using Org.BouncyCastle.Asn1.X509;
 
 namespace LibSecurity
 {
@@ -55,6 +56,7 @@ namespace LibSecurity
             gen.SetNotAfter(new DateTime(2050, 1, 1, 0, 0, 0)); //valid for basically ever
             gen.SetPublicKey(key.Public);
             gen.SetSignatureAlgorithm("SHA256WithRSAEncryption"); //hardcoded for now, maybe change it later.
+            gen.AddExtension(X509Extensions.KeyUsage, true, new KeyUsage(KeyUsage.DigitalSignature | KeyUsage.KeyEncipherment));
             return new CertManager(gen.Generate(key.Private));
         }
 
@@ -104,6 +106,13 @@ namespace LibSecurity
         {
             PemReader r = new PemReader(new StreamReader(filename));
             return new CertManager((X509Certificate)r.ReadObject());
+        }
+
+        public System.Security.Cryptography.X509Certificates.X509Certificate2 ToDotNetCert(KeyManager key)
+        {
+            var dotnetcert = new System.Security.Cryptography.X509Certificates.X509Certificate2(DotNetUtilities.ToX509Certificate(Cert));
+            dotnetcert.PrivateKey = key.ToDotNetKey();
+            return dotnetcert;
         }
     }
 }

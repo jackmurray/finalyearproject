@@ -10,6 +10,7 @@ using LibConfig;
 using LibUtil;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Generators;
+using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Security;
 
@@ -36,6 +37,11 @@ namespace LibSecurity
             AsymmetricCipherKeyPair key = g.GenerateKeyPair();
             Log.Verbose("Generated new RSA key.");
             return new KeyManager(key);
+        }
+
+        public AsymmetricAlgorithm ToDotNetKey()
+        {
+            return DotNetUtilities.ToRSA(rsa.Private as RsaPrivateCrtKeyParameters);
         }
 
         public void WriteKeyToFile(string filename, bool writePrivateKey)
