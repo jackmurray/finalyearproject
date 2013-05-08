@@ -39,6 +39,7 @@ namespace SpeakerReceiver
             new LibSSDP.SSDPService(key, cert).Start();
 
             Uri uri = Util.GetOurControlURL(false); //Get URI that we're going to run on.
+
             ServiceHost host = new ServiceHost(typeof (ReceiverService), uri);
             ServiceMetadataBehavior smb = new ServiceMetadataBehavior
             {
@@ -47,11 +48,12 @@ namespace SpeakerReceiver
             host.Description.Behaviors.Add(smb);
             
             //App EP
-            host.AddServiceEndpoint(typeof (IReceiverService), new BasicHttpBinding(), uri);
+            ServiceEndpoint appEP = host.AddServiceEndpoint(typeof (IReceiverService), new BasicHttpBinding(), uri);
+            appEP.Behaviors.Add(new ServerRequestProcessor(new LibSecurity.WebServiceProtector(true)));
             //MEX EP
             host.AddServiceEndpoint(ServiceMetadataBehavior.MexContractName,
                                     MetadataExchangeBindings.CreateMexHttpBinding(), "mex");
-
+            
             host.Open();
             Console.WriteLine("Service started on " + uri);
             Console.ReadLine();

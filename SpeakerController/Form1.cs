@@ -40,7 +40,9 @@ namespace SpeakerController
 
         private ReceiverService.ReceiverServiceClient GetClient(string uri)
         {
-            return new ReceiverService.ReceiverServiceClient(new BasicHttpBinding(), new EndpointAddress(uri));
+            var client = new ReceiverService.ReceiverServiceClient(new BasicHttpBinding(), new EndpointAddress(uri));
+            client.Endpoint.EndpointBehaviors.Add(new LibUtil.ClientServiceProcessor(new LibSecurity.WebServiceProtector(false)));
+            return client;
         }
     }
 }
