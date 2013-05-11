@@ -59,10 +59,15 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="LibAudio.cs" />
     <Compile Include="LibSecurity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LibAudio\LibAudio.csproj">
+      <Project>{f4041fc6-caeb-4476-a06d-ce301258e500}</Project>
+      <Name>LibAudio</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LibSecurity\LibSecurity.csproj">
       <Project>{9ea6083b-8cae-4921-b916-b9d62168b80b}</Project>
       <Name>LibSecurity</Name>
