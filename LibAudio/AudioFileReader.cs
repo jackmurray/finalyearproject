@@ -36,5 +36,10 @@ namespace LibAudio
                 return true;
             else return false;
         }
+
+        protected void Skip(uint bytes)
+        {
+            _s.Seek(bytes, SeekOrigin.Current);
+        }
     }
 }
