@@ -27,6 +27,7 @@ namespace LibAudio
                 Reset();
                 ID3Tag tag = new ID3Tag(_s);
                 tag.Parse();
+                Skip(tag.Size); //Skip over the rest of the ID3 header. We should now be pointing to the MP3 header, so we'll go ahead and parse that now.
             }
             else if (t == HeaderType.MP3)
             {
