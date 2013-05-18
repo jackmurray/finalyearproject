@@ -8,7 +8,7 @@ namespace LibAudio
 {
     public class ID3Tag : AudioFileReader
     {
-        public static readonly byte[] MAGIC = new byte[] {0x49, 0x44, 0x33};
+        public static readonly byte[] MAGIC = new byte[] {0x49, 0x44, 0x33}; //ASCII string 'ID3'
 
         public byte MajorVersion { get; set; }
         public byte MinorVersion { get; set; }
@@ -23,13 +23,18 @@ namespace LibAudio
 
         public override void Parse()
         {
-            if (!CheckMagic(MAGIC))
+            if (!CheckMagic())
                 throw new FormatException("Tried to parse a stream that didn't have an ID3 header!");
 
             MajorVersion = Read(1)[0];
             MinorVersion = Read(1)[0];
             Flags = Read(1)[0];
             Size = ID3SizeFieldToInt(Read(4));
+        }
+
+        public override bool CheckMagic()
+        {
+            return CheckBytes(MAGIC);
         }
 
         /// <summary>

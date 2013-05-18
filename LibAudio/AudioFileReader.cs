@@ -16,6 +16,7 @@ namespace LibAudio
         }
 
         public abstract void Parse();
+        public abstract bool CheckMagic();
 
         protected byte[] Read(int numBytes)
         {
@@ -29,17 +30,22 @@ namespace LibAudio
             _s.Position = 0;
         }
 
-        protected bool CheckMagic(byte[] magic)
+        protected bool CheckBytes(byte[] expect)
         {
-            byte[] read = Read(magic.Length);
-            if (magic.SequenceEqual(read))
+            byte[] read = Read(expect.Length);
+            if (expect.SequenceEqual(read))
                 return true;
             else return false;
         }
 
-        protected void Skip(uint bytes)
+        protected void Skip(int bytes)
         {
             _s.Seek(bytes, SeekOrigin.Current);
+        }
+
+        protected void SkipBack(int bytes)
+        {
+            _s.Seek(-bytes, SeekOrigin.Current);
         }
     }
 }

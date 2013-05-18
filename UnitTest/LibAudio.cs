@@ -22,5 +22,14 @@ namespace UnitTest
             t.Parse();
             Assert.AreEqual(t.Size, (uint)0x017ED5);
         }
+
+        [TestMethod]
+        public void MP3WithID3Header()
+        {
+            MP3Format mp3 = new MP3Format(File.OpenRead("D:\\Music\\Lacuna Coil\\Dark Adrenaline\\End of Time.mp3"));
+            mp3.Parse();
+            Assert.AreEqual(mp3.BitRate, BitRate.OneHundredNinetyTwo);
+            Assert.AreEqual(mp3.Frequency, Frequency.FourtyFourPointOne);
+        }
     }
 }
