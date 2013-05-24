@@ -46,7 +46,8 @@ namespace LibUtil
             IPAddress ourip =
                 Dns.GetHostEntry(Dns.GetHostName())
                    .AddressList.First(a => a.AddressFamily == AddressFamily.InterNetwork);
-            return new Uri(String.Format("http://{0}:10451/Control.svc", ourip));
+            string svcname = isController ? "Controller" : "Receiver";
+            return new Uri(String.Format("http://{0}:10451/{1}.svc", ourip, svcname));
         }
     }
 }
