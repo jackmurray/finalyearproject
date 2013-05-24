@@ -30,11 +30,12 @@
         {
             this.btnDiscover = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
+            this.lstDevices = new System.Windows.Forms.ListBox();
             this.SuspendLayout();
             // 
             // btnDiscover
             // 
-            this.btnDiscover.Location = new System.Drawing.Point(76, 195);
+            this.btnDiscover.Location = new System.Drawing.Point(93, 198);
             this.btnDiscover.Name = "btnDiscover";
             this.btnDiscover.Size = new System.Drawing.Size(75, 23);
             this.btnDiscover.TabIndex = 0;
@@ -52,11 +53,20 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // lstDevices
+            // 
+            this.lstDevices.FormattingEnabled = true;
+            this.lstDevices.Location = new System.Drawing.Point(12, 12);
+            this.lstDevices.Name = "lstDevices";
+            this.lstDevices.Size = new System.Drawing.Size(120, 95);
+            this.lstDevices.TabIndex = 2;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 262);
+            this.Controls.Add(this.lstDevices);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.btnDiscover);
             this.Name = "Form1";
@@ -69,6 +79,7 @@
 
         private System.Windows.Forms.Button btnDiscover;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.ListBox lstDevices;
     }
 }
 
