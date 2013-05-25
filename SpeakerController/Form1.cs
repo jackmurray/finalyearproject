@@ -21,6 +21,7 @@ namespace SpeakerController
         public Form1()
         {
             InitializeComponent();
+            Text = string.Format("{0}-{1}", GetBuildVersion(), GetBuildFlavour());
 
             Uri uri = Util.GetOurControlURL(true); //Get URI that we're going to run on.
 
@@ -43,6 +44,20 @@ namespace SpeakerController
             host.Open();
         }
 
+        public static string GetBuildFlavour()
+        {
+#if DEBUG
+            return "DEBUG";
+#else
+            return "RELEASE";
+#endif
+        }
+
+        private static string GetBuildVersion()
+        {
+            return System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString();
+        }
+
         private void btnDiscover_Click(object sender, EventArgs e)
         {
             lstDevices.Items.Clear();
@@ -59,13 +74,15 @@ namespace SpeakerController
 
         private void button1_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(GetClient("http://10.0.1.6:10451/Receiver.svc").GetVersion().ToString());
+            MessageBox.Show(GetClient(lstDevices.SelectedItem.ToString()).GetVersion().ToString());
         }
 
         private ReceiverService.ReceiverServiceClient GetClient(string uri)
         {
             var client = new ReceiverService.ReceiverServiceClient(new BasicHttpBinding(), new EndpointAddress(uri));
+#if !DEBUG //If we're a debug build, don't try and decrypt stuff. This means that debug builds of the controller must be used with debug receivers too.
             client.Endpoint.EndpointBehaviors.Add(new LibUtil.ClientServiceProcessor(new LibSecurity.WebServiceProtector(false)));
+#endif
             return client;
         }
     }

@@ -20,6 +20,7 @@ namespace SpeakerReceiver
 
         private static void Main(string[] args)
         {
+            Console.WriteLine("{0}-{1}", GetBuildVersion(), GetBuildFlavour());
             Setup();
             KeyManager key = null;
             CertManager cert = null;
@@ -49,7 +50,9 @@ namespace SpeakerReceiver
             
             //App EP
             ServiceEndpoint appEP = host.AddServiceEndpoint(typeof (IReceiverService), new BasicHttpBinding(), uri);
+#if !DEBUG
             appEP.Behaviors.Add(new ServerRequestProcessor(new LibSecurity.WebServiceProtector(true)));
+#endif
             //MEX EP
             host.AddServiceEndpoint(ServiceMetadataBehavior.MexContractName,
                                     MetadataExchangeBindings.CreateMexHttpBinding(), "mex");
@@ -77,6 +80,21 @@ namespace SpeakerReceiver
         {
             Cleanup();
             Environment.Exit(1);
+        }
+
+
+        private static string GetBuildFlavour()
+        {
+#if DEBUG
+            return "DEBUG";
+#else
+            return "RELEASE";
+#endif
+        }
+
+        private static string GetBuildVersion()
+        {
+            return System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString();
         }
     }
 }
