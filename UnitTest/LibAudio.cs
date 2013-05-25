@@ -30,6 +30,11 @@ namespace UnitTest
             mp3.Parse();
             Assert.AreEqual(mp3.BitRate, BitRate.OneHundredNinetyTwo);
             Assert.AreEqual(mp3.Frequency, Frequency.FourtyFourPointOne);
+
+            mp3 = new MP3Format(File.OpenRead("D:\\Music\\Icon For Hire\\Scripted\\The Grey.mp3"));
+            mp3.Parse();
+            Assert.AreEqual(mp3.BitRate, BitRate.ThreeHundredTwenty);
+            Assert.AreEqual(mp3.Frequency, Frequency.FourtyFourPointOne);
         }
     }
 }
