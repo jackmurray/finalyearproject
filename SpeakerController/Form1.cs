@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.ServiceModel;
 using LibSSDP;
+using LibSecurity;
 using LibUtil;
 
 namespace SpeakerController
@@ -48,6 +49,8 @@ namespace SpeakerController
         {
 #if DEBUG
             return "DEBUG";
+#elif NONDEBUG
+            return "NONDEBUG";
 #else
             return "RELEASE";
 #endif
@@ -81,7 +84,7 @@ namespace SpeakerController
         {
             var client = new ReceiverService.ReceiverServiceClient(new BasicHttpBinding(), new EndpointAddress(uri));
 #if !DEBUG //If we're a debug build, don't try and decrypt stuff. This means that debug builds of the controller must be used with debug receivers too.
-            client.Endpoint.EndpointBehaviors.Add(new LibUtil.ClientServiceProcessor(new LibSecurity.WebServiceProtector(false)));
+            client.Endpoint.EndpointBehaviors.Add(new ClientServiceProcessor(new LibSecurity.WebServiceProtector(false)));
 #endif
             return client;
         }

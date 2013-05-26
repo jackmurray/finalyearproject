@@ -87,6 +87,8 @@ namespace SpeakerReceiver
         {
 #if DEBUG
             return "DEBUG";
+#elif NONDEBUG
+            return "NONDEBUG";
 #else
             return "RELEASE";
 #endif
