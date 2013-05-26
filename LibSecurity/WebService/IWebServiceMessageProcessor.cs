@@ -4,7 +4,7 @@ using System.Linq;
 using System.ServiceModel.Channels;
 using System.Text;
 
-namespace LibUtil
+namespace LibSecurity
 {
     public interface IWebServiceMessageProcessor
     {

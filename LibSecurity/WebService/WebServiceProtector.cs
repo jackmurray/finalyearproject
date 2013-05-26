@@ -8,7 +8,7 @@ using System.Xml;
 
 namespace LibSecurity
 {
-    public class WebServiceProtector : LibUtil.IWebServiceMessageProcessor
+    public class WebServiceProtector : IWebServiceMessageProcessor
     {
         private const string HEADER_SIGNATURE = "x-signature";
         private const string HEADER_GUID = "x-guid";
@@ -32,6 +32,7 @@ namespace LibSecurity
         }
 
         //Yes, duplicating this sucks, but HttpRequest/HttpResponseMessageProperty aren't common subclasses of anything, so there's nothing we can do.
+        //There's also no setter on the .Headers property :/
         private Message AddRequestSignatureHeaders(ref Message m)
         {
             HttpRequestMessageProperty httpRequestMessage;
@@ -100,12 +101,14 @@ namespace LibSecurity
 
             doc.Load(ms);
 
-            XmlNodeList list = doc.GetElementsByTagName("GetVersion");
-            if (list.Count > 0)
+            XmlNodeList list = doc.GetElementsByTagName("s:Body");
+            list[0].RemoveAll();
+            list[0].AppendChild(doc.CreateNode(XmlNodeType.Element, "blob", "http://lol.com"));
+            /*if (list.Count > 0)
                 list[0].AppendChild(doc.CreateNode(XmlNodeType.Element, "test", "http://lol.com"));
             else
                 doc.GetElementsByTagName("GetVersionResponse")[0].AppendChild(doc.CreateNode(XmlNodeType.Element, "test", "http://lol.com"));
-
+            */
             ms.SetLength(0);
 
             writer = XmlWriter.Create(ms);

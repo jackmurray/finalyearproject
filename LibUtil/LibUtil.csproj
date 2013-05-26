@@ -38,9 +38,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ClientServiceProcessor.cs" />
-    <Compile Include="IWebServiceMessageProcessor.cs" />
-    <Compile Include="ServerRequestProcessor.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

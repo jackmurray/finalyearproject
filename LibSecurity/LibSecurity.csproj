@@ -43,11 +43,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CertManager.cs" />
+    <Compile Include="WebService\ClientServiceProcessor.cs" />
     <Compile Include="Hasher.cs" />
+    <Compile Include="WebService\IWebServiceMessageProcessor.cs" />
     <Compile Include="KeyManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WebService\ServerRequestProcessor.cs" />
     <Compile Include="Signer.cs" />
-    <Compile Include="WebServiceProtector.cs" />
+    <Compile Include="WebService\WebServiceProtector.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LibConfig\LibConfig.csproj">

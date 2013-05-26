@@ -7,7 +7,7 @@ using System.ServiceModel.Dispatcher;
 using System.Text;
 using System.ServiceModel;
 
-namespace LibUtil
+namespace LibSecurity
 {
     public class ServerRequestProcessor : IDispatchMessageInspector, IEndpointBehavior
     {
