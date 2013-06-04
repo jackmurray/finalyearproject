@@ -34,6 +34,17 @@ namespace LibConfig
                 throw new ConfigException("Unable to read config value: " + ex.Message);
             }
         }
+
+        /// <summary>
+        /// Gets a config key, and interprets it's value as a path.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static string GetPath(string key)
+        {
+            string p = Get(key);
+            return System.IO.Path.GetFullPath(p);
+        }
         
         private static void LoadConfig()
         {
