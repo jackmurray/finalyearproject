@@ -16,6 +16,7 @@ namespace LibConfig
         //List of config keys.
         public const string LOG_PATH = "logPath"; //Path for logfiles.
         public const string CRYPTO_PATH = "cryptoPath"; //Path to store cryptographic material in.
+        public const string GEN_PKCS12_CERT = "generatePKCS12Cert";
 
         public static string Get(string key)
         {
@@ -33,6 +34,11 @@ namespace LibConfig
             {
                 throw new ConfigException("Unable to read config value: " + ex.Message);
             }
+        }
+
+        public static bool GetFlag(string key)
+        {
+            return bool.Parse(Get(key));
         }
 
         /// <summary>

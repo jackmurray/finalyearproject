@@ -87,12 +87,15 @@ namespace LibSecurity
                     cert = CertManager.Create(key);
                     cert.WriteToFile(certFile);
                     Log.Information("Cert generated.");
-                    Pkcs12Store store = new Pkcs12StoreBuilder().Build();
-                    store.SetKeyEntry("privatekey", new AsymmetricKeyEntry(key.Private),
-                                      new[] {new X509CertificateEntry(cert.Cert)});
-                    Stream s = File.OpenWrite(pfxFile);
-                    store.Save(s, "password".ToCharArray(), new SecureRandom());
-                    s.Close();
+                    if (Config.GetFlag(Config.GEN_PKCS12_CERT))
+                    {
+                        Pkcs12Store store = new Pkcs12StoreBuilder().Build();
+                        store.SetKeyEntry("privatekey", new AsymmetricKeyEntry(key.Private),
+                                          new[] {new X509CertificateEntry(cert.Cert)});
+                        Stream s = File.OpenWrite(pfxFile);
+                        store.Save(s, "password".ToCharArray(), new SecureRandom());
+                        s.Close();
+                    }
                 }
                 catch (Exception ex)
                 {

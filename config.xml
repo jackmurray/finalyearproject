@@ -2,4 +2,5 @@
 <config>
 	<logPath>logs</logPath>
 	<cryptoPath>crypto</cryptoPath>
+	<generatePKCS12Cert>false</generatePKCS12Cert>
 </config>
