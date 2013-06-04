@@ -19,6 +19,9 @@ namespace SpeakerController
 {
     public partial class Form1 : Form
     {
+        private KeyManager key;
+        private CertManager cert;
+
         public Form1()
         {
             InitializeComponent();
@@ -43,6 +46,9 @@ namespace SpeakerController
                                     MetadataExchangeBindings.CreateMexHttpBinding(), "mex");
 
             host.Open();
+            Setup();
+            key = KeyManager.GetKey();
+            cert = CertManager.GetCert(key);
         }
 
         public static string GetBuildFlavour()
@@ -77,7 +83,8 @@ namespace SpeakerController
 
         private void button1_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(GetClient(lstDevices.SelectedItem.ToString()).GetVersion().ToString());
+            MessageBox.Show(new SslClient(cert.ToDotNetCert(key)).Connect(10452).ToString());
+            //MessageBox.Show(GetClient(lstDevices.SelectedItem.ToString()).GetVersion().ToString());
         }
 
         private ReceiverService.ReceiverServiceClient GetClient(string uri)
@@ -87,6 +94,11 @@ namespace SpeakerController
             client.Endpoint.EndpointBehaviors.Add(new ClientServiceProcessor(new LibSecurity.WebServiceProtector(false)));
 #endif
             return client;
+        }
+
+        private void Setup()
+        {
+            Util.CreateDirs();
         }
     }
 }

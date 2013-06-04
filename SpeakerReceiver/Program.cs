@@ -59,6 +59,7 @@ namespace SpeakerReceiver
             
             host.Open();
             Console.WriteLine("Service started on " + uri);
+            new SslServer(cert.ToDotNetCert(key)).Listen(10452);
             Console.ReadLine();
             host.Close();
 
