@@ -25,8 +25,6 @@ namespace LibSecurity
             sock.Connect(new IPEndPoint(IPAddress.Parse("10.0.1.6"), port));
             SslStream ssl = new SslStream(sock.GetStream(), false, (a,b,c,d) => true);
             ssl.AuthenticateAsClient("d3cb375c-b626-4b24-bc3f-f022b12b3f2f", new X509Certificate2Collection(_cert), System.Security.Authentication.SslProtocols.Tls, false);
-            //ssl.WriteByte(0); //work around bug in mono. it tries to read from the stream as part of the AuthenticateAsServer() call
-                              //so we give it a byte to chomp before it can return and start operating normally.
             int read = ssl.ReadByte();
             ssl.Close();
             return read;
