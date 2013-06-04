@@ -10,6 +10,7 @@ using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.OpenSsl;
+using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.X509;
 using Org.BouncyCastle.Asn1.X509;
@@ -63,6 +64,7 @@ namespace LibSecurity
         public static CertManager GetCert(KeyManager key)
         {
             string certFile = System.IO.Path.Combine(Config.Get(Config.CRYPTO_PATH), "cert.crt");
+            string pfxFile = System.IO.Path.Combine(Config.Get(Config.CRYPTO_PATH), "cert.pfx");
             CertManager cert = null;
 
             if (System.IO.File.Exists(certFile))
@@ -85,6 +87,12 @@ namespace LibSecurity
                     cert = CertManager.Create(key);
                     cert.WriteToFile(certFile);
                     Log.Information("Cert generated.");
+                    Pkcs12Store store = new Pkcs12StoreBuilder().Build();
+                    store.SetKeyEntry("privatekey", new AsymmetricKeyEntry(key.Private),
+                                      new[] {new X509CertificateEntry(cert.Cert)});
+                    Stream s = File.OpenWrite(pfxFile);
+                    store.Save(s, "password".ToCharArray(), new SecureRandom());
+                    s.Close();
                 }
                 catch (Exception ex)
                 {
@@ -108,11 +116,20 @@ namespace LibSecurity
             return new CertManager((X509Certificate)r.ReadObject());
         }
 
+        public System.Security.Cryptography.X509Certificates.X509Certificate ToDotNetPublicCert()
+        {
+            var dotnetcert = new System.Security.Cryptography.X509Certificates.X509Certificate(DotNetUtilities.ToX509Certificate(Cert));
+            return dotnetcert;
+        }
+
         public System.Security.Cryptography.X509Certificates.X509Certificate2 ToDotNetCert(KeyManager key)
         {
-            var dotnetcert = new System.Security.Cryptography.X509Certificates.X509Certificate2(DotNetUtilities.ToX509Certificate(Cert));
-            dotnetcert.PrivateKey = key.ToDotNetKey();
-            return dotnetcert;
+            /*string path = System.IO.Path.Combine(Config.GetPath(Config.CRYPTO_PATH), "cert.pfx");
+            var dotnetcert = new System.Security.Cryptography.X509Certificates.X509Certificate2(path, "password", System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.UserKeySet | System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.PersistKeySet);
+            return dotnetcert;*/
+            var cert = new System.Security.Cryptography.X509Certificates.X509Certificate2(ToDotNetPublicCert());
+            cert.PrivateKey = key.ToDotNetKey();
+            return cert;
         }
     }
 }
