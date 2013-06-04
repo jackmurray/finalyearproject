@@ -27,25 +27,6 @@ namespace SpeakerController
             InitializeComponent();
             Text = string.Format("{0}-{1}", GetBuildVersion(), GetBuildFlavour());
 
-            Uri uri = Util.GetOurControlURL(true); //Get URI that we're going to run on.
-
-            ServiceHost host = new ServiceHost(typeof(ControllerService), uri);
-            ServiceMetadataBehavior smb = new ServiceMetadataBehavior
-            {
-                HttpGetEnabled = true
-            };
-            host.Description.Behaviors.Add(smb);
-
-            //App EP
-            ServiceEndpoint appEP = host.AddServiceEndpoint(typeof(IControllerService), new BasicHttpBinding(), uri);
-#if !DEBUG //If we're a debug build, don't encrypt stuff.
-            appEP.Behaviors.Add(new ServerRequestProcessor(new LibSecurity.WebServiceProtector(true)));
-#endif
-            //MEX EP
-            host.AddServiceEndpoint(ServiceMetadataBehavior.MexContractName,
-                                    MetadataExchangeBindings.CreateMexHttpBinding(), "mex");
-
-            host.Open();
             Setup();
             key = KeyManager.GetKey();
             cert = CertManager.GetCert(key);
@@ -85,15 +66,6 @@ namespace SpeakerController
         {
             MessageBox.Show(new SslClient(cert.ToDotNetCert(key)).Connect(10452).ToString());
             //MessageBox.Show(GetClient(lstDevices.SelectedItem.ToString()).GetVersion().ToString());
-        }
-
-        private ReceiverService.ReceiverServiceClient GetClient(string uri)
-        {
-            var client = new ReceiverService.ReceiverServiceClient(new BasicHttpBinding(), new EndpointAddress(uri));
-#if !DEBUG //If we're a debug build, don't try and decrypt stuff. This means that debug builds of the controller must be used with debug receivers too.
-            client.Endpoint.EndpointBehaviors.Add(new ClientServiceProcessor(new LibSecurity.WebServiceProtector(false)));
-#endif
-            return client;
         }
 
         private void Setup()
