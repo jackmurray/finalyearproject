@@ -43,6 +43,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CertManager.cs" />
+    <Compile Include="SslClient.cs" />
+    <Compile Include="SslServer.cs" />
     <Compile Include="WebService\ClientServiceProcessor.cs" />
     <Compile Include="Hasher.cs" />
     <Compile Include="WebService\IWebServiceMessageProcessor.cs" />
