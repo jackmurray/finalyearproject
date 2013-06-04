@@ -41,7 +41,16 @@ namespace LibSecurity
 
         public AsymmetricAlgorithm ToDotNetKey()
         {
-            return DotNetUtilities.ToRSA(rsa.Private as RsaPrivateCrtKeyParameters);
+            //Once again, StackOverflow to the rescue.
+            //http://stackoverflow.com/questions/7984945/the-credentials-supplied-to-the-package-were-not-recognized-error-when-authent
+            // Apparently, using DotNetUtilities to convert the private key is a little iffy. Have to do some init up front.
+            RSACryptoServiceProvider tempRcsp = (RSACryptoServiceProvider)DotNetUtilities.ToRSA(rsa.Private as RsaPrivateCrtKeyParameters);
+            RSACryptoServiceProvider rcsp = new RSACryptoServiceProvider(new CspParameters(1, "Microsoft Strong Cryptographic Provider", Guid.NewGuid().ToString()));
+            
+
+            rcsp.ImportCspBlob(tempRcsp.ExportCspBlob(true));
+
+            return rcsp;
         }
 
         public void WriteKeyToFile(string filename, bool writePrivateKey)
