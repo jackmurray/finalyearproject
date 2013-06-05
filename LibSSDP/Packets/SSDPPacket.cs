@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Net;
-using LibSecurity;
 
 namespace LibSSDP
 {
@@ -15,8 +14,9 @@ namespace LibSSDP
         public static IPEndPoint RemoteEndpoint = new IPEndPoint(IPAddress.Parse("239.255.255.250"), 1900); //Standard SSDP address.
         public static IPEndPoint LocalEndpoint = new IPEndPoint(IPAddress.Any, 1900); //Standard SSDP address.
         protected const string ServiceType = "urn:multicastspeakers:speaker";
-        public string fingerprint, Location, Signature;
+        public string Location;
         public Method Method;
+        public DateTime Date;
 
         public void Send(UdpClient c)
         {
@@ -26,26 +26,31 @@ namespace LibSSDP
 
         protected byte[] Serialize()
         {
+            return Encoding.ASCII.GetBytes(this.ToString());
+        }
+
+        protected string GetBasicHeaders()
+        {
             StringBuilder packet = new StringBuilder();
             packet.AppendFormat("{0}\r\n", Method.ToPacketString());
-            packet.AppendFormat("USN: fingerprint:{0}\r\n", fingerprint);
             packet.AppendFormat("Date: {0}\r\n", LibUtil.Util.FormatDate(DateTime.Now));
+            packet.AppendFormat("Location: {0}\r\n", Location);
+
+            return packet.ToString();
+        }
+
+        public override string ToString()
+        {
+            StringBuilder packet = new StringBuilder();
+            packet.Append(GetBasicHeaders());
             packet.Append(GetSpecificHeaders()); //Get any specific headers for different packet types.
 
-            if (Location != null)
-                packet.AppendFormat("Location: {0}\r\n", Location);
-            if (Signature != null)
-                packet.AppendFormat("x-signature: {0}\r\n", Signature);
-
-            return Encoding.ASCII.GetBytes(packet.ToString());
+            return packet.ToString();
         }
+
 
         protected abstract string GetSpecificHeaders();
-
-        protected string GetSignature(KeyManager key)
-        {
-            return Signer.Create(key).SignBase64(Serialize());
-        }
+        protected abstract void TryParseExtendedHeader(string name, string val);
 
         public static SSDPPacket Parse(string s)
         {
@@ -82,9 +87,6 @@ namespace LibSSDP
 
                     switch (headername) //We'll just ignore any headers we don't understand.
                     {
-                        case "USN":
-                            p.fingerprint = headerval.Replace("fingerprint:", "");
-                            break;
                         case "NT": //Announce uses NT
                         case "ST": //Discovery/Reponse uses ST.
                             //We're actually more liberal here than we should be. The protocol spec dictates which packet types should use which header, but we don't care as much - so long as we get *something* it's cool.
@@ -94,8 +96,12 @@ namespace LibSSDP
                         case "Location":
                             p.Location = headerval;
                             break;
-                        case "x-signature":
-                            p.Signature = headerval;
+                        case "Date":
+                            p.Date = DateTime.Parse(headerval);
+                            break;
+                            //If we couldn't figure out the header, maybe the implementing class can.
+                        default:
+                            p.TryParseExtendedHeader(headername, headerval);
                             break;
                     }
                 }

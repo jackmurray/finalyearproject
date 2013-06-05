@@ -8,9 +8,19 @@ using LibSecurity;
 
 namespace LibSSDP
 {
-    public class SSDPAnnouncePacket : SSDPPacket
+    public class SSDPAnnouncePacket : SSDPSignedPacket
     {
         internal SSDPAnnouncePacket()
+        {
+            Setup();
+        }
+
+        internal SSDPAnnouncePacket(KeyManager key, CertManager cert) : base(key, cert)
+        {
+            Setup();
+        }
+
+        private void Setup()
         {
             Method = LibSSDP.Method.Announce;
         }
@@ -22,17 +32,6 @@ namespace LibSSDP
             sb.AppendFormat("NT: {0}\r\n", ServiceType);
 
             return sb.ToString();
-        }
-
-        internal static SSDPAnnouncePacket Build(KeyManager key, CertManager cert)
-        {
-            string fingerprint = cert.Fingerprint;
-            SSDPAnnouncePacket packet = new SSDPAnnouncePacket()
-            {
-                fingerprint = fingerprint
-            };
-            packet.Signature = packet.GetSignature(key);
-            return packet;
         }
     }
 }

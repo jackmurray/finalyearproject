@@ -69,6 +69,7 @@
     <Compile Include="Packets\SSDPPacket.cs" />
     <Compile Include="Packets\SSDPResponsePacket.cs" />
     <Compile Include="Packets\SSDPSearchPacket.cs" />
+    <Compile Include="Packets\SSDPSignedPacket.cs" />
     <Compile Include="SSDPClient.cs" />
     <Compile Include="SSDPService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

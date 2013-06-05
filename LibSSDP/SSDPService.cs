@@ -30,7 +30,7 @@ namespace LibSSDP
         private void Announce()
         {
             UdpClient client = Util.GetClient();
-            SSDPAnnouncePacket.Build(key, cert).Send(client);
+            new SSDPAnnouncePacket(key, cert).Send(client);
             client.Close();
         }
 
@@ -58,7 +58,7 @@ namespace LibSSDP
                         {
                             if (p.Method == Method.Search) //If someone is looking for us, respond. We don't care about other announcers.
                             {
-                                SSDPResponsePacket response = SSDPResponsePacket.Build(key, cert);
+                                SSDPResponsePacket response = new SSDPResponsePacket(key, cert);
                                 response.Send(remoteEP);
                             }
                             else

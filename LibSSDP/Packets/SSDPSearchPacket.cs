@@ -20,6 +20,11 @@ namespace LibSSDP
             return sb.ToString();
         }
 
+        protected override void TryParseExtendedHeader(string name, string val)
+        {
+            return; //search doesn't have anything special
+        }
+
         public static SSDPSearchPacket Build()
         {
             SSDPSearchPacket packet = new SSDPSearchPacket();

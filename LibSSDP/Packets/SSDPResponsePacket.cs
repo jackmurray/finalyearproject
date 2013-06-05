@@ -8,9 +8,19 @@ using LibSecurity;
 
 namespace LibSSDP
 {
-    public class SSDPResponsePacket : SSDPPacket
+    public class SSDPResponsePacket : SSDPSignedPacket
     {
         internal SSDPResponsePacket()
+        {
+            Setup();
+        }
+
+        internal SSDPResponsePacket(KeyManager key, CertManager cert) : base(key, cert)
+        {
+            Setup();
+        }
+
+        private void Setup()
         {
             Location = LibUtil.Util.GetOurControlURL(false).ToString();
             Method = LibSSDP.Method.Respond;
@@ -21,17 +31,6 @@ namespace LibSSDP
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("ST: {0}\r\n", ServiceType);
             return sb.ToString();
-        }
-
-        internal static SSDPResponsePacket Build(KeyManager key, CertManager cert)
-        {
-            string fingerprint = cert.Fingerprint;
-            SSDPResponsePacket packet = new SSDPResponsePacket()
-            {
-                    fingerprint = fingerprint
-            };
-            packet.Signature = packet.GetSignature(key);
-            return packet;
         }
 
         public void Send(IPEndPoint ep)
