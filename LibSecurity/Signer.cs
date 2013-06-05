@@ -36,5 +36,10 @@ namespace LibSecurity
         {
             return LibUtil.Util.BytesToBase64String(Sign(data));
         }
+
+        public string SignASCIIStringToBase64(string s)
+        {
+            return SignBase64(Encoding.ASCII.GetBytes(s));
+        }
     }
 }
