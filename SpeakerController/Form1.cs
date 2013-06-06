@@ -9,6 +9,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using LibConfig;
 using LibSSDP;
 using LibSecurity;
 using LibUtil;
@@ -69,6 +70,27 @@ namespace SpeakerController
         private void Setup()
         {
             Util.CreateDirs();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            string name = "Unnamed Device";
+            if (!Config.Exists(Config.DEVICE_FRIENDLY_NAME))
+                SetFriendlyName(name);
+            else
+                name = Config.Get(Config.DEVICE_FRIENDLY_NAME);
+
+            txtFriendlyName.Text = name;
+        }
+
+        private void SetFriendlyName(string name)
+        {
+            Config.Set(Config.DEVICE_FRIENDLY_NAME, name);
+        }
+
+        private void btnSaveFriendlyName_Click(object sender, EventArgs e)
+        {
+            SetFriendlyName(txtFriendlyName.Text);
         }
     }
 }

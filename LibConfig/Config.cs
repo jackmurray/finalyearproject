@@ -19,6 +19,7 @@ namespace LibConfig
         public const string CRYPTO_PATH = "cryptoPath"; //Path to store cryptographic material in.
         public const string GEN_PKCS12_CERT = "generatePKCS12Cert";
         public const string WRITE_TRACE_TO_CONSOLE = "writeTraceToConsole";
+        public const string DEVICE_FRIENDLY_NAME = "deviceFriendlyName";
 
         public static string Get(string key)
         {
