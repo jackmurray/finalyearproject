@@ -15,6 +15,7 @@ namespace LibTrace
         private int id = 0;
         private readonly object tracelock = new object();
         private static readonly Dictionary<string, TraceSource> Sources = new Dictionary<string, TraceSource>();
+        private bool writeToConsole = false;
 
         public Trace(string sourceName)
         {
@@ -31,6 +32,9 @@ namespace LibTrace
                 Verbose("Logging started.");
                 Sources.Add(sourceName, s);
             }
+
+            if (Config.GetFlag(Config.WRITE_TRACE_TO_CONSOLE))
+                writeToConsole = true;
         }
 
         public void Critical(string message)
@@ -69,9 +73,12 @@ namespace LibTrace
         {
             lock (tracelock)
             {
-                s.TraceEvent(type, id, FormatMessage(message));
+                string formatted = FormatMessage(message);
+                s.TraceEvent(type, id, formatted);
                 s.Flush();
                 id++;
+                if (writeToConsole)
+                    Console.WriteLine("{0} {1}", s.Name, formatted);
             }
         }
 

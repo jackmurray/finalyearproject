@@ -17,6 +17,7 @@ namespace LibConfig
         public const string LOG_PATH = "logPath"; //Path for logfiles.
         public const string CRYPTO_PATH = "cryptoPath"; //Path to store cryptographic material in.
         public const string GEN_PKCS12_CERT = "generatePKCS12Cert";
+        public const string WRITE_TRACE_TO_CONSOLE = "writeTraceToConsole";
 
         public static string Get(string key)
         {
