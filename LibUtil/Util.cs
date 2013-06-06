@@ -40,14 +40,5 @@ namespace LibUtil
             Util.MkDir(Config.Get(Config.CRYPTO_PATH));
             Util.MkDir(System.IO.Path.Combine(Config.Get(Config.CRYPTO_PATH), "trustedKeys"));
         }
-
-        public static Uri GetOurControlURL(bool isController)
-        {
-            IPAddress ourip =
-                Dns.GetHostEntry(Dns.GetHostName())
-                   .AddressList.First(a => a.AddressFamily == AddressFamily.InterNetwork);
-            string svcname = isController ? "Controller" : "Receiver";
-            return new Uri(String.Format("http://{0}:10451/{1}.svc", ourip, svcname));
-        }
     }
 }

@@ -63,7 +63,7 @@ namespace SpeakerController
 
         private void button1_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(new SslClient(cert.ToDotNetCert(key)).Connect(10452).ToString());
+            MessageBox.Show(new SslClient(cert.ToDotNetCert(key)).Connect(10451).ToString());
             //MessageBox.Show(GetClient(lstDevices.SelectedItem.ToString()).GetVersion().ToString());
         }
 

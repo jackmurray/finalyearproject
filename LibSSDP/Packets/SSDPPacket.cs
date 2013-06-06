@@ -14,7 +14,7 @@ namespace LibSSDP
         public static IPEndPoint RemoteEndpoint = new IPEndPoint(IPAddress.Parse("239.255.255.250"), 1900); //Standard SSDP address.
         public static IPEndPoint LocalEndpoint = new IPEndPoint(IPAddress.Any, 1900); //Standard SSDP address.
         protected const string ServiceType = "urn:multicastspeakers:speaker";
-        public string Location;
+        public int Location;
         public Method Method;
         public DateTime Date;
 
@@ -94,7 +94,7 @@ namespace LibSSDP
                                 checkedServiceType = true;
                             break;
                         case "Location":
-                            p.Location = headerval;
+                            p.Location = int.Parse(headerval);
                             break;
                         case "Date":
                             p.Date = DateTime.Parse(headerval);

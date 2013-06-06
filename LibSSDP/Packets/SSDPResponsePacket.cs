@@ -22,7 +22,7 @@ namespace LibSSDP
 
         private void Setup()
         {
-            Location = LibUtil.Util.GetOurControlURL(false).ToString();
+            Location = 10451;
             Method = LibSSDP.Method.Respond;
         }
 

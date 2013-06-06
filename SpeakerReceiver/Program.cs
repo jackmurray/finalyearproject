@@ -38,7 +38,7 @@ namespace SpeakerReceiver
             new LibSSDP.SSDPService(key, cert).Start();
 
             
-            new SslServer(cert.ToDotNetCert(key)).Listen(10452);
+            new SslServer(cert.ToDotNetCert(key)).Listen(10451);
             Console.ReadLine();
 
             Cleanup();

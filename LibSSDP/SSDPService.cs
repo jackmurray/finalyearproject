@@ -58,6 +58,7 @@ namespace LibSSDP
                         {
                             if (p.Method == Method.Search) //If someone is looking for us, respond. We don't care about other announcers.
                             {
+                                Log.Information("Got an SSDP search. Sending response.");
                                 SSDPResponsePacket response = new SSDPResponsePacket(key, cert);
                                 response.Send(remoteEP);
                             }
