@@ -12,6 +12,7 @@ namespace LibConfig
         private const string CONFIG_FILENAME = "config.xml";
         private static bool IsLoaded = false;
         private static XmlDocument xml;
+        private static readonly object configLock = new object();
 
         //List of config keys.
         public const string LOG_PATH = "logPath"; //Path for logfiles.
@@ -21,19 +22,56 @@ namespace LibConfig
 
         public static string Get(string key)
         {
-            if (!IsLoaded)
-                LoadConfig();
+            lock (configLock) //we don't wanna accidentally try and read something while we're updating it.
+            {
+                if (!IsLoaded)
+                    LoadConfig();
 
-            try
+                try
+                {
+                    XmlNode n = xml.SelectSingleNode("/config/" + key);
+                    if (n == null)
+                        throw new ConfigException("Missing config key: " + key);
+                    return n.InnerText;
+                }
+                catch (Exception ex)
+                {
+                    throw new ConfigException("Unable to read config value: " + ex.Message);
+                }
+            }
+        }
+
+        public static void Set(string key, string value)
+        {
+            lock (configLock)
             {
                 XmlNode n = xml.SelectSingleNode("/config/" + key);
                 if (n == null)
-                    throw new ConfigException("Missing config key: " + key);
-                return n.InnerText;
+                {
+                    n = xml.CreateNode(XmlNodeType.Element, key, "");
+                    XmlNode root = xml.SelectSingleNode("/config");
+                    root.AppendChild(n);
+                }
+
+                n.InnerText = value;
+
+                xml.Save(CONFIG_FILENAME);
             }
-            catch (Exception ex)
+        }
+
+        public static bool Exists(string key)
+        {
+            lock (configLock)
             {
-                throw new ConfigException("Unable to read config value: " + ex.Message);
+                try
+                {
+                    XmlNode n = xml.SelectSingleNode("/config/" + key);
+                    return n != null;
+                }
+                catch (Exception ex)
+                {
+                    throw new ConfigException("Unable to read config value: " + ex.Message);
+                }
             }
         }
 
