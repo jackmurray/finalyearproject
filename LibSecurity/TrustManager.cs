@@ -9,7 +9,7 @@ namespace LibSecurity
 {
     public static class TrustManager
     {
-        internal static bool ValidateAsServer(object sender, X509Certificate certificate, X509Chain chain,
+        internal static bool ValidateClientCert(object sender, X509Certificate certificate, X509Chain chain,
                               SslPolicyErrors sslPolicyErrors)
         {
             sslPolicyErrors &= ~SslPolicyErrors.RemoteCertificateChainErrors; //we don't care about cert chain errors sonce we don't have a proper PKI structure.
@@ -19,7 +19,7 @@ namespace LibSecurity
             return true;
         }
 
-        internal static bool ValidateAsClient(object sender, X509Certificate certificate, X509Chain chain,
+        internal static bool ValidateServerCert(object sender, X509Certificate certificate, X509Chain chain,
                               SslPolicyErrors sslPolicyErrors)
         {
             sslPolicyErrors &= ~SslPolicyErrors.RemoteCertificateChainErrors; //we don't care about cert chain errors sonce we don't have a proper PKI structure.
