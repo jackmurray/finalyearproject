@@ -49,6 +49,7 @@
     <Compile Include="KeyManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Signer.cs" />
+    <Compile Include="TrustManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LibConfig\LibConfig.csproj">

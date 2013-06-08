@@ -36,15 +36,9 @@ namespace LibSecurity
             }
         }
 
-        private bool Validate(object sender, X509Certificate certificate, X509Chain chain,
-                              SslPolicyErrors sslPolicyErrors)
-        {
-            return true;
-        }
-
         private void ConnectionHandler(TcpClient c)
         {
-            SslStream ssl = new SslStream(c.GetStream(), false, Validate);
+            SslStream ssl = new SslStream(c.GetStream(), false, TrustManager.ValidateAsServer);
             ssl.AuthenticateAsServer(_cert, true, System.Security.Authentication.SslProtocols.Tls, false);
             Console.WriteLine("Accepted SSL connection.");
             ssl.WriteByte(0xff);

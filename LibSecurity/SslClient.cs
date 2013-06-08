@@ -24,14 +24,10 @@ namespace LibSecurity
         {
             var sock = new TcpClient();
             sock.Connect(ep);
-            _stream = new SslStream(sock.GetStream(), false, Validate);
-            _stream.AuthenticateAsClient("d3cb375c-b626-4b24-bc3f-f022b12b3f2f", new X509Certificate2Collection(_cert), System.Security.Authentication.SslProtocols.Tls, false);
-        }
-
-        private bool Validate(object sender, X509Certificate certificate, X509Chain chain,
-                              SslPolicyErrors sslPolicyErrors)
-        {
-            return true;
+            _stream = new SslStream(sock.GetStream(), false, TrustManager.ValidateAsClient);
+            X509CertificateCollection cc = new X509CertificateCollection();
+            cc.Add(_cert);
+            _stream.AuthenticateAsClient("d3cb375c-b626-4b24-bc3f-f022b12b3f2f", cc, System.Security.Authentication.SslProtocols.Tls, false);
         }
 
         public int GetVal()
