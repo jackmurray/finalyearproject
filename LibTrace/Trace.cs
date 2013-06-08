@@ -13,11 +13,10 @@ namespace LibTrace
     {
         private TraceSource s;
         private int id = 0;
-        private readonly object tracelock = new object();
         private static readonly Dictionary<string, TraceSource> Sources = new Dictionary<string, TraceSource>();
-        private bool writeToConsole = false;
+        private SourceLevels Level = SourceLevels.Information; //the same for all sources at the moment. TODO: per-component tracing setting.
 
-        public static IEnumerable<ITraceReceiver> ExtraReceivers = new List<ITraceReceiver>();
+        public static List<TraceListener> ExtraListeners = new List<TraceListener>();
 
         public Trace(string sourceName)
         {
@@ -25,18 +24,15 @@ namespace LibTrace
                 s = Sources[sourceName];
             else
             {
-                // ReSharper disable UseObjectOrCollectionInitializer
-                s = new TraceSource(sourceName);
-                // ReSharper restore UseObjectOrCollectionInitializer
-                s.Switch.Level = SourceLevels.All; //Bug in Mono. If you do this in the constructor it does not work.
+                s = new TraceSource(sourceName, Level);
                 s.Listeners.Clear();
-                GetAllListeners(sourceName).ForEach(l => s.Listeners.Add(l));
-                Verbose("Logging started.");
+                s.Listeners.Add(GetTraceListener(sourceName));
+                if (Config.GetFlag(Config.WRITE_TRACE_TO_CONSOLE))
+                    s.Listeners.Add(new ConsoleTraceListener());
+                ExtraListeners.ForEach(l => s.Listeners.Add(l));
                 Sources.Add(sourceName, s);
+                Verbose("Logging started.");
             }
-
-            if (Config.GetFlag(Config.WRITE_TRACE_TO_CONSOLE))
-                writeToConsole = true;
         }
 
         public void Critical(string message)
@@ -73,17 +69,10 @@ namespace LibTrace
 
         private void DoLog(string message, TraceEventType type)
         {
-            lock (tracelock)
-            {
                 string formatted = FormatMessage(message);
                 s.TraceEvent(type, id, formatted);
                 s.Flush();
                 id++;
-                if (writeToConsole)
-                    Console.WriteLine("{0} {1}", s.Name, formatted);
-                foreach (ITraceReceiver r in ExtraReceivers)
-                    r.ReceiveTrace(formatted);
-            }
         }
 
         private string FormatMessage(string message)
@@ -91,30 +80,17 @@ namespace LibTrace
             return String.Format("[{0}] {1}", DateTime.Now.ToString(), message);
         }
 
-        private List<TraceListener> GetAllListeners(string sourceName)
+        private TraceListener GetTraceListener(string sourceName)
         {
-            var listeners = new List<TraceListener>
-                {
-                    GetTraceListener(sourceName, SourceLevels.Critical),
-                    GetTraceListener(sourceName, SourceLevels.Error),
-                    GetTraceListener(sourceName, SourceLevels.Warning),
-                    GetTraceListener(sourceName, SourceLevels.Information),
-                    GetTraceListener(sourceName, SourceLevels.Verbose)
-                };
-            return listeners;
-        }
-
-        private TraceListener GetTraceListener(string sourceName, SourceLevels level)
-        {
-            TraceListener t = new TextWriterTraceListener(GetLogName(sourceName, level));
-            t.Filter = new EventTypeFilter(level);
+            TraceListener t = new TextWriterTraceListener(GetLogName(sourceName));
+            t.Filter = new EventTypeFilter(Level);
             return t;
         }
 
-        private string GetLogName(string sourceName, SourceLevels level)
+        private string GetLogName(string sourceName)
         {
             string path = Config.Get(Config.LOG_PATH);
-            string name = sourceName + "_" + Enum.GetName(typeof(SourceLevels), level) + ".log";
+            string name = sourceName + ".log";
             return System.IO.Path.Combine(path, name);
         }
 

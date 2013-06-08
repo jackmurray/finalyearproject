@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Net;
@@ -28,8 +29,6 @@ namespace SpeakerController
             Text = string.Format("{0}-{1}", GetBuildVersion(), GetBuildFlavour());
 
             Setup();
-            key = KeyManager.GetKey();
-            cert = CertManager.GetCert(key);
         }
 
         public static string GetBuildFlavour()
@@ -76,11 +75,16 @@ namespace SpeakerController
 
         private void Setup()
         {
+            LibTrace.Trace.ExtraListeners.Add(new ListBoxTraceListener(this, lstTrace));
             Util.CreateDirs();
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            key = KeyManager.GetKey();
+            cert = CertManager.GetCert(key);
+
+
             string name = "Unnamed Device";
             if (!Config.Exists(Config.DEVICE_FRIENDLY_NAME))
                 SetFriendlyName(name);
@@ -98,6 +102,28 @@ namespace SpeakerController
         private void btnSaveFriendlyName_Click(object sender, EventArgs e)
         {
             SetFriendlyName(txtFriendlyName.Text);
+        }
+    }
+
+    public class ListBoxTraceListener : TraceListener
+    {
+        private Form _f;
+        private ListBox _listbox;
+
+        public ListBoxTraceListener(Form f, ListBox listbox)
+        {
+            _f = f;
+            _listbox = listbox;
+        }
+
+        public override void Write(string message)
+        {
+            WriteLine(message);
+        }
+
+        public override void WriteLine(string message)
+        {
+            _f.Invoke((Action)(() => _listbox.Items.Add(message)));
         }
     }
 }
