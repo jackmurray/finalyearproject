@@ -48,7 +48,7 @@ namespace LibSSDP
                         if (p.Method == Method.Respond)
                         {
                             //The 'as' is safe because we've already checked the method.
-                            OnResponsePacketReceived(this, new ResponsePacketReceivedArgs() {Packet = p as SSDPResponsePacket});
+                            OnResponsePacketReceived(this, new ResponsePacketReceivedArgs() {Packet = p as SSDPResponsePacket, Source = remoteEP.Address});
                         }
                         else if (p.Method == Method.Announce)
                         {
@@ -74,5 +74,6 @@ namespace LibSSDP
     public class ResponsePacketReceivedArgs
     {
         public SSDPResponsePacket Packet { get; set; }
+        public IPAddress Source { get; set; }
     }
 }
