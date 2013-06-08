@@ -51,7 +51,7 @@ namespace LibSSDP
                         SSDPPacket p = SSDPPacket.Parse(Encoding.ASCII.GetString(data));
                         if (p == null)
                         {
-                            Log.Information("We got an SSDP packet, but it's not one of ours. Ignoring...");
+                            Log.Verbose("We got an SSDP packet, but it's not one of ours. Ignoring...");
                             continue;
                         }
                         else //Got a valid packet.
@@ -64,14 +64,14 @@ namespace LibSSDP
                             }
                             else
                             {
-                                Log.Information("Got an SSDP announce/response message. Don't care.");
+                                Log.Verbose("Got an SSDP announce/response message. Don't care.");
                                 continue;
                             }
                         }
                     }
                     catch (Exception ex)
                     {
-                        Log.Information("Invalid packet received. Ignoring...");
+                        Log.Verbose("Invalid packet received. Ignoring...");
                     }
                 }
                 catch (SocketException ex)
