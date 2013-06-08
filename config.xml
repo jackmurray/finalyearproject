@@ -4,4 +4,5 @@
 	<cryptoPath>crypto</cryptoPath>
 	<generatePKCS12Cert>false</generatePKCS12Cert>
 	<writeTraceToConsole>true</writeTraceToConsole>
+	<deviceFriendlyName>Unnamed Device</deviceFriendlyName>
 </config>

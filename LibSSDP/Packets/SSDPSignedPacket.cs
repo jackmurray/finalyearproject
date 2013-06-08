@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using LibSecurity;
+using LibConfig;
 
 namespace LibSSDP
 {
     public abstract class SSDPSignedPacket : SSDPPacket
     {
         private KeyManager key;
-        protected string fingerprint, signature;
+        public string fingerprint, signature, friendlyName;
+        public int Location;
 
         /// <summary>
         /// So we can construct objects when parsing packets.
@@ -23,6 +25,7 @@ namespace LibSSDP
         {
             this.key = key;
             fingerprint = cert.Fingerprint;
+            friendlyName = Config.Get(Config.DEVICE_FRIENDLY_NAME);
         }
 
         protected string GetSignature(string s)
@@ -52,7 +55,21 @@ namespace LibSSDP
                 case "x-signature":
                     signature = val;
                     break;
+                case "Location":
+                    Location = int.Parse(val);
+                    break;
+                case "x-device-name":
+                    friendlyName = val;
+                    break;
             }
+        }
+
+        protected override string GetSpecificHeaders()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("Location: {0}\r\n", Location);
+            sb.AppendFormat("x-device-name: {0}\r\n", friendlyName);
+            return sb.ToString();
         }
     }
 }

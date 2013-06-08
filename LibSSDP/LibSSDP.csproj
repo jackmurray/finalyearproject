@@ -76,6 +76,10 @@
     <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LibConfig\LibConfig.csproj">
+      <Project>{37be8328-6872-494f-9458-d3540d7dc44f}</Project>
+      <Name>LibConfig</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LibSecurity\LibSecurity.csproj">
       <Project>{9ea6083b-8cae-4921-b916-b9d62168b80b}</Project>
       <Name>LibSecurity</Name>

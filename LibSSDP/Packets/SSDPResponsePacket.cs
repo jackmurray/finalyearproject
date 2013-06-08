@@ -29,6 +29,7 @@ namespace LibSSDP
         protected override string GetSpecificHeaders()
         {
             StringBuilder sb = new StringBuilder();
+            sb.Append(base.GetSpecificHeaders());
             sb.AppendFormat("ST: {0}\r\n", ServiceType);
             return sb.ToString();
         }

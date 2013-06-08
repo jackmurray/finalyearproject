@@ -28,6 +28,7 @@ namespace LibSSDP
         protected override string GetSpecificHeaders()
         {
             StringBuilder sb = new StringBuilder();
+            sb.Append(base.GetSpecificHeaders());
             sb.Append("NTS: ssdp:alive\r\n");
             sb.AppendFormat("NT: {0}\r\n", ServiceType);
 

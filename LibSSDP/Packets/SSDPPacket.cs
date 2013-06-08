@@ -14,7 +14,6 @@ namespace LibSSDP
         public static IPEndPoint RemoteEndpoint = new IPEndPoint(IPAddress.Parse("239.255.255.250"), 1900); //Standard SSDP address.
         public static IPEndPoint LocalEndpoint = new IPEndPoint(IPAddress.Any, 1900); //Standard SSDP address.
         protected const string ServiceType = "urn:multicastspeakers:speaker";
-        public int Location;
         public Method Method;
         public DateTime Date;
 
@@ -34,7 +33,7 @@ namespace LibSSDP
             StringBuilder packet = new StringBuilder();
             packet.AppendFormat("{0}\r\n", Method.ToPacketString());
             packet.AppendFormat("Date: {0}\r\n", LibUtil.Util.FormatDate(DateTime.Now));
-            packet.AppendFormat("Location: {0}\r\n", Location);
+            
 
             return packet.ToString();
         }
@@ -92,9 +91,6 @@ namespace LibSSDP
                             //We're actually more liberal here than we should be. The protocol spec dictates which packet types should use which header, but we don't care as much - so long as we get *something* it's cool.
                             if (headerval == ServiceType)
                                 checkedServiceType = true;
-                            break;
-                        case "Location":
-                            p.Location = int.Parse(headerval);
                             break;
                         case "Date":
                             p.Date = DateTime.Parse(headerval);

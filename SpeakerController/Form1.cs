@@ -58,7 +58,7 @@ namespace SpeakerController
         //this is called by the receiver thread, hence the Invoke().
         void c_OnResponsePacketReceived(object sender, ResponsePacketReceivedArgs args)
         {
-            Invoke((Action)(() => lstDevices.Items.Add(args.Packet.Location)));
+            Invoke((Action)(() => lstDevices.Items.Add(args.Packet.friendlyName)));
         }
 
         private void button1_Click(object sender, EventArgs e)
