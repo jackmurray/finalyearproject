@@ -72,9 +72,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /y $(SolutionDir)config.xml $(TargetDir)
-xcopy /y $(SolutionDir)receiver.sh $(TargetDir)
-robocopy /e /fft /njh /njs /nfl $(TargetDir) \\nas4free\deploy\receiver
+    <PostBuildEvent>robocopy /fft /njh /njs /nfl "$(TargetDir)\" \\nas4free\deploy\receiver *.dll *.exe
 exit 0</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>

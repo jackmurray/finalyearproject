@@ -105,8 +105,8 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /y $(SolutionDir)config.xml $(TargetDir)
-xcopy /y $(TargetDir)* \\nas4free\deploy\controller</PostBuildEvent>
+    <PostBuildEvent>robocopy /fft /njh /njs /nfl "$(TargetDir)\" \\nas4free\deploy\controller *.dll *.exe
+exit 0</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
