@@ -12,7 +12,7 @@ namespace LibSSDP
     {
         public static UdpClient GetClient()
         {
-            UdpClient c = new UdpClient();
+            UdpClient c = new UdpClient(AddressFamily.InterNetwork);
             c.JoinMulticastGroup(IPAddress.Parse("239.255.255.250"));
             return c;
         }
