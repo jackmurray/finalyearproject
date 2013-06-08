@@ -30,10 +30,7 @@ namespace LibConfig
 
                 try
                 {
-                    XmlNode n = xml.SelectSingleNode("/config/" + key);
-                    if (n == null)
-                        throw new ConfigException("Missing config key: " + key);
-                    return n.InnerText;
+                    return GetRawNode(key).InnerText;
                 }
                 catch (Exception ex)
                 {
@@ -90,6 +87,14 @@ namespace LibConfig
         {
             string p = Get(key);
             return System.IO.Path.GetFullPath(p);
+        }
+
+        public static XmlNode GetRawNode(string key)
+        {
+            XmlNode n = xml.SelectSingleNode("/config/" + key);
+            if (n == null)
+                throw new ConfigException("Missing config key: " + key);
+            return n;
         }
         
         private static void LoadConfig()
