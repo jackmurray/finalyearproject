@@ -17,6 +17,8 @@ namespace LibTrace
         private static readonly Dictionary<string, TraceSource> Sources = new Dictionary<string, TraceSource>();
         private bool writeToConsole = false;
 
+        public static IEnumerable<ITraceReceiver> ExtraReceivers = new List<ITraceReceiver>();
+
         public Trace(string sourceName)
         {
             if (Sources.ContainsKey(sourceName))
@@ -79,6 +81,8 @@ namespace LibTrace
                 id++;
                 if (writeToConsole)
                     Console.WriteLine("{0} {1}", s.Name, formatted);
+                foreach (ITraceReceiver r in ExtraReceivers)
+                    r.ReceiveTrace(formatted);
             }
         }
 
