@@ -20,6 +20,7 @@ namespace SpeakerController
     {
         private KeyManager key;
         private CertManager cert;
+        private List<IPEndPoint> Receivers = new List<IPEndPoint>();
 
         public Form1()
         {
@@ -50,6 +51,7 @@ namespace SpeakerController
         private void btnDiscover_Click(object sender, EventArgs e)
         {
             lstDevices.Items.Clear();
+            Receivers.Clear();
             SSDPClient c = new SSDPClient();
             c.OnResponsePacketReceived += c_OnResponsePacketReceived;
             c.StartDiscovery();
@@ -58,13 +60,18 @@ namespace SpeakerController
         //this is called by the receiver thread, hence the Invoke().
         void c_OnResponsePacketReceived(object sender, ResponsePacketReceivedArgs args)
         {
-            Invoke((Action)(() => lstDevices.Items.Add(args.Packet.friendlyName)));
+            string val = string.Format("{0} - {1}", args.Packet.friendlyName, args.Source.ToString());
+            Invoke((Action)(() => { lstDevices.Items.Add(val);
+                                      Receivers.Add(new IPEndPoint(args.Source, args.Packet.Location));
+            }));
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(new SslClient(cert.ToDotNetCert(key)).Connect(10451).ToString());
-            //MessageBox.Show(GetClient(lstDevices.SelectedItem.ToString()).GetVersion().ToString());
+            IPEndPoint ep = Receivers[lstDevices.SelectedIndex];
+            SslClient ssl = new SslClient(cert.ToDotNetCert(key));
+            ssl.Connect(ep);
+            MessageBox.Show(ssl.GetVal().ToString());
         }
 
         private void Setup()

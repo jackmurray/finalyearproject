@@ -7,6 +7,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace LibSecurity
 {
@@ -14,6 +15,11 @@ namespace LibSecurity
     {
         private X509Certificate2 _cert;
 
+        /// <summary>
+        /// This class should be instantiated on a new thread. It will block to accept tcp connections.
+        /// When it receives a connection, it fires off another thread to deal with it.
+        /// </summary>
+        /// <param name="cert"></param>
         public SslServer(X509Certificate2 cert)
         {
             _cert = cert;
@@ -23,7 +29,22 @@ namespace LibSecurity
         {
             var sock = new TcpListener(IPAddress.Any, port);
             sock.Start();
-            SslStream ssl = new SslStream(sock.AcceptTcpClient().GetStream(), false, (a, b, c, d) => true);
+            while (true)
+            {
+                TcpClient c = sock.AcceptTcpClient();
+                new Thread(() => ConnectionHandler(c)).Start();
+            }
+        }
+
+        private bool Validate(object sender, X509Certificate certificate, X509Chain chain,
+                              SslPolicyErrors sslPolicyErrors)
+        {
+            return true;
+        }
+
+        private void ConnectionHandler(TcpClient c)
+        {
+            SslStream ssl = new SslStream(c.GetStream(), false, Validate);
             ssl.AuthenticateAsServer(_cert, true, System.Security.Authentication.SslProtocols.Tls, false);
             Console.WriteLine("Accepted SSL connection.");
             ssl.WriteByte(0xff);

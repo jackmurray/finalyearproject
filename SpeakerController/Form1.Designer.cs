@@ -37,7 +37,7 @@
             // 
             // btnDiscover
             // 
-            this.btnDiscover.Location = new System.Drawing.Point(93, 198);
+            this.btnDiscover.Location = new System.Drawing.Point(195, 294);
             this.btnDiscover.Name = "btnDiscover";
             this.btnDiscover.Size = new System.Drawing.Size(75, 23);
             this.btnDiscover.TabIndex = 0;
@@ -47,7 +47,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(93, 227);
+            this.button1.Location = new System.Drawing.Point(195, 323);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 1;
@@ -60,19 +60,19 @@
             this.lstDevices.FormattingEnabled = true;
             this.lstDevices.Location = new System.Drawing.Point(12, 12);
             this.lstDevices.Name = "lstDevices";
-            this.lstDevices.Size = new System.Drawing.Size(120, 95);
+            this.lstDevices.Size = new System.Drawing.Size(196, 173);
             this.lstDevices.TabIndex = 2;
             // 
             // txtFriendlyName
             // 
-            this.txtFriendlyName.Location = new System.Drawing.Point(161, 13);
+            this.txtFriendlyName.Location = new System.Drawing.Point(341, 11);
             this.txtFriendlyName.Name = "txtFriendlyName";
             this.txtFriendlyName.Size = new System.Drawing.Size(100, 20);
             this.txtFriendlyName.TabIndex = 3;
             // 
             // btnSaveFriendlyName
             // 
-            this.btnSaveFriendlyName.Location = new System.Drawing.Point(171, 40);
+            this.btnSaveFriendlyName.Location = new System.Drawing.Point(351, 38);
             this.btnSaveFriendlyName.Name = "btnSaveFriendlyName";
             this.btnSaveFriendlyName.Size = new System.Drawing.Size(75, 23);
             this.btnSaveFriendlyName.TabIndex = 4;
@@ -84,7 +84,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 262);
+            this.ClientSize = new System.Drawing.Size(452, 358);
             this.Controls.Add(this.btnSaveFriendlyName);
             this.Controls.Add(this.txtFriendlyName);
             this.Controls.Add(this.lstDevices);
