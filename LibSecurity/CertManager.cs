@@ -58,6 +58,8 @@ namespace LibSecurity
             gen.SetPublicKey(key.Public);
             gen.SetSignatureAlgorithm("SHA256WithRSAEncryption"); //hardcoded for now, maybe change it later.
             gen.AddExtension(X509Extensions.KeyUsage, true, new KeyUsage(KeyUsage.DigitalSignature | KeyUsage.KeyEncipherment));
+            var eku = new[] {KeyPurposeID.IdKPServerAuth, KeyPurposeID.IdKPClientAuth};
+            gen.AddExtension(X509Extensions.ExtendedKeyUsage, true, new ExtendedKeyUsage(eku));
             return new CertManager(gen.Generate(key.Private));
         }
 
