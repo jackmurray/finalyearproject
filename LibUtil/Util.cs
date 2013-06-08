@@ -38,7 +38,6 @@ namespace LibUtil
         {
             Util.MkDir(Config.Get(Config.LOG_PATH));
             Util.MkDir(Config.Get(Config.CRYPTO_PATH));
-            Util.MkDir(System.IO.Path.Combine(Config.Get(Config.CRYPTO_PATH), "trustedKeys"));
         }
     }
 }
