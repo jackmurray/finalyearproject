@@ -109,6 +109,7 @@ namespace SpeakerController
     {
         private Form _f;
         private ListBox _listbox;
+        private StringBuilder buffer = new StringBuilder();
 
         public ListBoxTraceListener(Form f, ListBox listbox)
         {
@@ -118,12 +119,19 @@ namespace SpeakerController
 
         public override void Write(string message)
         {
-            WriteLine(message);
+            buffer.Append(message);
         }
 
         public override void WriteLine(string message)
         {
-            _f.Invoke((Action)(() => _listbox.Items.Add(message)));
+            string final = "";
+            if (buffer.Length > 0)
+            {
+                final += buffer;
+                buffer.Clear();
+            }
+            final += message;
+            _f.Invoke((Action)(() => _listbox.Items.Add(final)));
         }
     }
 }

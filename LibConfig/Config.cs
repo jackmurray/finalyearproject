@@ -20,6 +20,7 @@ namespace LibConfig
         public const string GEN_PKCS12_CERT = "generatePKCS12Cert";
         public const string WRITE_TRACE_TO_CONSOLE = "writeTraceToConsole";
         public const string DEVICE_FRIENDLY_NAME = "deviceFriendlyName";
+        public const string TRACE_LEVEL = "traceLevel";
 
         public static string Get(string key)
         {
@@ -109,6 +110,16 @@ namespace LibConfig
                 throw new ConfigException("Unable to load config: " + ex.Message);
             }
             IsLoaded = true;
+        }
+
+        public static System.Diagnostics.SourceLevels GetTraceLevel()
+        {
+            string raw = Get(TRACE_LEVEL);
+            System.Diagnostics.SourceLevels result;
+            if (Enum.TryParse(raw, out result))
+                return result;
+            else
+                throw new ConfigException("Unable to parse '" + raw + "' as a valid SourceLevel.");
         }
     }
 

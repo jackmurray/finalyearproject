@@ -13,7 +13,7 @@ namespace LibSSDP
     {
         private UdpClient c;
         private IPEndPoint localEP, remoteEP;
-        private Trace Log = new Trace("SSDPClient");
+        private Trace Log = Trace.GetInstance("SSDPClient");
         public event ResponsePacketReceived OnResponsePacketReceived;
 
         public SSDPClient()

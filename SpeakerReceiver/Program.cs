@@ -25,9 +25,7 @@ namespace SpeakerReceiver
             try
             {
                 key = KeyManager.GetKey();
-                Console.WriteLine("Key loaded.");
                 cert = CertManager.GetCert(key);
-                Console.WriteLine(cert.Subject);
             }
             catch (Exception ex)
             {
@@ -47,7 +45,7 @@ namespace SpeakerReceiver
         private static void Setup()
         {
             Util.CreateDirs();
-            Log = new Trace("SpeakerReceiver"); //Do this after we create the log dir.
+            Log = Trace.GetInstance("SpeakerReceiver"); //Do this after we create the log dir.
         }
 
         private static void Cleanup()

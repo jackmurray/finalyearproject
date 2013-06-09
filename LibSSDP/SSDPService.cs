@@ -14,7 +14,7 @@ namespace LibSSDP
     {
         private KeyManager key;
         private CertManager cert;
-        private Trace Log = new Trace("SSDPService");
+        private Trace Log = Trace.GetInstance("SSDPService");
 
         /// <summary>
         /// When we receive a packet, the IP gets put in here.

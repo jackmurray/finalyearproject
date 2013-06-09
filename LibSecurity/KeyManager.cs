@@ -19,7 +19,7 @@ namespace LibSecurity
     public class KeyManager
     {
         private const int KEY_LENGTH = 2048;
-        private static Trace Log = new Trace("LibSecurity");
+        private static Trace Log = Trace.GetInstance("LibSecurity");
         private AsymmetricCipherKeyPair rsa;
         public AsymmetricKeyParameter Public { get { return rsa.Public; } }
         public AsymmetricKeyParameter Private { get { return rsa.Private; } }

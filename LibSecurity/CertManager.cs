@@ -20,7 +20,7 @@ namespace LibSecurity
     public class CertManager
     {
         public X509Certificate Cert { get; set; }
-        private static Trace Log = new Trace("LibSecurity");
+        private static Trace Log = Trace.GetInstance("LibSecurity");
 
         /// <summary>
         /// Gets the fingerprint of this cert. Defined as Hex(SHA1(DEREncodedCert)).
@@ -105,6 +105,7 @@ namespace LibSecurity
                     throw;
                 }
             }
+            Log.Information("Loaded cert: " + cert.Subject);
             return cert;
         }
 

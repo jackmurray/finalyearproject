@@ -13,26 +13,30 @@ namespace LibTrace
     {
         private TraceSource s;
         private int id = 0;
-        private static readonly Dictionary<string, TraceSource> Sources = new Dictionary<string, TraceSource>();
-        private SourceLevels Level = SourceLevels.Information; //the same for all sources at the moment. TODO: per-component tracing setting.
+        private static readonly Dictionary<string, Trace> Objects = new Dictionary<string, Trace>();
+        private SourceLevels Level = Config.GetTraceLevel(); //the same for all sources at the moment. TODO: per-component tracing setting.
 
         public static List<TraceListener> ExtraListeners = new List<TraceListener>();
 
-        public Trace(string sourceName)
+        protected Trace(string sourceName)
         {
-            if (Sources.ContainsKey(sourceName))
-                s = Sources[sourceName];
-            else
-            {
-                s = new TraceSource(sourceName, Level);
-                s.Listeners.Clear();
-                s.Listeners.Add(GetTraceListener(sourceName));
-                if (Config.GetFlag(Config.WRITE_TRACE_TO_CONSOLE))
-                    s.Listeners.Add(new ConsoleTraceListener());
-                ExtraListeners.ForEach(l => s.Listeners.Add(l));
-                Sources.Add(sourceName, s);
-                Verbose("Logging started.");
-            }
+            s = new TraceSource(sourceName, Level);
+            s.Listeners.Clear();
+            s.Listeners.Add(GetTraceListener(sourceName));
+            if (Config.GetFlag(Config.WRITE_TRACE_TO_CONSOLE))
+                s.Listeners.Add(new ConsoleTraceListener());
+            ExtraListeners.ForEach(l => s.Listeners.Add(l));
+            Verbose("Logging started.");
+        }
+
+        public static Trace GetInstance(string sourceName)
+        {
+            if (Objects.ContainsKey(sourceName))
+                return Objects[sourceName];
+
+            Trace t = new Trace(sourceName);
+            Objects.Add(sourceName, t);
+            return t;
         }
 
         public void Critical(string message)
@@ -83,7 +87,6 @@ namespace LibTrace
         private TraceListener GetTraceListener(string sourceName)
         {
             TraceListener t = new TextWriterTraceListener(GetLogName(sourceName));
-            t.Filter = new EventTypeFilter(Level);
             return t;
         }
 

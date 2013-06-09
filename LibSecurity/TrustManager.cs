@@ -15,7 +15,8 @@ namespace LibSecurity
             sslPolicyErrors &= ~SslPolicyErrors.RemoteCertificateChainErrors; //we don't care about cert chain errors sonce we don't have a proper PKI structure.
             //if (sslPolicyErrors != SslPolicyErrors.None)
                 //return false;
-            Console.WriteLine("Remote cert: {0}", certificate == null ? "null" : certificate.Subject);
+            LibTrace.Trace Log = LibTrace.Trace.GetInstance("LibSecurity");
+            Log.Information(String.Format("Client cert: {0}", certificate == null ? "null" : certificate.Subject));
             return true;
         }
 
@@ -25,7 +26,8 @@ namespace LibSecurity
             sslPolicyErrors &= ~SslPolicyErrors.RemoteCertificateChainErrors; //we don't care about cert chain errors sonce we don't have a proper PKI structure.
             //if (sslPolicyErrors != SslPolicyErrors.None)
             //return false;
-            Console.WriteLine("Remote cert: {0}", certificate == null ? "null" : certificate.Subject);
+            LibTrace.Trace Log = LibTrace.Trace.GetInstance("LibSecurity");
+            Log.Information(String.Format("Server cert: {0}", certificate == null ? "null" : certificate.Subject));
             return true;
         }
     }
