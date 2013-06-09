@@ -9,7 +9,9 @@ namespace LibConfig
 {
     public static class Config
     {
-        private const string CONFIG_FILENAME = "config.xml";
+        public const string CONFIG_FILENAME = "config.xml";
+        public const string TRUSTED_KEYS_FILENAME = "trustedKeys.xml";
+
         private static bool IsLoaded = false;
         private static XmlDocument xml;
         private static readonly object configLock = new object();
@@ -120,6 +122,32 @@ namespace LibConfig
                 return result;
             else
                 throw new ConfigException("Unable to parse '" + raw + "' as a valid SourceLevel.");
+        }
+
+        /// <summary>
+        /// Must be called explicitly - it's not done automatically like normal config stuff.
+        /// </summary>
+        public static void LoadTrustedKeys()
+        {
+            XmlDocument keysxml = new XmlDocument();
+            keysxml.Load(System.IO.Path.Combine(GetPath(CRYPTO_PATH), TRUSTED_KEYS_FILENAME));
+
+            XmlNode root = keysxml.SelectSingleNode("/keys");
+            TrustedKeys.Load(root.ChildNodes);
+        }
+
+        public static void SaveTrustedKeys()
+        {
+            XmlDocument keysxml = new XmlDocument();
+            XmlNode root = keysxml.CreateNode(XmlNodeType.Element, "keys", "");
+            foreach (string key in TrustedKeys.GetAllKeys())
+            {
+                XmlNode n = keysxml.CreateNode(XmlNodeType.Element, "key", "");
+                n.InnerText = key;
+                root.AppendChild(n);
+            }
+            keysxml.AppendChild(root);
+            keysxml.Save(System.IO.Path.Combine(GetPath(CRYPTO_PATH), TRUSTED_KEYS_FILENAME));
         }
     }
 

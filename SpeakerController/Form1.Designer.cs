@@ -34,6 +34,7 @@
             this.txtFriendlyName = new System.Windows.Forms.TextBox();
             this.btnSaveFriendlyName = new System.Windows.Forms.Button();
             this.lstTrace = new System.Windows.Forms.ListBox();
+            this.btnGetCert = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnDiscover
@@ -52,7 +53,7 @@
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 1;
-            this.button1.Text = "button1";
+            this.button1.Text = "Call";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -89,11 +90,22 @@
             this.lstTrace.Size = new System.Drawing.Size(816, 121);
             this.lstTrace.TabIndex = 5;
             // 
+            // btnGetCert
+            // 
+            this.btnGetCert.Location = new System.Drawing.Point(109, 225);
+            this.btnGetCert.Name = "btnGetCert";
+            this.btnGetCert.Size = new System.Drawing.Size(75, 23);
+            this.btnGetCert.TabIndex = 6;
+            this.btnGetCert.Text = "Get Cert";
+            this.btnGetCert.UseVisualStyleBackColor = true;
+            this.btnGetCert.Click += new System.EventHandler(this.btnGetCert_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(832, 464);
+            this.Controls.Add(this.btnGetCert);
             this.Controls.Add(this.lstTrace);
             this.Controls.Add(this.btnSaveFriendlyName);
             this.Controls.Add(this.txtFriendlyName);
@@ -116,6 +128,7 @@
         private System.Windows.Forms.TextBox txtFriendlyName;
         private System.Windows.Forms.Button btnSaveFriendlyName;
         private System.Windows.Forms.ListBox lstTrace;
+        private System.Windows.Forms.Button btnGetCert;
     }
 }
 

@@ -27,8 +27,6 @@ namespace SpeakerController
         {
             InitializeComponent();
             Text = string.Format("{0}-{1}", GetBuildVersion(), GetBuildFlavour());
-
-            Setup();
         }
 
         public static string GetBuildFlavour()
@@ -76,11 +74,13 @@ namespace SpeakerController
         private void Setup()
         {
             LibTrace.Trace.ExtraListeners.Add(new ListBoxTraceListener(this, lstTrace));
-            Util.CreateDirs();
+            Util.CreateItems();
+            Config.LoadTrustedKeys();
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            Setup();
             key = KeyManager.GetKey();
             cert = CertManager.GetCert(key);
 
@@ -102,6 +102,14 @@ namespace SpeakerController
         private void btnSaveFriendlyName_Click(object sender, EventArgs e)
         {
             SetFriendlyName(txtFriendlyName.Text);
+        }
+
+        private void btnGetCert_Click(object sender, EventArgs e)
+        {
+            IPEndPoint ep = Receivers[lstDevices.SelectedIndex];
+            SslClient ssl = new SslClient(cert.ToDotNetCert(key));
+            ssl.Connect(ep);
+            TrustedKeys.Add(ssl.GetRemoteCert());
         }
     }
 

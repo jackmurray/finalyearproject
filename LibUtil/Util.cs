@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using LibConfig;
+using System.IO;
 
 namespace LibUtil
 {
@@ -23,8 +24,8 @@ namespace LibUtil
 
         public static void MkDir(string path)
         {
-            if (!System.IO.Directory.Exists(path))
-                System.IO.Directory.CreateDirectory(path);
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
         }
 
         public static string FormatDate(DateTime dt)
@@ -34,10 +35,13 @@ namespace LibUtil
                                  utc.Second);
         }
 
-        public static void CreateDirs()
+        public static void CreateItems()
         {
             Util.MkDir(Config.Get(Config.LOG_PATH));
             Util.MkDir(Config.Get(Config.CRYPTO_PATH));
+            Util.MkDir(Path.Combine(Config.GetPath(Config.CRYPTO_PATH), "trustedKeys"));
+            if (!File.Exists(Path.Combine(Config.GetPath(Config.CRYPTO_PATH), Config.TRUSTED_KEYS_FILENAME)))
+                Config.SaveTrustedKeys(); //If the file didn't exist then we can call this and it'll make it for us.
         }
     }
 }

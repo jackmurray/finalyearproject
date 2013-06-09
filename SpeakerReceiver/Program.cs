@@ -44,8 +44,9 @@ namespace SpeakerReceiver
 
         private static void Setup()
         {
-            Util.CreateDirs();
+            Util.CreateItems();
             Log = Trace.GetInstance("SpeakerReceiver"); //Do this after we create the log dir.
+            Config.LoadTrustedKeys();
         }
 
         private static void Cleanup()
