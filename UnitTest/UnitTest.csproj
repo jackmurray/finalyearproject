@@ -62,9 +62,6 @@
       <Name>LibSecurity</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="private.key" />
-  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
