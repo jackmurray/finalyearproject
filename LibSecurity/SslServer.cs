@@ -38,7 +38,7 @@ namespace LibSecurity
 
         private void ConnectionHandler(TcpClient c)
         {
-            SslStream ssl = new SslStream(c.GetStream(), false, TrustManager.ValidateClientCert);
+            SslStream ssl = new SslStream(c.GetStream(), false, Util.ValidateClientCert);
             ssl.AuthenticateAsServer(_cert, true, System.Security.Authentication.SslProtocols.Tls, false);
             Console.WriteLine("Accepted SSL connection.");
             ssl.WriteByte(0xff);

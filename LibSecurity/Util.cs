@@ -7,7 +7,7 @@ using System.Text;
 
 namespace LibSecurity
 {
-    public static class TrustManager
+    internal static class Util
     {
         internal static bool ValidateClientCert(object sender, X509Certificate certificate, X509Chain chain,
                               SslPolicyErrors sslPolicyErrors)
