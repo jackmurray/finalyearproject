@@ -11,18 +11,16 @@ using System.Threading;
 
 namespace LibSecurity
 {
-    public class SslServer
+    public class SslServer : SslEndpointBase
     {
-        private X509Certificate2 _cert;
-
         /// <summary>
         /// This class should be instantiated on a new thread. It will block to accept tcp connections.
         /// When it receives a connection, it fires off another thread to deal with it.
         /// </summary>
         /// <param name="cert"></param>
-        public SslServer(X509Certificate2 cert)
+        public SslServer(X509Certificate2 cert) : base(cert)
         {
-            _cert = cert;
+            
         }
 
         public void Listen(int port)
@@ -36,6 +34,10 @@ namespace LibSecurity
             }
         }
 
+        /// <summary>
+        /// Must be run on a new thread e.g. via the Listen() call.
+        /// </summary>
+        /// <param name="c"></param>
         private void ConnectionHandler(TcpClient c)
         {
             SslStream ssl = new SslStream(c.GetStream(), false, Util.ValidateClientCert);

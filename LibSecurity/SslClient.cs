@@ -10,14 +10,13 @@ using System.Net.Sockets;
 
 namespace LibSecurity
 {
-    public class SslClient
+    public class SslClient : SslEndpointBase
     {
-        private X509Certificate2 _cert;
         private SslStream _stream;
 
-        public SslClient(X509Certificate2 cert)
+        public SslClient(X509Certificate2 cert) : base(cert)
         {
-            _cert = cert;
+            
         }
 
         public void Connect(IPEndPoint ep)
@@ -33,6 +32,11 @@ namespace LibSecurity
         public int GetVal()
         {
             return _stream.ReadByte();
+        }
+
+        public X509Certificate GetRemoteCert()
+        {
+            return _stream.RemoteCertificate;
         }
     }
 }
