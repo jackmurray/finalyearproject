@@ -48,7 +48,11 @@ namespace LibSSDP
                         if (p.Method == Method.Respond)
                         {
                             //The 'as' is safe because we've already checked the method.
-                            OnResponsePacketReceived(this, new ResponsePacketReceivedArgs() {Packet = p as SSDPResponsePacket, Source = remoteEP.Address});
+                            string stripped = Encoding.ASCII.GetString(data);
+                            int pos = stripped.IndexOf("USN: fingerprint"); //TODO: do this properly (i.e. remove the headers and serialise the packet rather than just hacking the end of the string off).
+                            stripped = stripped.Remove(pos);
+                            Log.Verbose("Stripped response: " + stripped);
+                            OnResponsePacketReceived(this, new ResponsePacketReceivedArgs() { Packet = p as SSDPResponsePacket, Source = remoteEP.Address, StrippedPacket = Encoding.ASCII.GetBytes(stripped) });
                         }
                         else if (p.Method == Method.Announce)
                         {
@@ -75,5 +79,6 @@ namespace LibSSDP
     {
         public SSDPResponsePacket Packet { get; set; }
         public IPAddress Source { get; set; }
+        public byte[] StrippedPacket { get; set; } //packet data with signature stripped, ready for verification.
     }
 }
