@@ -14,6 +14,7 @@ using LibConfig;
 using LibSSDP;
 using LibSecurity;
 using LibUtil;
+using Trace = LibTrace.Trace;
 
 namespace SpeakerController
 {
@@ -22,6 +23,7 @@ namespace SpeakerController
         private KeyManager key;
         private CertManager cert;
         private List<IPEndPoint> Receivers = new List<IPEndPoint>();
+        private Trace Log = Trace.GetInstance("SpeakerController");
 
         public Form1()
         {
@@ -58,14 +60,39 @@ namespace SpeakerController
         void c_OnResponsePacketReceived(object sender, ResponsePacketReceivedArgs args)
         {
             string val = string.Format("{0} - {1}", args.Packet.friendlyName, args.Source.ToString());
-            Invoke((Action)(() => { lstDevices.Items.Add(val);
-                                      Receivers.Add(new IPEndPoint(args.Source, args.Packet.Location));
+            Color c;
+            if (!TrustedKeys.Contains(args.Packet.fingerprint))
+            {
+                c = Color.Black;
+                Log.Information("Processed SSDP response from untrusted device.");
+            }
+            else
+            {
+                Verifier v = new Verifier(TrustedKeys.Get(args.Packet.fingerprint));
+                bool result = v.Verify(args.StrippedPacket, Util.Base64ToByteArray(args.Packet.signature));
+                if (result)
+                {
+                    c = Color.Green;
+                    Log.Information("Processed correctly signed SSDP response from trusted device.");
+                }
+                else
+                {
+                    c = Color.Red;
+                    Log.Warning(
+                        "!!!Incorrectly signed SSDP response from trusted device. This could be a result of a malicious entity attempting to impersonate a device.!!!");
+                }
+            }
+            Invoke((Action)(() =>
+             {
+                 ListViewItem item = new ListViewItem(val) {ForeColor = c};
+                 lstDevices.Items.Add(item);
+                 Receivers.Add(new IPEndPoint(args.Source, args.Packet.Location));
             }));
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            IPEndPoint ep = Receivers[lstDevices.SelectedIndex];
+            IPEndPoint ep = Receivers[lstDevices.SelectedIndices[0]];
             SslClient ssl = new SslClient(cert.ToDotNetCert(key));
             ssl.Connect(ep);
             MessageBox.Show(ssl.GetVal().ToString());
@@ -106,7 +133,7 @@ namespace SpeakerController
 
         private void btnGetCert_Click(object sender, EventArgs e)
         {
-            IPEndPoint ep = Receivers[lstDevices.SelectedIndex];
+            IPEndPoint ep = Receivers[lstDevices.SelectedIndices[0]];
             SslClient ssl = new SslClient(cert.ToDotNetCert(key));
             ssl.Connect(ep);
             TrustedKeys.Add(ssl.GetRemoteCert());

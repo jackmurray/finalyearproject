@@ -30,11 +30,11 @@
         {
             this.btnDiscover = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
-            this.lstDevices = new System.Windows.Forms.ListBox();
             this.txtFriendlyName = new System.Windows.Forms.TextBox();
             this.btnSaveFriendlyName = new System.Windows.Forms.Button();
             this.lstTrace = new System.Windows.Forms.ListBox();
             this.btnGetCert = new System.Windows.Forms.Button();
+            this.lstDevices = new System.Windows.Forms.ListView();
             this.SuspendLayout();
             // 
             // btnDiscover
@@ -57,14 +57,6 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // lstDevices
-            // 
-            this.lstDevices.FormattingEnabled = true;
-            this.lstDevices.Location = new System.Drawing.Point(12, 12);
-            this.lstDevices.Name = "lstDevices";
-            this.lstDevices.Size = new System.Drawing.Size(196, 173);
-            this.lstDevices.TabIndex = 2;
-            // 
             // txtFriendlyName
             // 
             this.txtFriendlyName.Location = new System.Drawing.Point(720, 12);
@@ -85,8 +77,11 @@
             // lstTrace
             // 
             this.lstTrace.FormattingEnabled = true;
+            this.lstTrace.HorizontalExtent = 1000;
+            this.lstTrace.HorizontalScrollbar = true;
             this.lstTrace.Location = new System.Drawing.Point(12, 331);
             this.lstTrace.Name = "lstTrace";
+            this.lstTrace.ScrollAlwaysVisible = true;
             this.lstTrace.Size = new System.Drawing.Size(816, 121);
             this.lstTrace.TabIndex = 5;
             // 
@@ -100,16 +95,26 @@
             this.btnGetCert.UseVisualStyleBackColor = true;
             this.btnGetCert.Click += new System.EventHandler(this.btnGetCert_Click);
             // 
+            // lstDevices
+            // 
+            this.lstDevices.Location = new System.Drawing.Point(12, 12);
+            this.lstDevices.MultiSelect = false;
+            this.lstDevices.Name = "lstDevices";
+            this.lstDevices.Size = new System.Drawing.Size(205, 173);
+            this.lstDevices.TabIndex = 7;
+            this.lstDevices.UseCompatibleStateImageBehavior = false;
+            this.lstDevices.View = System.Windows.Forms.View.List;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(832, 464);
+            this.Controls.Add(this.lstDevices);
             this.Controls.Add(this.btnGetCert);
             this.Controls.Add(this.lstTrace);
             this.Controls.Add(this.btnSaveFriendlyName);
             this.Controls.Add(this.txtFriendlyName);
-            this.Controls.Add(this.lstDevices);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.btnDiscover);
             this.Name = "Form1";
@@ -124,11 +129,11 @@
 
         private System.Windows.Forms.Button btnDiscover;
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.ListBox lstDevices;
         private System.Windows.Forms.TextBox txtFriendlyName;
         private System.Windows.Forms.Button btnSaveFriendlyName;
         private System.Windows.Forms.ListBox lstTrace;
         private System.Windows.Forms.Button btnGetCert;
+        private System.Windows.Forms.ListView lstDevices;
     }
 }
 
