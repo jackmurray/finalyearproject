@@ -26,6 +26,7 @@ namespace LibSecurity
 
         public byte[] Sign(byte[] data)
         {
+            LibTrace.Trace.GetInstance("LibSecurity").Verbose("Signing data: " + LibUtil.Util.BytesToHexString(data));
             sig.BlockUpdate(data, 0, data.Length);
             byte[] signature = sig.GenerateSignature();
             sig.Reset(); //So we can re-use this signer for multiple inputs.

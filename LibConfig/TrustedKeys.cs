@@ -44,5 +44,17 @@ namespace LibConfig
         {
             return new List<string>(KeyList);
         }
+
+        public static X509Certificate Get(string key)
+        {
+            if (!Contains(key))
+                return null;
+
+            string fingerprint = key.ToLower();
+            var fs = File.OpenRead(System.IO.Path.Combine(Path, fingerprint + ".crt"));
+            byte[] buf = new byte[fs.Length];
+            fs.Read(buf, 0, (int)fs.Length);
+            return new X509Certificate(buf);
+        }
     }
 }

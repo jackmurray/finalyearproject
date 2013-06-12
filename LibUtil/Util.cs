@@ -22,6 +22,11 @@ namespace LibUtil
             return Convert.ToBase64String(data);
         }
 
+        public static byte[] Base64ToByteArray(string s)
+        {
+            return Convert.FromBase64String(s);
+        }
+
         public static void MkDir(string path)
         {
             if (!Directory.Exists(path))
