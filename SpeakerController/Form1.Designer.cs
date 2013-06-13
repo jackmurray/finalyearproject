@@ -32,7 +32,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.txtFriendlyName = new System.Windows.Forms.TextBox();
             this.btnSaveFriendlyName = new System.Windows.Forms.Button();
-            this.btnGetCert = new System.Windows.Forms.Button();
+            this.btnTrustDevice = new System.Windows.Forms.Button();
             this.lstDevices = new System.Windows.Forms.ListView();
             this.dGridTrace = new System.Windows.Forms.DataGridView();
             this.Severity = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -80,15 +80,15 @@
             this.btnSaveFriendlyName.UseVisualStyleBackColor = true;
             this.btnSaveFriendlyName.Click += new System.EventHandler(this.btnSaveFriendlyName_Click);
             // 
-            // btnGetCert
+            // btnTrustDevice
             // 
-            this.btnGetCert.Location = new System.Drawing.Point(109, 225);
-            this.btnGetCert.Name = "btnGetCert";
-            this.btnGetCert.Size = new System.Drawing.Size(75, 23);
-            this.btnGetCert.TabIndex = 6;
-            this.btnGetCert.Text = "Get Cert";
-            this.btnGetCert.UseVisualStyleBackColor = true;
-            this.btnGetCert.Click += new System.EventHandler(this.btnGetCert_Click);
+            this.btnTrustDevice.Location = new System.Drawing.Point(109, 225);
+            this.btnTrustDevice.Name = "btnTrustDevice";
+            this.btnTrustDevice.Size = new System.Drawing.Size(75, 23);
+            this.btnTrustDevice.TabIndex = 6;
+            this.btnTrustDevice.Text = "Trust Device";
+            this.btnTrustDevice.UseVisualStyleBackColor = true;
+            this.btnTrustDevice.Click += new System.EventHandler(this.btnGetCert_Click);
             // 
             // lstDevices
             // 
@@ -113,11 +113,13 @@
             this.ID,
             this.Message});
             this.dGridTrace.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.dGridTrace.Location = new System.Drawing.Point(0, 342);
+            this.dGridTrace.Location = new System.Drawing.Point(0, 274);
             this.dGridTrace.Name = "dGridTrace";
             this.dGridTrace.ReadOnly = true;
+            this.dGridTrace.RowHeadersVisible = false;
             this.dGridTrace.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToDisplayedHeaders;
-            this.dGridTrace.Size = new System.Drawing.Size(832, 122);
+            this.dGridTrace.ShowEditingIcon = false;
+            this.dGridTrace.Size = new System.Drawing.Size(832, 190);
             this.dGridTrace.TabIndex = 8;
             // 
             // Severity
@@ -152,7 +154,7 @@
             // 
             this.splitter1.Cursor = System.Windows.Forms.Cursors.HSplit;
             this.splitter1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.splitter1.Location = new System.Drawing.Point(0, 339);
+            this.splitter1.Location = new System.Drawing.Point(0, 271);
             this.splitter1.Name = "splitter1";
             this.splitter1.Size = new System.Drawing.Size(832, 3);
             this.splitter1.TabIndex = 9;
@@ -166,7 +168,7 @@
             this.Controls.Add(this.splitter1);
             this.Controls.Add(this.dGridTrace);
             this.Controls.Add(this.lstDevices);
-            this.Controls.Add(this.btnGetCert);
+            this.Controls.Add(this.btnTrustDevice);
             this.Controls.Add(this.btnSaveFriendlyName);
             this.Controls.Add(this.txtFriendlyName);
             this.Controls.Add(this.button1);
@@ -186,7 +188,7 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TextBox txtFriendlyName;
         private System.Windows.Forms.Button btnSaveFriendlyName;
-        private System.Windows.Forms.Button btnGetCert;
+        private System.Windows.Forms.Button btnTrustDevice;
         private System.Windows.Forms.ListView lstDevices;
         private System.Windows.Forms.DataGridView dGridTrace;
         private System.Windows.Forms.DataGridViewTextBoxColumn Severity;

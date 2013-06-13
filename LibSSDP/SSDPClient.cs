@@ -16,6 +16,8 @@ namespace LibSSDP
         public event ResponsePacketReceived OnResponsePacketReceived;
         public event ResponsePacketReceived OnAnnouncePacketReceived;
 
+        private Thread announceListenerThread, responseHandlerThread;
+
         public SSDPClient()
         {
             sender = Util.GetClient();
@@ -26,11 +28,13 @@ namespace LibSSDP
         {
             SSDPSearchPacket p = SSDPSearchPacket.Build();
             p.Send(sender);
-            new Thread(SenderResponseHandler).Start();
+            responseHandlerThread = new Thread(SenderResponseHandler);
+            responseHandlerThread.Name = "SSDP Response Processor";
+            responseHandlerThread.Start();
 
-            Thread listenerthread = new Thread(AnnounceListenerResponseHandler);
-            listenerthread.Name = "SSDP Announce Listener";
-            listenerthread.Start();
+            announceListenerThread = new Thread(AnnounceListenerResponseHandler);
+            announceListenerThread.Name = "SSDP Announce Listener";
+            announceListenerThread.Start();
         }
 
         private void SenderResponseHandler()
@@ -46,7 +50,7 @@ namespace LibSSDP
                 }
                 catch (Exception ex)
                 {
-                    Log.Information("Invalid packet received. Ignoring...");
+                    Log.Verbose("Invalid packet received. Ignoring...");
                 }
             }
         }
@@ -64,7 +68,7 @@ namespace LibSSDP
                 }
                 catch (Exception ex)
                 {
-                    Log.Information("Invalid packet received. Ignoring...");
+                    Log.Verbose("Invalid packet received. Ignoring...");
                 }
             }
         }
@@ -104,6 +108,14 @@ namespace LibSSDP
                     return;
                 }
             }
+        }
+
+        public void Stop()
+        {
+            if (responseHandlerThread != null)
+                responseHandlerThread.Abort();
+            if (announceListenerThread != null)
+                announceListenerThread.Abort();
         }
     }
 

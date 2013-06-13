@@ -49,6 +49,11 @@ namespace SpeakerController
 
         private void btnDiscover_Click(object sender, EventArgs e)
         {
+            DoDiscovery();
+        }
+
+        private void DoDiscovery()
+        {
             lstDevices.Items.Clear();
             Receivers.Clear();
             SSDPClient c = new SSDPClient();
@@ -120,6 +125,8 @@ namespace SpeakerController
                 name = Config.Get(Config.DEVICE_FRIENDLY_NAME);
 
             txtFriendlyName.Text = name;
+
+            DoDiscovery();
         }
 
         private void SetFriendlyName(string name)
