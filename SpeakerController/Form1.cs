@@ -100,7 +100,7 @@ namespace SpeakerController
 
         private void Setup()
         {
-            LibTrace.Trace.ExtraListeners.Add(new ListBoxTraceListener(this, lstTrace));
+            LibTrace.Trace.ExtraListeners.Add(new DataGridTraceListener(this, dGridTrace));
             Util.CreateItems();
             Config.LoadTrustedKeys();
         }
@@ -140,33 +140,45 @@ namespace SpeakerController
         }
     }
 
-    public class ListBoxTraceListener : TraceListener
+    public class DataGridTraceListener : TraceListener
     {
         private Form _f;
-        private ListBox _listbox;
-        private StringBuilder buffer = new StringBuilder();
+        private DataGridView _dgrid;
 
-        public ListBoxTraceListener(Form f, ListBox listbox)
+        public DataGridTraceListener(Form f, DataGridView dgrid)
         {
             _f = f;
-            _listbox = listbox;
+            _dgrid = dgrid;
+        }
+
+        public void PrintMessage(string source, TraceEventType eventType, int id, string message)
+        {
+            _f.Invoke((Action)(() =>
+                {
+                    DataGridViewRow row = new DataGridViewRow();
+                    row.CreateCells(_dgrid);
+                    row.Cells[0].Value = eventType.ToString();
+                    row.Cells[1].Value = source;
+                    row.Cells[2].Value = id;
+                    row.Cells[3].Value = message;
+                    _dgrid.Rows.Add(row);
+                    _dgrid.FirstDisplayedScrollingRowIndex = _dgrid.Rows.Count - 1;
+                }));
         }
 
         public override void Write(string message)
         {
-            buffer.Append(message);
+            throw new NotImplementedException();
         }
 
         public override void WriteLine(string message)
         {
-            string final = "";
-            if (buffer.Length > 0)
-            {
-                final += buffer;
-                buffer.Clear();
-            }
-            final += message;
-            _f.Invoke((Action)(() => _listbox.Items.Add(final)));
+            throw new NotImplementedException();
+        }
+
+        public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message)
+        {
+            PrintMessage(source, eventType, id, message);
         }
     }
 }
