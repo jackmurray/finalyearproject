@@ -17,6 +17,15 @@ namespace LibSSDP
             return c;
         }
 
+        public static UdpClient GetListener(IPEndPoint ep)
+        {
+            var client = GetClient();
+            client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true); //Windows's SSDP thing already has a socket here, so we need this option so we can open one too.
+            client.Client.ExclusiveAddressUse = false;
+            client.Client.Bind(SSDPPacket.LocalEndpoint);
+            return client;
+        }
+
         public static string ToPacketString(this Method m)
         {
             switch (m)

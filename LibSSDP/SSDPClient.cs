@@ -11,63 +11,97 @@ namespace LibSSDP
 {
     public class SSDPClient
     {
-        private UdpClient c;
-        private IPEndPoint localEP, remoteEP;
+        private UdpClient sender, listener;
         private Trace Log = Trace.GetInstance("SSDPClient");
         public event ResponsePacketReceived OnResponsePacketReceived;
+        public event ResponsePacketReceived OnAnnouncePacketReceived;
 
         public SSDPClient()
         {
-            c = Util.GetClient();
-            localEP = c.Client.LocalEndPoint as IPEndPoint;
+            sender = Util.GetClient();
+            listener = Util.GetListener(SSDPPacket.LocalEndpoint);
         }
 
         public void StartDiscovery()
         {
             SSDPSearchPacket p = SSDPSearchPacket.Build();
-            p.Send(c);
-            new Thread(ListenerThreadProc).Start();
+            p.Send(sender);
+            new Thread(SenderResponseHandler).Start();
+
+            Thread listenerthread = new Thread(AnnounceListenerResponseHandler);
+            listenerthread.Name = "SSDP Announce Listener";
+            listenerthread.Start();
         }
 
-        private void ListenerThreadProc()
+        private void SenderResponseHandler()
         {
             byte[] data;
+            IPEndPoint remoteEP = null;
             while (true)
             {
-                data = c.Receive(ref remoteEP);
+                data = sender.Receive(ref remoteEP);
                 try
                 {
-                    SSDPPacket p = SSDPPacket.Parse(Encoding.ASCII.GetString(data));
-                    if (p == null)
-                    {
-                        Log.Information("We got an SSDP packet, but it's not one of ours. Ignoring...");
-                        continue;
-                    }
-                    else //Got a valid packet.
-                    {
-                        if (p.Method == Method.Respond)
-                        {
-                            //The 'as' is safe because we've already checked the method.
-                            string stripped = Encoding.ASCII.GetString(data);
-                            int pos = stripped.IndexOf("USN: fingerprint"); //TODO: do this properly (i.e. remove the headers and serialise the packet rather than just hacking the end of the string off).
-                            stripped = stripped.Remove(pos);
-                            Log.Verbose("Stripped response: " + stripped);
-                            OnResponsePacketReceived(this, new ResponsePacketReceivedArgs() { Packet = p as SSDPResponsePacket, Source = remoteEP.Address, StrippedPacket = Encoding.ASCII.GetBytes(stripped) });
-                        }
-                        else if (p.Method == Method.Announce)
-                        {
-                            //TODO
-                        }
-                        else
-                        {
-                            Log.Information("Got an SSDP discovery message. Don't care.");
-                            continue;
-                        }
-                    }
+                    ParsePacket(data, remoteEP);
                 }
                 catch (Exception ex)
                 {
                     Log.Information("Invalid packet received. Ignoring...");
+                }
+            }
+        }
+
+        private void AnnounceListenerResponseHandler()
+        {
+            byte[] data;
+            IPEndPoint remoteEP = null;
+            while (true)
+            {
+                data = listener.Receive(ref remoteEP);
+                try
+                {
+                    ParsePacket(data, remoteEP);
+                }
+                catch (Exception ex)
+                {
+                    Log.Information("Invalid packet received. Ignoring...");
+                }
+            }
+        }
+
+        private void ParsePacket(byte[] data, IPEndPoint remoteEP)
+        {
+            SSDPPacket p = SSDPPacket.Parse(Encoding.ASCII.GetString(data));
+            if (p == null)
+            {
+                Log.Information("We got an SSDP packet, but it's not one of ours. Ignoring...");
+                return;
+            }
+            else //Got a valid packet.
+            {
+                if (p.Method == Method.Respond || p.Method == Method.Announce)
+                {
+                    string stripped = Encoding.ASCII.GetString(data);
+                    int pos = stripped.IndexOf("USN: fingerprint"); //TODO: do this properly (i.e. remove the headers and serialise the packet rather than just hacking the end of the string off).
+                    stripped = stripped.Remove(pos);
+                    Log.Verbose("Stripped response: " + stripped);
+
+                    var args = new ResponsePacketReceivedArgs()
+                    {
+                        Packet = p as SSDPSignedPacket,
+                        Source = remoteEP.Address,
+                        StrippedPacket = Encoding.ASCII.GetBytes(stripped)
+                    };
+                    if (p.Method == Method.Announce)
+                        OnAnnouncePacketReceived(this, args);
+                    else if (p.Method == Method.Respond)
+                        OnResponsePacketReceived(this, args);
+                    else throw new Exception("This will never happen."); //unless you forget to change the if statement above when you change this one.
+                }
+                else
+                {
+                    Log.Information("Got an SSDP discovery message. Don't care.");
+                    return;
                 }
             }
         }
@@ -77,7 +111,7 @@ namespace LibSSDP
 
     public class ResponsePacketReceivedArgs
     {
-        public SSDPResponsePacket Packet { get; set; }
+        public SSDPSignedPacket Packet { get; set; }
         public IPAddress Source { get; set; }
         public byte[] StrippedPacket { get; set; } //packet data with signature stripped, ready for verification.
     }

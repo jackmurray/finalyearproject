@@ -37,10 +37,8 @@ namespace LibSSDP
         private void ResponderThreadProc()
         {
             byte[] data;
-            UdpClient client = Util.GetClient();
-            client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true); //Windows's SSDP thing already has a socket here, so we need this option so we can open one too.
-            client.Client.ExclusiveAddressUse = false;
-            client.Client.Bind(SSDPPacket.LocalEndpoint);
+            UdpClient client = Util.GetListener(SSDPPacket.LocalEndpoint);
+            
             while (true)
             {
                 try

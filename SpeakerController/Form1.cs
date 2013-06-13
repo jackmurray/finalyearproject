@@ -53,6 +53,7 @@ namespace SpeakerController
             Receivers.Clear();
             SSDPClient c = new SSDPClient();
             c.OnResponsePacketReceived += c_OnResponsePacketReceived;
+            c.OnAnnouncePacketReceived += c_OnResponsePacketReceived;
             c.StartDiscovery();
         }
 
