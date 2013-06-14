@@ -14,8 +14,7 @@ namespace LibSecurity
     public class SslServer : SslEndpointBase
     {
         /// <summary>
-        /// This class should be instantiated on a new thread. It will block to accept tcp connections.
-        /// When it receives a connection, it fires off another thread to deal with it.
+        /// 
         /// </summary>
         /// <param name="cert"></param>
         public SslServer(X509Certificate2 cert) : base(cert)
@@ -25,11 +24,16 @@ namespace LibSecurity
 
         public void Listen(int port)
         {
-            var sock = new TcpListener(IPAddress.Any, port);
-            sock.Start();
+            var l = new TcpListener(IPAddress.Any, port);
+            new Thread(() => ConnectionListener(l)).Start();
+        }
+
+        private void ConnectionListener(TcpListener l)
+        {
+            l.Start();
             while (true)
             {
-                TcpClient c = sock.AcceptTcpClient();
+                TcpClient c = l.AcceptTcpClient();
                 new Thread(() => ConnectionHandler(c)).Start();
             }
         }
