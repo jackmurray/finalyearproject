@@ -22,6 +22,7 @@ namespace LibSSDP
 
         private void Setup()
         {
+            Location = 10451;
             Method = LibSSDP.Method.Announce;
         }
 
