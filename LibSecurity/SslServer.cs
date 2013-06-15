@@ -8,6 +8,7 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using LibService;
 
 namespace LibSecurity
 {
@@ -47,9 +48,13 @@ namespace LibSecurity
             SslStream ssl = new SslStream(c.GetStream(), false, Util.ValidateClientCert);
             ssl.AuthenticateAsServer(_cert, true, System.Security.Authentication.SslProtocols.Tls, false);
             Console.WriteLine("Accepted SSL connection.");
-            ssl.WriteByte(0xff);
-            ssl.Flush();
-            ssl.Close();
+            ServiceHandler handler = new ServiceHandler(ssl);
+            while (true)
+            {
+                int ret = handler.HandleMessage();
+                if (ret == -1) //socket was closed. we're done here.
+                    return;
+            }
         }
     }
 }

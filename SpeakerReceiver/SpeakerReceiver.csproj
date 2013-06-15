@@ -57,6 +57,10 @@
       <Project>{9ea6083b-8cae-4921-b916-b9d62168b80b}</Project>
       <Name>LibSecurity</Name>
     </ProjectReference>
+    <ProjectReference Include="..\LibService\LibService.csproj">
+      <Project>{a8d27f1f-33af-4280-aeea-8396a1fb0018}</Project>
+      <Name>LibService</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LibSSDP\LibSSDP.csproj">
       <Project>{6547b936-c867-4cdd-87d2-aa8082f9f05e}</Project>
       <Name>LibSSDP</Name>

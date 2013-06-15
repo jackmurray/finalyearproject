@@ -102,6 +102,7 @@ namespace SpeakerController
             SslClient ssl = new SslClient(cert.ToDotNetCert(key));
             ssl.Connect(ep);
             MessageBox.Show(ssl.GetVal().ToString());
+            ssl.Close();
         }
 
         private void Setup()
