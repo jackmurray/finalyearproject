@@ -14,7 +14,7 @@ namespace LibService
             Services.Add(s);
         }
 
-        public static IService FindServiceForMessage(byte[] message)
+        public static IService FindServiceForMessage(ServiceMessage message)
         {
             var firstOrDefault = Services.FirstOrDefault(s => s.CanHandleMessage(message));
             if (firstOrDefault != null)

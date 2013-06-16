@@ -51,8 +51,11 @@
   <ItemGroup>
     <Compile Include="CommonService.cs" />
     <Compile Include="IService.cs" />
+    <Compile Include="ServiceClient.cs" />
+    <Compile Include="ServiceEndpoint.cs" />
     <Compile Include="ServiceHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServiceMessage.cs" />
     <Compile Include="ServiceRegistration.cs" />
   </ItemGroup>
   <ItemGroup>

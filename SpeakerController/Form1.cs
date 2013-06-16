@@ -13,6 +13,7 @@ using System.Windows.Forms;
 using LibConfig;
 using LibSSDP;
 using LibSecurity;
+using LibService;
 using LibUtil;
 using Trace = LibTrace.Trace;
 
@@ -101,7 +102,10 @@ namespace SpeakerController
             IPEndPoint ep = Receivers[lstDevices.SelectedIndices[0]];
             SslClient ssl = new SslClient(cert.ToDotNetCert(key));
             ssl.Connect(ep);
-            MessageBox.Show(ssl.GetVal().ToString());
+
+            ServiceClient client = ssl.GetClient();
+            var response = client.Call(new ServiceMessage(new byte[] {0x00}));
+            MessageBox.Show(response.Data[0].ToString());
             ssl.Close();
         }
 

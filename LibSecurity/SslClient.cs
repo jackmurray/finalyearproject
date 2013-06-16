@@ -7,6 +7,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using LibService;
 
 namespace LibSecurity
 {
@@ -29,13 +30,6 @@ namespace LibSecurity
             _stream.AuthenticateAsClient("d3cb375c-b626-4b24-bc3f-f022b12b3f2f", cc, System.Security.Authentication.SslProtocols.Tls, false);
         }
 
-        public int GetVal()
-        {
-            _stream.Write(new byte[] {0x01, 0x00, 0x00, 0x00});
-            _stream.Write(new byte[] {0x00});
-            return _stream.ReadByte();
-        }
-
         public X509Certificate GetRemoteCert()
         {
             return _stream.RemoteCertificate;
@@ -44,6 +38,11 @@ namespace LibSecurity
         public void Close()
         {
             _stream.Close();
+        }
+
+        public ServiceClient GetClient()
+        {
+            return new ServiceClient(_stream);
         }
     }
 }

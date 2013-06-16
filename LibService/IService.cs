@@ -7,7 +7,7 @@ namespace LibService
 {
     public interface IService
     {
-        bool CanHandleMessage(byte[] message);
-        byte[] HandleMessage(byte[] message);
+        bool CanHandleMessage(ServiceMessage message);
+        ServiceMessage HandleMessage(ServiceMessage message);
     }
 }

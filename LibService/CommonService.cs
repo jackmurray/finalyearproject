@@ -7,17 +7,17 @@ namespace LibService
 {
     public class CommonService : IService
     {
-        public bool CanHandleMessage(byte[] message)
+        public bool CanHandleMessage(ServiceMessage message)
         {
-            if (message[0] == 0x00)
+            if (message.Data[0] == 0x00)
                 return true;
 
             return false;
         }
 
-        public byte[] HandleMessage(byte[] message)
+        public ServiceMessage HandleMessage(ServiceMessage message)
         {
-            return new byte[] {0x01};
+            return new ServiceMessage(new byte[] {0x01});
         }
     }
 }
