@@ -9,7 +9,7 @@ namespace LibService
     {
         public byte[] Data { get; set; }
 
-        public byte[] Length { get { return BitConverter.GetBytes(Data.Length); } }
+        public int Length { get { return Data.Length; } }
 
         public ServiceMessage(byte[] data)
         {
