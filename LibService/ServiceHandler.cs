@@ -32,9 +32,17 @@ namespace LibService
             if (service == null)
                 throw new Exception("No suitable service handler found.");
 
-            ServiceMessage messageResponse = service.HandleMessage(m);
-            Send(messageResponse);
-            Log.Verbose("Message response sent.");
+            try
+            {
+                ServiceMessage messageResponse = service.HandleMessage(m);
+                Send(messageResponse);
+                Log.Verbose("Message response sent.");
+            }
+            catch (SocketException ex)
+            {
+                Log.Error("Socket exception: " + ex.Message);
+                return -1;
+            }
             return 0; //success
         }
     }
