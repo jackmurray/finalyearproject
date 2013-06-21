@@ -14,6 +14,11 @@ namespace LibService
             Services.Add(s);
         }
 
+        /// <summary>
+        /// Finds the first service that can handle the message.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public static IService FindServiceForMessage(ServiceMessage message)
         {
             var firstOrDefault = Services.FirstOrDefault(s => s.CanHandleMessage(message));
