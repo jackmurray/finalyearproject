@@ -40,9 +40,10 @@ namespace LibSecurity
             _stream.Close();
         }
 
-        public ServiceClient GetClient()
+        public T GetClient<T>() where T : ServiceClient
         {
-            return new ServiceClient(_stream);
+            //not sure if this is the best method. maybe something better should be done in future.
+            return Activator.CreateInstance(typeof (T), _stream) as T;
         }
     }
 }

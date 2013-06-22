@@ -22,12 +22,11 @@ namespace LibService
 
         protected ServiceMessage Read()
         {
-            byte[] messageLenRaw = new byte[4];
-            if (_s.Read(messageLenRaw, 0, 4) == 0)
-            {
-                Log.Verbose("Socket closed.");
-                throw new SocketException();
-            }
+            byte serviceID = ReadSingleByte();
+            byte operationID = ReadSingleByte();
+            Log.Verbose(String.Format("Message for serviceID {0}, operation {1}", serviceID, operationID));
+
+            byte[] messageLenRaw = ReadBytes(4);
             int messageLen = Decode(messageLenRaw);
             Log.Verbose("Expecting message of " + messageLen + " bytes.");
             if (messageLen < 0)
@@ -36,25 +35,41 @@ namespace LibService
             byte[] messageBody = ReadBytes(messageLen);
             Log.Verbose("Finished reading message.");
 
-            return new ServiceMessage(messageBody);
+            return new ServiceMessage(serviceID, operationID, messageBody);
         }
 
         protected byte[] ReadBytes(int num)
         {
             byte[] buffer = new byte[num];
-            int i = 0;
-            while (i != num)
-                i += _s.Read(buffer, i, num - i);
+            int bytesRead = 0;
+            while (bytesRead != num)
+            {
+                int thisCall = _s.Read(buffer, bytesRead, num - bytesRead);
+                if (thisCall == 0)
+                {
+                    Log.Verbose("Socket closed.");
+                    throw new SocketException();
+                }
+                bytesRead += thisCall;
+            }
 
             return buffer;
+        }
+
+        protected byte ReadSingleByte()
+        {
+            byte[] buf = ReadBytes(1);
+            return buf[0];
         }
 
         protected void Send(ServiceMessage m)
         {
             MemoryStream buffer = new MemoryStream(MessageSize(m));
+            buffer.WriteByte(m.serviceID);
+            buffer.WriteByte(m.operationID);
             buffer.Write(Encode(m.Length), 0, sizeof (Int32));
             buffer.Write(m.Data, 0, m.Data.Length);
-            _s.Write(buffer.GetBuffer());
+            _s.Write(buffer.ToArray());
         }
 
         protected int MessageSize(ServiceMessage m)

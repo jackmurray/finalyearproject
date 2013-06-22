@@ -49,9 +49,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommonService.cs" />
+    <Compile Include="Clients\CommonServiceClient.cs" />
+    <Compile Include="Services\CommonService.cs" />
     <Compile Include="IService.cs" />
-    <Compile Include="ServiceClient.cs" />
+    <Compile Include="Clients\ServiceClient.cs" />
     <Compile Include="ServiceEndpoint.cs" />
     <Compile Include="ServiceHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -64,6 +65,7 @@
       <Name>LibTrace</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
