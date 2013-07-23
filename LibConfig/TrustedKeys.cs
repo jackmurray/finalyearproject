@@ -35,9 +35,9 @@ namespace LibConfig
             Config.SaveTrustedKeys(); //save out the data. don't want to lose it if we crash.
         }
 
-        public static bool Contains(string key)
+        public static bool Contains(string fingerprint)
         {
-            return KeyList.Contains(key);
+            return KeyList.Contains(fingerprint);
         }
 
         public static List<string> GetAllKeys()
