@@ -26,7 +26,8 @@ namespace LibTrace
             if (Config.GetFlag(Config.WRITE_TRACE_TO_CONSOLE))
                 s.Listeners.Add(new ConsoleTraceListener());
             ExtraListeners.ForEach(l => s.Listeners.Add(l));
-            Verbose("Logging started.");
+            
+            Verbose("Logging started at level " + s.Switch.Level);
         }
 
         public static Trace GetInstance(string sourceName)
