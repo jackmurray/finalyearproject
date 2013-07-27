@@ -18,8 +18,9 @@ namespace SpeakerReceiver
 
         private static void Main(string[] args)
         {
-            Console.WriteLine("{0}-{1}", GetBuildVersion(), GetBuildFlavour());
             Setup();
+            Console.WriteLine("{0}-{1}", GetBuildVersion(), GetBuildFlavour());
+            Console.WriteLine("Platform: " + (Config.IsRunningOnMono == true ? "Mono" : "MS.NET"));
             KeyManager key = null;
             CertManager cert = null;
             try
@@ -44,6 +45,7 @@ namespace SpeakerReceiver
 
         private static void Setup()
         {
+            Config.LoadConfig(); //Manually load config.
             Util.CreateItems();
             Log = Trace.GetInstance("SpeakerReceiver"); //Do this after we create the log dir.
             Config.LoadTrustedKeys();

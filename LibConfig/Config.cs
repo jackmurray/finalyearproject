@@ -24,6 +24,8 @@ namespace LibConfig
         public const string DEVICE_FRIENDLY_NAME = "deviceFriendlyName";
         public const string TRACE_LEVEL = "traceLevel";
 
+        public static bool IsRunningOnMono { get; private set; }
+
         public static string Get(string key)
         {
             lock (configLock) //we don't wanna accidentally try and read something while we're updating it.
@@ -100,8 +102,13 @@ namespace LibConfig
             return n;
         }
         
-        private static void LoadConfig()
+        /// <summary>
+        /// Load config data. Will be called automatically if needed, but can be done manually if required.
+        /// </summary>
+        public static void LoadConfig()
         {
+            if (IsLoaded)
+                return;
             xml = new XmlDocument();
             try
             {
@@ -112,6 +119,7 @@ namespace LibConfig
                 throw new ConfigException("Unable to load config: " + ex.Message);
             }
             IsLoaded = true;
+            IsRunningOnMono = Config.MonoCheck();
         }
 
         public static System.Diagnostics.SourceLevels GetTraceLevel()
@@ -148,6 +156,11 @@ namespace LibConfig
             }
             keysxml.AppendChild(root);
             keysxml.Save(System.IO.Path.Combine(GetPath(CRYPTO_PATH), TRUSTED_KEYS_FILENAME));
+        }
+
+        private static bool MonoCheck()
+        {
+            return Type.GetType("Mono.Runtime") != null;
         }
     }
 
