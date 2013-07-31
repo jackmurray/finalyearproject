@@ -23,12 +23,20 @@ namespace LibSecurity
             
         }
 
+        /// <summary>
+        /// Fire up the main listening thread. This call returns after starting it.
+        /// </summary>
+        /// <param name="port"></param>
         public void Listen(int port)
         {
             var l = new TcpListener(IPAddress.Any, port);
             new Thread(() => ConnectionListener(l)).Start();
         }
 
+        /// <summary>
+        /// Wait for incoming connections, and fire off a new thread to deal with each one that's received.
+        /// </summary>
+        /// <param name="l"></param>
         private void ConnectionListener(TcpListener l)
         {
             l.Start();
@@ -40,20 +48,29 @@ namespace LibSecurity
         }
 
         /// <summary>
-        /// Must be run on a new thread e.g. via the Listen() call.
+        /// Handle a connection.
         /// </summary>
         /// <param name="c"></param>
         private void ConnectionHandler(TcpClient c)
         {
-            SslStream ssl = new SslStream(c.GetStream(), false, Util.ValidateClientCert);
-            ssl.AuthenticateAsServer(_cert, true, System.Security.Authentication.SslProtocols.Tls, false);
-            Console.WriteLine("Accepted SSL connection.");
-            ServiceHandler handler = new ServiceHandler(ssl);
-            while (true)
+            try
             {
-                int ret = handler.HandleMessage();
-                if (ret == -1) //socket was closed. we're done here.
-                    return;
+                SslStream ssl = new SslStream(c.GetStream(), false, Util.ValidateClientCert);
+                ssl.AuthenticateAsServer(_cert, true, System.Security.Authentication.SslProtocols.Tls, false);
+                Console.WriteLine("Accepted SSL connection.");
+                ServiceHandler handler = new ServiceHandler(ssl);
+                while (true)
+                {
+                    int ret = handler.HandleMessage();
+                    if (ret == -1) //socket was closed. we're done here.
+                        return;
+                }
+            }
+            catch (Exception ex)
+            {
+                LibTrace.Trace.GetInstance("LibSecurity").Error("Exception in SslServer: " + ex.Message);
+                c.Close();
+                return;
             }
         }
     }
