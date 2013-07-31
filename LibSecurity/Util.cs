@@ -12,22 +12,34 @@ namespace LibSecurity
         internal static bool ValidateClientCert(object sender, X509Certificate certificate, X509Chain chain,
                               SslPolicyErrors sslPolicyErrors)
         {
-            sslPolicyErrors &= ~SslPolicyErrors.RemoteCertificateChainErrors; //we don't care about cert chain errors sonce we don't have a proper PKI structure.
-            //if (sslPolicyErrors != SslPolicyErrors.None)
-                //return false;
-            LibTrace.Trace Log = LibTrace.Trace.GetInstance("LibSecurity");
-            Log.Information(String.Format("Client cert: {0}", certificate == null ? "null" : certificate.Subject));
-            return true;
+            return ValidateGeneric(sender, certificate, chain, sslPolicyErrors, false);
         }
 
         internal static bool ValidateServerCert(object sender, X509Certificate certificate, X509Chain chain,
                               SslPolicyErrors sslPolicyErrors)
         {
-            sslPolicyErrors &= ~SslPolicyErrors.RemoteCertificateChainErrors; //we don't care about cert chain errors sonce we don't have a proper PKI structure.
-            //if (sslPolicyErrors != SslPolicyErrors.None)
-            //return false;
+            return ValidateGeneric(sender, certificate, chain, sslPolicyErrors, true);
+        }
+
+        private static bool ValidateGeneric(object sender, X509Certificate certificate, X509Chain chain,
+                                            SslPolicyErrors sslPolicyErrors, bool isServer)
+        {
             LibTrace.Trace Log = LibTrace.Trace.GetInstance("LibSecurity");
-            Log.Information(String.Format("Server cert: {0}", certificate == null ? "null" : certificate.Subject));
+            sslPolicyErrors &= ~SslPolicyErrors.RemoteCertificateChainErrors; //we don't care about cert chain errors sonce we don't have a proper PKI structure.
+            sslPolicyErrors &= ~SslPolicyErrors.RemoteCertificateNameMismatch; //the name on our certs is just a GUID which we don't care about. all of our security comes from checking the
+                                                                               //public key on the cert.
+            if (sslPolicyErrors != SslPolicyErrors.None)
+            {
+                Log.Error((isServer ? "Server" : "Client") + " cert validation FAILED. SslPolicyErrors was : " + sslPolicyErrors);
+                return false;
+            }
+            if (certificate == null)
+            {
+                Log.Error((isServer ? "Server" : "Client") + " cert validation FAILED. Cert was null.");
+                return false;
+            }
+
+            Log.Information((isServer ? "Server" : "Client") + " cert: " + certificate.Subject);
             return true;
         }
     }
