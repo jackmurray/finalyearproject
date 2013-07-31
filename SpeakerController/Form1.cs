@@ -167,7 +167,22 @@ namespace SpeakerController
 
         public void PrintMessage(string source, TraceEventType eventType, int id, string message)
         {
-            _f.Invoke((Action)(() =>
+            /*
+             * Use BeginInvoke() to queue up the message for adding to the dgrid. Previously we used Invoke which
+             * caused deadlocks.
+             * 
+             * The GUI thread could be busy performing some operation that would eventually try and send a log message.
+             * Meanwhile, another thread performed an operation which sent a log message. This thread would then lock the .NET
+             * framework's global tracing lock (this could probably have been turned off instead, but this is a better solution)
+             * and proceed to try and call Invoke() to have the GUI thread update the datagrid. The Invoke() call would block because
+             * it's synchronous, and the GUI thread was currently busy. Eventually, the GUI thread would try and send his log message
+             * and cause a deadlock. The worker thread would hold the tracing lock and be unable to release it because it couldn't call Invoke(),
+             * and the GUI thread would unable to process the Invoke() since it was waiting for the tracing lock.
+             * 
+             * BeginInvoke() allows the worker thread's logging call to return straight away and release the tracing lock, then the GUI thread
+             * can acquire it, queue up his log message and then go service both of them.
+             * */
+            _f.BeginInvoke((Action)(() =>
                 {
                     DataGridViewRow row = new DataGridViewRow();
                     row.CreateCells(_dgrid);
