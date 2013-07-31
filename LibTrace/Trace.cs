@@ -27,7 +27,7 @@ namespace LibTrace
                 s.Listeners.Add(new ConsoleTraceListener());
             ExtraListeners.ForEach(l => s.Listeners.Add(l));
             
-            Verbose("Logging started at level " + s.Switch.Level);
+            Information("Logging started at level " + s.Switch.Level);
         }
 
         public static Trace GetInstance(string sourceName)
@@ -74,16 +74,27 @@ namespace LibTrace
 
         private void DoLog(string message, TraceEventType type)
         {
-            if (Config.IsRunningOnMono) //There's a bug in mono where trace event filtering doesn't work properly, so we have to do it ourselves.
-            {
-                if (((int) Level & (int) type) != 1)
-                    return;
-            }
+            if (Config.IsRunningOnMono && !ShouldLog(this.Level, type)) //There's a bug in mono where trace event filtering doesn't work properly, so we have to do it ourselves.
+                return;
 
             string formatted = FormatMessage(message);
             s.TraceEvent(type, id, formatted);
             s.Flush();
             id++;
+        }
+
+        /// <summary>
+        /// Check if we should log a given type. Only for use in the mono workaround.
+        /// </summary>
+        /// <param name="level"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private bool ShouldLog(SourceLevels level, TraceEventType type)
+        {
+            if (((int)level & (int)type) == 0)
+                return false;
+
+            return true;
         }
 
         private string FormatMessage(string message)
