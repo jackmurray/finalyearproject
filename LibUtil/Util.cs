@@ -48,5 +48,20 @@ namespace LibUtil
             if (!File.Exists(Path.Combine(Config.GetPath(Config.CRYPTO_PATH), Config.TRUSTED_KEYS_FILENAME)))
                 Config.SaveTrustedKeys(); //If the file didn't exist then we can call this and it'll make it for us.
         }
+
+        public static byte[] Encode(int val)
+        {
+            return BitConverter.GetBytes(IPAddress.HostToNetworkOrder(val));
+        }
+
+        public static int Decode(byte[] val)
+        {
+            return Decode(val, 0);
+        }
+
+        public static int Decode(byte[] val, int offset)
+        {
+            return IPAddress.NetworkToHostOrder(BitConverter.ToInt32(val, offset));
+        }
     }
 }

@@ -7,6 +7,7 @@ using System.Net.Security;
 using System.Net.Sockets;
 using System.Text;
 using LibTrace;
+using LibUtil;
 
 namespace LibService
 {
@@ -27,7 +28,7 @@ namespace LibService
             Log.Verbose(String.Format("Message for serviceID {0}, operation {1}", serviceID, operationID));
 
             byte[] messageLenRaw = ReadBytes(4);
-            int messageLen = Decode(messageLenRaw);
+            int messageLen = Util.Decode(messageLenRaw);
             Log.Verbose("Expecting message of " + messageLen + " bytes.");
             if (messageLen < 0)
                 throw new IndexOutOfRangeException("Message length must be a positive number. Got " + messageLen);
@@ -67,7 +68,7 @@ namespace LibService
             MemoryStream buffer = new MemoryStream(MessageSize(m));
             buffer.WriteByte(m.serviceID);
             buffer.WriteByte(m.operationID);
-            buffer.Write(Encode(m.Length), 0, sizeof (Int32));
+            buffer.Write(Util.Encode(m.Length), 0, sizeof (Int32));
             buffer.Write(m.Data, 0, m.Data.Length);
             _s.Write(buffer.ToArray());
         }
@@ -75,16 +76,6 @@ namespace LibService
         protected int MessageSize(ServiceMessage m)
         {
             return sizeof (Int32) + m.Data.Length;
-        }
-
-        protected byte[] Encode(int val)
-        {
-            return BitConverter.GetBytes(IPAddress.HostToNetworkOrder(val));
-        }
-
-        protected int Decode(byte[] val)
-        {
-            return IPAddress.NetworkToHostOrder(BitConverter.ToInt32(val, 0));
         }
     }
 }
