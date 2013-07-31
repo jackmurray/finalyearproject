@@ -6,4 +6,5 @@
 	<writeTraceToConsole>true</writeTraceToConsole>
 	<deviceFriendlyName>Unnamed Device</deviceFriendlyName>
 	<traceLevel>Verbose</traceLevel>
+	<pairingKey>EXAMPLEKEY</pairingKey>
 </config>

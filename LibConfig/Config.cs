@@ -23,6 +23,7 @@ namespace LibConfig
         public const string WRITE_TRACE_TO_CONSOLE = "writeTraceToConsole";
         public const string DEVICE_FRIENDLY_NAME = "deviceFriendlyName";
         public const string TRACE_LEVEL = "traceLevel";
+        public const string PAIRING_KEY = "pairingKey"; //This must be the same on all devices.
 
         public static bool IsRunningOnMono { get; private set; }
 
