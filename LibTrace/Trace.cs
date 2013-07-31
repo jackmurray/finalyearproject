@@ -74,10 +74,16 @@ namespace LibTrace
 
         private void DoLog(string message, TraceEventType type)
         {
-                string formatted = FormatMessage(message);
-                s.TraceEvent(type, id, formatted);
-                s.Flush();
-                id++;
+            if (Config.IsRunningOnMono) //There's a bug in mono where trace event filtering doesn't work properly, so we have to do it ourselves.
+            {
+                if (((int) Level & (int) type) != 1)
+                    return;
+            }
+
+            string formatted = FormatMessage(message);
+            s.TraceEvent(type, id, formatted);
+            s.Flush();
+            id++;
         }
 
         private string FormatMessage(string message)
