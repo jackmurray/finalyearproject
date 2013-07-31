@@ -36,7 +36,7 @@ namespace SpeakerReceiver
             
             new LibSSDP.SSDPService(key, cert).Start();
 
-            LibService.ServiceRegistration.Register(new LibService.CommonService());
+            LibService.ServiceRegistration.Register(new LibService.CommonService(GetBuildVersion()));
             new SslServer(cert.ToDotNetCert(key)).Listen(10451);
             Console.ReadLine();
 
@@ -74,9 +74,9 @@ namespace SpeakerReceiver
 #endif
         }
 
-        private static string GetBuildVersion()
+        private static Version GetBuildVersion()
         {
-            return System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString();
+            return System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
         }
     }
 }
