@@ -57,7 +57,7 @@ namespace LibSecurity
             {
                 SslStream ssl = new SslStream(c.GetStream(), false, Util.ValidateClientCert);
                 ssl.AuthenticateAsServer(_cert, true, System.Security.Authentication.SslProtocols.Tls, false);
-                Console.WriteLine("Accepted SSL connection.");
+                LibTrace.Trace.GetInstance("LibSecurity").Information("Accepted SSL connection.");
                 ServiceHandler handler = new ServiceHandler(ssl);
                 while (true)
                 {
