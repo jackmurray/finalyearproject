@@ -89,7 +89,7 @@ namespace SpeakerController
                         "!!!Incorrectly signed SSDP response from trusted device. This could be a result of a malicious entity attempting to impersonate a device.!!!");
                 }
             }
-            Invoke((Action)(() =>
+            BeginInvoke((Action)(() =>
              {
                  ListViewItem item = new ListViewItem(val) {ForeColor = c};
                  lstDevices.Items.Add(item);
