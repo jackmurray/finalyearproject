@@ -8,6 +8,7 @@ using System.Net.Sockets;
 using System.Text;
 using LibTrace;
 using LibUtil;
+using Newtonsoft.Json;
 
 namespace LibService
 {
@@ -23,20 +24,18 @@ namespace LibService
 
         protected ServiceMessage Read()
         {
-            byte serviceID = ReadSingleByte();
-            byte operationID = ReadSingleByte();
-            Log.Verbose(String.Format("Message for serviceID {0}, operation {1}", serviceID, operationID));
-
-            byte[] messageLenRaw = ReadBytes(4);
+            byte[] messageLenRaw = ReadBytes(sizeof(int));
             int messageLen = Util.Decode(messageLenRaw);
             Log.Verbose("Expecting message of " + messageLen + " bytes.");
+
             if (messageLen < 0)
                 throw new IndexOutOfRangeException("Message length must be a positive number. Got " + messageLen);
 
             byte[] messageBody = ReadBytes(messageLen);
             Log.Verbose("Finished reading message.");
+            string message = Encoding.UTF8.GetString(messageBody);
 
-            return new ServiceMessage(serviceID, operationID, messageBody);
+            return JsonConvert.DeserializeObject<ServiceMessage>(message);
         }
 
         protected byte[] ReadBytes(int num)
@@ -65,17 +64,13 @@ namespace LibService
 
         protected void Send(ServiceMessage m)
         {
-            MemoryStream buffer = new MemoryStream(MessageSize(m));
-            buffer.WriteByte(m.serviceID);
-            buffer.WriteByte(m.operationID);
-            buffer.Write(Util.Encode(m.Length), 0, sizeof (Int32));
-            buffer.Write(m.Data, 0, m.Data.Length);
+            string msg = m.Serialize();
+            int len = msg.Length;
+            MemoryStream buffer = new MemoryStream(len + sizeof(int)); //initialise buffer with all the space we need
+            buffer.Write(Util.Encode(len), 0, sizeof (int)); //write the length of the message
+            byte[] encodedmsg = Encoding.UTF8.GetBytes(msg);
+            buffer.Write(encodedmsg, 0, encodedmsg.Length); //followed by the msg itself
             _s.Write(buffer.ToArray());
-        }
-
-        protected int MessageSize(ServiceMessage m)
-        {
-            return sizeof (Int32) + m.Data.Length;
         }
     }
 }

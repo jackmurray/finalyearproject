@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using LibUtil;
+using Newtonsoft.Json;
 
 namespace LibService
 {
@@ -36,15 +37,7 @@ namespace LibService
             switch (message.operationID)
             {
                 case GET_VERSION:
-                    byte[] major = Util.Encode(_version.Major);
-                    byte[] minor = Util.Encode(_version.Minor);
-                    byte[] build = Util.Encode(_version.Build);
-                    byte[] revision = Util.Encode(_version.Revision);
-                    byte[] encodedVersion = new byte[4*4];
-                    major.CopyTo(encodedVersion, 0);
-                    minor.CopyTo(encodedVersion, 4);
-                    build.CopyTo(encodedVersion, 8);
-                    revision.CopyTo(encodedVersion, 12);
+                    string encodedVersion = JsonConvert.SerializeObject(_version);
 
                     response = new ServiceMessage(SERVICE_ID, GET_VERSION, encodedVersion);
                     break;

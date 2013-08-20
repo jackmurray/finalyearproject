@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace LibService
 {
@@ -10,7 +11,7 @@ namespace LibService
         /// <summary>
         /// The message payload.
         /// </summary>
-        public byte[] Data { get; set; }
+        public string Data { get; set; }
 
         /// <summary>
         /// The ID of the service this message is for.
@@ -22,16 +23,16 @@ namespace LibService
         /// </summary>
         public byte operationID { get; set; }
 
-        /// <summary>
-        /// Length of the data payload.
-        /// </summary>
-        public int Length { get { return Data.Length; } }
-
-        public ServiceMessage(byte serviceID, byte operationID, byte[] data)
+        public ServiceMessage(byte serviceID, byte operationID, string data)
         {
             Data = data;
             this.serviceID = serviceID;
             this.operationID = operationID;
+        }
+
+        public string Serialize()
+        {
+            return JsonConvert.SerializeObject(this);
         }
     }
 }
