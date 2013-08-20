@@ -10,6 +10,7 @@ namespace LibService
     public class CommonService : IService
     {
         public const byte SERVICE_ID = 0x00;
+        private string _name = "CommonService";
 
         public const byte GET_VERSION = 0x00;
 
@@ -46,6 +47,10 @@ namespace LibService
             }
 
             return response;
+        }
+
+        public string Name {
+            get { return _name; }
         }
     }
 }
