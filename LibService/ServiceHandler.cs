@@ -21,6 +21,7 @@ namespace LibService
             try
             {
                 m = Read();
+                Log.Verbose(String.Format("Got a message for serviceID:{0}, operationID:{1}", m.serviceID, m.operationID));
             }
             catch (SocketException)
             {
