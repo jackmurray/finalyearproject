@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="LibAudio.cs" />
     <Compile Include="LibSecurity.cs" />
+    <Compile Include="LibService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LibTrace.cs" />
   </ItemGroup>
@@ -55,6 +56,10 @@
     <ProjectReference Include="..\LibSecurity\LibSecurity.csproj">
       <Project>{9ea6083b-8cae-4921-b916-b9d62168b80b}</Project>
       <Name>LibSecurity</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LibService\LibService.csproj">
+      <Project>{a8d27f1f-33af-4280-aeea-8396a1fb0018}</Project>
+      <Name>LibService</Name>
     </ProjectReference>
     <ProjectReference Include="..\LibTrace\LibTrace.csproj">
       <Project>{aaa4347e-a677-438e-97da-bc8fb2f57822}</Project>
