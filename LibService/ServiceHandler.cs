@@ -20,7 +20,7 @@ namespace LibService
             ServiceMessage m;
             try
             {
-                m = Read();
+                m = ReadReq();
                 Log.Verbose(String.Format("Got a message for serviceID:{0}, operationID:{1}", m.serviceID, m.operationID));
             }
             catch (SocketException)
@@ -36,7 +36,7 @@ namespace LibService
             try
             {
                 ServiceMessage messageResponse = service.HandleMessage(m);
-                Send(messageResponse);
+                SendResp(messageResponse, HttpResponseCode.OK);
                 Log.Verbose("Message response sent.");
             }
             catch (SocketException ex)

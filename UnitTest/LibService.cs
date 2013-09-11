@@ -44,5 +44,15 @@ Host: example
 ";
             HttpMessage m = HttpMessage.Parse(s);
         }
+
+        [TestMethod]
+        public void TestFindByteSequence()
+        {
+            Assert.AreEqual(2, HttpMessage.FindByteSequence(new byte[] { 0x01 }, new byte[] { 0x00, 0x00, 0x01, 0x00 }, 0));
+            Assert.AreEqual(0, HttpMessage.FindByteSequence(new byte[] { 0x01 }, new byte[] { 0x01 }, 0));
+            Assert.AreEqual(-1, HttpMessage.FindByteSequence(new byte[] { 0x01 }, new byte[] { 0x00 }, 0));
+            Assert.AreEqual(2, HttpMessage.FindByteSequence(new byte[] { 0x01, 0x01 }, new byte[] { 0x00, 0x00, 0x01, 0x01 }, 0));
+            Assert.AreEqual(-1, HttpMessage.FindByteSequence(new byte[] { 0x01, 0x01 }, new byte[] { 0x00, 0x00, 0x00, 0x01 }, 0));
+        }
     }
 }

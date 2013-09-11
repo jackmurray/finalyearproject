@@ -32,7 +32,7 @@ namespace LibService
 
         public string Serialize()
         {
-            return JsonConvert.SerializeObject(this);
+            return Data;
         }
     }
 }
