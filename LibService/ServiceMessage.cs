@@ -16,14 +16,14 @@ namespace LibService
         /// <summary>
         /// The ID of the service this message is for.
         /// </summary>
-        public byte serviceID { get; set; }
+        public string serviceID { get; set; }
 
         /// <summary>
         /// The operation within the service.
         /// </summary>
-        public byte operationID { get; set; }
+        public string operationID { get; set; }
 
-        public ServiceMessage(byte serviceID, byte operationID, string data)
+        public ServiceMessage(string serviceID, string operationID, string data)
         {
             Data = data;
             this.serviceID = serviceID;

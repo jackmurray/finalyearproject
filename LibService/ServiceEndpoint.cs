@@ -29,10 +29,10 @@ namespace LibService
                 return null;
 
             string[] url = m.URL.Split(new char[] {'/'}, StringSplitOptions.RemoveEmptyEntries);
-            return new ServiceMessage(byte.Parse(url[0]), byte.Parse(url[1]), m.Body);
+            return new ServiceMessage(url[0], url[1], m.Body);
         }
 
-        protected ServiceMessage ReadResp(byte serviceID, byte operationID)
+        protected ServiceMessage ReadResp(string serviceID, string operationID)
         {
             HttpMessage m = HttpMessage.Parse(_s);
             return new ServiceMessage(serviceID, operationID, m.Body);

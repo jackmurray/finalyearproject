@@ -22,9 +22,7 @@ namespace LibService
         public static IService FindServiceForMessage(ServiceMessage message)
         {
             var firstOrDefault = Services.FirstOrDefault(s => s.CanHandleMessage(message));
-            if (firstOrDefault != null)
-                return firstOrDefault;
-            else return null;
+            return firstOrDefault;
         }
     }
 }

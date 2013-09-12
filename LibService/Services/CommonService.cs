@@ -9,11 +9,8 @@ namespace LibService
 {
     public class CommonService : IService
     {
-        public const byte SERVICE_ID = 0x00;
-        private string _name = "CommonService";
-
-        public const byte GET_VERSION = 0x00;
-
+        public static string Name = "CommonService";
+        private List<string> Operations = new List<string>() {"GetVersion"};
         private Version _version;
 
         public CommonService(Version version)
@@ -23,9 +20,9 @@ namespace LibService
 
         public bool CanHandleMessage(ServiceMessage message)
         {
-            if (message.serviceID != SERVICE_ID)
+            if (message.serviceID != CommonService.Name)
                 return false;
-            if (message.operationID != GET_VERSION)
+            if (!Operations.Contains(message.operationID))
                 return false;
 
             return true;
@@ -37,20 +34,16 @@ namespace LibService
 
             switch (message.operationID)
             {
-                case GET_VERSION:
+                case "GetVersion":
                     string encodedVersion = JsonConvert.SerializeObject(_version);
 
-                    response = new ServiceMessage(SERVICE_ID, GET_VERSION, encodedVersion);
+                    response = new ServiceMessage(CommonService.Name, "GetVersion", encodedVersion);
                     break;
                 default:
                     throw new ArgumentException("Invalid message received.");
             }
 
             return response;
-        }
-
-        public string Name {
-            get { return _name; }
         }
     }
 }

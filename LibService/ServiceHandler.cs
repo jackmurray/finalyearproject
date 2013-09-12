@@ -34,7 +34,7 @@ namespace LibService
             IService service = ServiceRegistration.FindServiceForMessage(m);
             if (service == null)
                 throw new Exception("No suitable service handler found.");
-            Log.Verbose("Message will be handled by service: " + service.Name);
+
             try
             {
                 ServiceMessage messageResponse = service.HandleMessage(m);

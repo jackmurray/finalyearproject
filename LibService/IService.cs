@@ -9,7 +9,5 @@ namespace LibService
     {
         bool CanHandleMessage(ServiceMessage message);
         ServiceMessage HandleMessage(ServiceMessage message);
-
-        string Name { get; }
     }
 }
