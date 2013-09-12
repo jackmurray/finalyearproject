@@ -143,12 +143,23 @@ namespace LibService
             while (true)
             {
                 int bytesRead = s.Read(buffer, 0, 1024);
-                if (bytesRead == 0) break;
+                if (bytesRead == 0)
+                    //EOF reached on socket. Maybe we got a partial message and the connection was killed, or maybe we were just optimistically  waiting for
+                    //another message but the caller is done now and closed the socket.
+                {
+                    if (ms.Length == 0) //socket was closed and nothing was read, so just exit.
+                        return null;
+                    else //socket closed mid-message. log an error.
+                    {
+                        throw new Exception("Socket was closed mid-message.");
+                    }
+                }
 
                 ms.Write(buffer, 0, bytesRead); //Add what we just read to the full buffer;
                 i = FindByteSequence(CRLFCRLF, buffer, 0);
                 if (i != -1) break;
             }
+            
 
             m = HttpMessage.ParseHeaders(Encoding.UTF8.GetString(ms.ToArray(), 0, i)); //only read up as far as the double-CRLF. anything after that may not be fully received yet.
             if (m.Headers.ContainsKey("Content-Length"))

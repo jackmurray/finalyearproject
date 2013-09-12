@@ -25,6 +25,8 @@ namespace LibService
         protected ServiceMessage ReadReq()
         {
             HttpMessage m = HttpMessage.Parse(_s);
+            if (m == null)
+                return null;
 
             string[] url = m.URL.Split(new char[] {'/'}, StringSplitOptions.RemoveEmptyEntries);
             return new ServiceMessage(byte.Parse(url[0]), byte.Parse(url[1]), m.Body);

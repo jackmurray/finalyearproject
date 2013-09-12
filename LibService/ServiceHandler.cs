@@ -21,6 +21,8 @@ namespace LibService
             try
             {
                 m = ReadReq();
+                if (m == null)
+                    return -1;
                 Log.Verbose(String.Format("Got a message for serviceID:{0}, operationID:{1}", m.serviceID, m.operationID));
             }
             catch (SocketException)
