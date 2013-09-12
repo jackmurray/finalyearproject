@@ -91,10 +91,7 @@ namespace LibTrace
         /// <returns></returns>
         private bool ShouldLog(SourceLevels level, TraceEventType type)
         {
-            if (((int)level & (int)type) == 0)
-                return false;
-
-            return true;
+            return ((int)level & (int)type) != 0;
         }
 
         private string FormatMessage(string message)
