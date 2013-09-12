@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,8 +20,12 @@ namespace SpeakerReceiver
         private static void Main(string[] args)
         {
             Setup();
-            Console.WriteLine("{0}-{1}", GetBuildVersion(), GetBuildFlavour());
-            Console.WriteLine("Platform: " + (Config.IsRunningOnMono == true ? "Mono" : "MS.NET"));
+            Console.WriteLine("Build Flavour: " + GetBuildFlavour());
+            foreach (Assembly a in Util.GetLoadedAssemblies())
+                Log.Verbose(a.GetName().Name + "-" + a.GetName().Version);
+            
+            Console.WriteLine("Platform: " + (Config.IsRunningOnMono ? "Mono" : "MS.NET"));
+            
             KeyManager key = null;
             CertManager cert = null;
             try

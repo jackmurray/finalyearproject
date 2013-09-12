@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using LibConfig;
@@ -62,6 +63,11 @@ namespace LibUtil
         public static int Decode(byte[] val, int offset)
         {
             return IPAddress.NetworkToHostOrder(BitConverter.ToInt32(val, offset));
+        }
+
+        public static IEnumerable<Assembly> GetLoadedAssemblies()
+        {
+            return AppDomain.CurrentDomain.GetAssemblies().Where(a => a.GetName().Name.StartsWith("Lib") || a.GetName().Name.StartsWith("Speaker"));
         }
     }
 }
