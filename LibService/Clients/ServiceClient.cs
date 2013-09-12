@@ -14,8 +14,8 @@ namespace LibService
 
         protected ServiceMessage Call(ServiceMessage m)
         {
-            Send(m);
-            return Read();
+            SendReq(m);
+            return ReadResp(m.serviceID, m.operationID);
         }
     }
 }

@@ -59,11 +59,17 @@ namespace LibSecurity
                 ssl.AuthenticateAsServer(_cert, true, System.Security.Authentication.SslProtocols.Tls, false);
                 LibTrace.Trace.GetInstance("LibSecurity").Information("Accepted SSL connection.");
                 ServiceHandler handler = new ServiceHandler(ssl);
+                int numHandled = 0;
                 while (true)
                 {
                     int ret = handler.HandleMessage();
                     if (ret == -1) //socket was closed. we're done here.
+                    {
+                        LibTrace.Trace.GetInstance("LibSecurity")
+                                .Information("SslServer shutting down. Handled " + numHandled + " messages.");
                         return;
+                    }
+                    numHandled++;
                 }
             }
             catch (Exception ex)

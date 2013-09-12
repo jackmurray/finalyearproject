@@ -22,55 +22,52 @@ namespace LibService
             _s = s;
         }
 
-        protected ServiceMessage Read()
+        protected ServiceMessage ReadReq()
         {
-            byte[] messageLenRaw = ReadBytes(sizeof(int));
-            int messageLen = Util.Decode(messageLenRaw);
-            Log.Verbose("Expecting message of " + messageLen + " bytes.");
+            HttpMessage m = HttpMessage.Parse(_s);
+            if (m == null)
+                return null;
 
-            if (messageLen < 0)
-                throw new IndexOutOfRangeException("Message length must be a positive number. Got " + messageLen);
-
-            byte[] messageBody = ReadBytes(messageLen);
-            Log.Verbose("Finished reading message.");
-            string message = Encoding.UTF8.GetString(messageBody);
-
-            return JsonConvert.DeserializeObject<ServiceMessage>(message);
+            string[] url = m.URL.Split(new char[] {'/'}, StringSplitOptions.RemoveEmptyEntries);
+            return new ServiceMessage(byte.Parse(url[0]), byte.Parse(url[1]), m.Body);
         }
 
-        protected byte[] ReadBytes(int num)
+        protected ServiceMessage ReadResp(byte serviceID, byte operationID)
         {
-            byte[] buffer = new byte[num];
-            int bytesRead = 0;
-            while (bytesRead != num)
-            {
-                int thisCall = _s.Read(buffer, bytesRead, num - bytesRead);
-                if (thisCall == 0)
-                {
-                    Log.Verbose("Socket closed.");
-                    throw new SocketException();
-                }
-                bytesRead += thisCall;
-            }
-
-            return buffer;
+            HttpMessage m = HttpMessage.Parse(_s);
+            return new ServiceMessage(serviceID, operationID, m.Body);
         }
 
-        protected byte ReadSingleByte()
+        protected void SendReq(ServiceMessage m)
         {
-            byte[] buf = ReadBytes(1);
-            return buf[0];
+            Send(m, HttpMessageType.REQUEST, null);
         }
 
-        protected void Send(ServiceMessage m)
+        protected void SendResp(ServiceMessage m, HttpResponseCode code)
+        {
+            Send(m, HttpMessageType.RESPONSE, code);
+        }
+
+        protected void Send(ServiceMessage m, HttpMessageType type, HttpResponseCode code)
         {
             string msg = m.Serialize();
-            int len = msg.Length;
+            /*int len = msg.Length;
             MemoryStream buffer = new MemoryStream(len + sizeof(int)); //initialise buffer with all the space we need
             buffer.Write(Util.Encode(len), 0, sizeof (int)); //write the length of the message
             byte[] encodedmsg = Encoding.UTF8.GetBytes(msg);
             buffer.Write(encodedmsg, 0, encodedmsg.Length); //followed by the msg itself
-            _s.Write(buffer.ToArray());
+            _s.Write(buffer.ToArray());*/
+
+            HttpMessage http = new HttpMessage()
+                {
+                    Type = type,
+                    Body = msg,
+                    Method = HttpMethod.POST,
+                    URL = string.Format("/{0}/{1}", m.serviceID, m.operationID),
+                    Code = code
+                };
+            byte[] encoded = http.GetUnicodeBytes();
+            _s.Write(encoded);
         }
     }
 }

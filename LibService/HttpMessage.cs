@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -7,6 +8,8 @@ namespace LibService
 {
     public class HttpMessage
     {
+        private static readonly byte[] CRLFCRLF = new byte[] {(byte) '\r', (byte) '\n', (byte) '\r', (byte) '\n'};
+
         public HttpMessageType Type { get; set; }
 
         /// <summary>
@@ -51,13 +54,36 @@ namespace LibService
 
         public static HttpMessage Parse(string s)
         {
-            HttpMessage m = new HttpMessage();
-            int endOfHeaders = s.IndexOf("\r\n\r\n");
+            HttpMessage m = ParseHeaders(s);
 
-            string[] headers = s.Substring(0, endOfHeaders).Split(new[] {"\r\n"}, StringSplitOptions.RemoveEmptyEntries);
+            string body = s.Substring(FindEndOfHeaders(s) + 4);
+            m.Body = body;
+
+            return m;
+        }
+
+        private static int FindEndOfHeaders(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+                throw new Exception("Invalid input string. Was null or empty.");
+
+            return s.IndexOf("\r\n\r\n", StringComparison.Ordinal);
+        }
+
+        /// <summary>
+        /// Reads just the HTTP headers from the given string. The string will be parsed until a double-CRLF is found, or the end of the string is reached.
+        /// </summary>
+        /// <param name="s"></param>
+        public static HttpMessage ParseHeaders(string s)
+        {
+            HttpMessage m = new HttpMessage();
+            int endOfHeaders = FindEndOfHeaders(s);
+            string justheaders = endOfHeaders != -1 ? s.Substring(0, endOfHeaders) : s;
+
+            string[] headers = justheaders.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
             if (headers.Length < 1)
                 throw new FormatException("No headers found.");
-            string[] firstline = headers[0].Split(' ');
+            string[] firstline = headers[0].Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
             if (firstline.Length < 1)
                 throw new FormatException("Invalid format of first header line.");
 
@@ -98,15 +124,85 @@ namespace LibService
                 m.Headers.Add(headers[i].Substring(0, delim), headers[i].Substring(delim + 1));
             }
 
-            string body = s.Substring(endOfHeaders + 4);
-            m.Body = body;
+            return m;
+        }
+
+        public static HttpMessage Parse(Stream s)
+        {
+            /*
+             * The basic idea here is that we allocate a buffer and start reading from the stream into it.
+             * After each read we search for \r\n\r\n, which marks the end of the headers. Once we've got the headers we can then
+             * parse them, and find the Content-Length (if present). We then read the body of the message based on Content-Length.
+             */
+
+            HttpMessage m;
+            byte[] buffer = new byte[1024];
+            MemoryStream ms = new MemoryStream();
+
+            int i = 0;
+            while (true)
+            {
+                int bytesRead = s.Read(buffer, 0, 1024);
+                if (bytesRead == 0)
+                    //EOF reached on socket. Maybe we got a partial message and the connection was killed, or maybe we were just optimistically  waiting for
+                    //another message but the caller is done now and closed the socket.
+                {
+                    if (ms.Length == 0) //socket was closed and nothing was read, so just exit.
+                        return null;
+                    else //socket closed mid-message. log an error.
+                    {
+                        throw new Exception("Socket was closed mid-message.");
+                    }
+                }
+
+                ms.Write(buffer, 0, bytesRead); //Add what we just read to the full buffer;
+                i = FindByteSequence(CRLFCRLF, buffer, 0);
+                if (i != -1) break;
+            }
+            
+
+            m = HttpMessage.ParseHeaders(Encoding.UTF8.GetString(ms.ToArray(), 0, i)); //only read up as far as the double-CRLF. anything after that may not be fully received yet.
+            if (m.Headers.ContainsKey("Content-Length"))
+            {
+                long contentlen = long.Parse(m.Headers["Content-Length"]);
+                if (contentlen > Int32.MaxValue)
+                    throw new Exception("Content-Length too long. Got " + contentlen);
+                i += 4;
+                long alreadyhave = ms.Length - i; //the number of bytes of the body we already received.
+                while (alreadyhave != contentlen)
+                {
+                    int t = s.Read(buffer, 0, 1024);
+                    if (t == 0) break;
+                    alreadyhave += t;
+                    ms.Write(buffer, 0, t);
+                }
+
+                m.Body = Encoding.UTF8.GetString(ms.ToArray(), i, (int)contentlen); //cast is ok because we checked bounds above.
+            }
 
             return m;
         }
 
+        /// <summary>
+        /// Find needle in haystack, starting from index pos. Returns position of start of needle if found, -1 if not.
+        /// </summary>
+        /// <param name="needle"></param>
+        /// <param name="haystack"></param>
+        /// <param name="pos"></param>
+        /// <returns></returns>
+        public static int FindByteSequence(byte[] needle, byte[] haystack, int pos)
+        {
+            for (int i = pos; i <= haystack.Count() - pos; i++)
+            {
+                if (needle.SequenceEqual(haystack.Skip(i).Take(needle.Count())))
+                    return i;
+            }
+            return -1;
+        }
+
         public byte[] GetUnicodeBytes()
         {
-            return Encoding.Unicode.GetBytes(this.Serialize());
+            return Encoding.UTF8.GetBytes(this.Serialize());
         }
     }
 
