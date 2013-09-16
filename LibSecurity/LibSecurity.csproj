@@ -37,9 +37,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CertManager.cs" />
-    <Compile Include="SslClient.cs" />
-    <Compile Include="SslEndpointBase.cs" />
-    <Compile Include="SslServer.cs" />
     <Compile Include="Hasher.cs" />
     <Compile Include="KeyManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

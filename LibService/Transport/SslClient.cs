@@ -7,9 +7,8 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
-using LibService;
 
-namespace LibSecurity
+namespace LibService
 {
     public class SslClient : SslEndpointBase
     {
@@ -24,7 +23,7 @@ namespace LibSecurity
         {
             var sock = new TcpClient();
             sock.Connect(ep);
-            _stream = new SslStream(sock.GetStream(), false, Util.ValidateServerCert, Util.SelectLocalCert);
+            _stream = new SslStream(sock.GetStream(), false, ValidateServerCert, SelectLocalCert);
             X509CertificateCollection cc = new X509CertificateCollection();
             cc.Add(_cert);
             _stream.AuthenticateAsClient("d3cb375c-b626-4b24-bc3f-f022b12b3f2f", cc, System.Security.Authentication.SslProtocols.Tls, false);

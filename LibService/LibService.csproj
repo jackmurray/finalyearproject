@@ -54,6 +54,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceMessage.cs" />
     <Compile Include="ServiceRegistration.cs" />
+    <Compile Include="Transport\SslClient.cs" />
+    <Compile Include="Transport\SslEndpointBase.cs" />
+    <Compile Include="Transport\SslServer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LibTrace\LibTrace.csproj">
