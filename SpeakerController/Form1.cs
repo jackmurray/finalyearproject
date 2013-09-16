@@ -105,9 +105,19 @@ namespace SpeakerController
 
             CommonServiceClient client = ssl.GetClient<CommonServiceClient>();
 
-            Version response = client.GetVersion();
-            MessageBox.Show(response.ToString());
-            ssl.Close();
+            try
+            {
+                Version response = client.GetVersion();
+                MessageBox.Show(response.ToString());
+            }
+            catch (ServiceException ex)
+            {
+                MessageBox.Show(ex.Message + ": " + ex.Code, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                ssl.Close();
+            }
         }
 
         private void Setup()
