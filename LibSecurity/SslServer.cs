@@ -30,7 +30,8 @@ namespace LibSecurity
         public void Listen(int port)
         {
             var l = new TcpListener(IPAddress.Any, port);
-            new Thread(() => ConnectionListener(l)).Start();
+            var t = new Thread(() => ConnectionListener(l)) {Name = "SslServerMainListener"};
+            t.Start();
         }
 
         /// <summary>
@@ -43,7 +44,8 @@ namespace LibSecurity
             while (true)
             {
                 TcpClient c = l.AcceptTcpClient();
-                new Thread(() => ConnectionHandler(c)).Start();
+                var t = new Thread(() => ConnectionHandler(c)) {Name = "SslServerConnectionHandler"};
+                t.Start();
             }
         }
 
