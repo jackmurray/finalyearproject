@@ -97,6 +97,10 @@ namespace LibService
                     m.Code = HttpResponseCode.NOT_FOUND;
                 else if (code == HttpResponseCode.INT_SRV_ERR.Code)
                     m.Code = HttpResponseCode.INT_SRV_ERR;
+                else if (code == HttpResponseCode.AUTH_REQ.Code)
+                    m.Code = HttpResponseCode.AUTH_REQ;
+                else if (code == HttpResponseCode.ACCESS_DENIED.Code)
+                    m.Code = HttpResponseCode.ACCESS_DENIED;
                 else throw new FormatException("Unsupported response code.");
             }
             else
@@ -236,6 +240,8 @@ namespace LibService
         private string message;
 
         public static readonly HttpResponseCode OK = new HttpResponseCode(200, "OK");
+        public static readonly HttpResponseCode AUTH_REQ = new HttpResponseCode(401, "Unauthorized");
+        public static readonly HttpResponseCode ACCESS_DENIED = new HttpResponseCode(403, "Forbidden");
         public static readonly HttpResponseCode NOT_FOUND = new HttpResponseCode(404, "Not Found");
         public static readonly HttpResponseCode INT_SRV_ERR = new HttpResponseCode(500, "Internal Server Error");
 
