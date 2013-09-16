@@ -12,10 +12,27 @@ namespace LibService
         {
         }
 
-        protected ServiceMessage Call(ServiceMessage m)
+        protected ServiceMessageResponse Call(ServiceMessage m)
         {
             SendReq(m);
-            return ReadResp(m.serviceID, m.operationID);
+            ServiceMessageResponse resp = ReadResp();
+            if (resp.ResponseCode != HttpResponseCode.OK)
+            {
+                LibTrace.Trace.GetInstance("LibService").Error("Service error: " + resp.ResponseCode);
+                throw new ServiceException("Service error", resp.ResponseCode);
+            }
+
+            return resp;
+        }
+    }
+
+    public class ServiceException : Exception
+    {
+        public HttpResponseCode Code { get; private set; }
+
+        public ServiceException(string msg, HttpResponseCode code) : base(msg)
+        {
+            this.Code = code;
         }
     }
 }

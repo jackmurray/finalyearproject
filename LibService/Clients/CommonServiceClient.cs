@@ -16,7 +16,7 @@ namespace LibService
         public Version GetVersion()
         {
             ServiceMessage m = new ServiceMessage(CommonService.Name, "GetVersion", null);
-            ServiceMessage response = Call(m);
+            ServiceMessageResponse response = Call(m);
             return JsonConvert.DeserializeObject<Version>(response.Data);
         }
     }

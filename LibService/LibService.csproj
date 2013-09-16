@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="Clients\CommonServiceClient.cs" />
     <Compile Include="HttpMessage.cs" />
+    <Compile Include="ServiceMessageResponse.cs" />
     <Compile Include="Services\CommonService.cs" />
     <Compile Include="IService.cs" />
     <Compile Include="Clients\ServiceClient.cs" />

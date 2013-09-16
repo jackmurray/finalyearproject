@@ -32,10 +32,10 @@ namespace LibService
             return new ServiceMessage(url[0], url[1], m.Body);
         }
 
-        protected ServiceMessage ReadResp(string serviceID, string operationID)
+        protected ServiceMessageResponse ReadResp()
         {
             HttpMessage m = HttpMessage.Parse(_s);
-            return new ServiceMessage(serviceID, operationID, m.Body);
+            return new ServiceMessageResponse(m.Body, m.Code);
         }
 
         protected void SendReq(ServiceMessage m)
