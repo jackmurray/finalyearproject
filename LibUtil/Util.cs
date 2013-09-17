@@ -18,6 +18,17 @@ namespace LibUtil
             return BitConverter.ToString(data).Replace("-", String.Empty).ToLower();
         }
 
+        public static byte[] HexStringToBytes(string s)
+        {
+            if (s.Length %2 != 0)
+                throw new ArgumentException("String length must be a multiple of 2");
+
+            byte[] bytes = new byte[s.Length / 2];
+            for (int i = 0; i < s.Length; i += 2)
+                bytes[i / 2] = Convert.ToByte(s.Substring(i, 2), 16);
+            return bytes;
+        }
+
         public static string BytesToBase64String(byte[] data)
         {
             return Convert.ToBase64String(data);
