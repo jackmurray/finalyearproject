@@ -40,32 +40,28 @@ namespace LibService
 
         protected void SendReq(ServiceMessage m)
         {
-            Send(m, HttpMessageType.REQUEST, null);
-        }
-
-        protected void SendResp(ServiceMessage m, HttpResponseCode code)
-        {
-            Send(m, HttpMessageType.RESPONSE, code);
-        }
-
-        protected void Send(ServiceMessage m, HttpMessageType type, HttpResponseCode code)
-        {
-            string msg = m.Serialize();
-            /*int len = msg.Length;
-            MemoryStream buffer = new MemoryStream(len + sizeof(int)); //initialise buffer with all the space we need
-            buffer.Write(Util.Encode(len), 0, sizeof (int)); //write the length of the message
-            byte[] encodedmsg = Encoding.UTF8.GetBytes(msg);
-            buffer.Write(encodedmsg, 0, encodedmsg.Length); //followed by the msg itself
-            _s.Write(buffer.ToArray());*/
-
+            string msg = m.Data;
             HttpMessage http = new HttpMessage()
-                {
-                    Type = type,
-                    Body = msg,
-                    Method = HttpMethod.POST,
-                    URL = string.Format("/{0}/{1}", m.serviceID, m.operationID),
-                    Code = code
-                };
+            {
+                Type = HttpMessageType.REQUEST,
+                Body = msg,
+                Method = HttpMethod.POST,
+                URL = string.Format("/{0}/{1}", m.serviceID, m.operationID)
+            };
+
+            byte[] encoded = http.GetUnicodeBytes();
+            _s.Write(encoded);
+        }
+
+        protected void SendResp(ServiceMessageResponse m)
+        {
+            string msg = m.Data;
+            HttpMessage http = new HttpMessage()
+            {
+                Type = HttpMessageType.RESPONSE,
+                Body = msg,
+                Code = m.ResponseCode
+            };
             byte[] encoded = http.GetUnicodeBytes();
             _s.Write(encoded);
         }

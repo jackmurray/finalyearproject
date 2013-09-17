@@ -37,13 +37,14 @@ namespace LibService
 
             try
             {
-                ServiceMessage messageResponse = service.HandleMessage(m);
-                SendResp(messageResponse, HttpResponseCode.OK);
+                ServiceMessageResponse messageResponse = service.HandleMessage(m);
+                SendResp(messageResponse);
                 Log.Verbose("Message response sent.");
             }
-            catch (SocketException ex)
+            catch (Exception ex)
             {
-                Log.Error("Socket exception: " + ex.Message);
+                Log.Error("Service exception: " + ex.Message);
+                SendResp(new ServiceMessageResponse(ex.Message, HttpResponseCode.INT_SRV_ERR));
                 return -1;
             }
             return 0; //success

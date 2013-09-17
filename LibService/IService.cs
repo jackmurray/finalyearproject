@@ -8,6 +8,6 @@ namespace LibService
     public interface IService
     {
         bool CanHandleMessage(ServiceMessage message);
-        ServiceMessage HandleMessage(ServiceMessage message);
+        ServiceMessageResponse HandleMessage(ServiceMessage message);
     }
 }

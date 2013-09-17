@@ -29,10 +29,5 @@ namespace LibService
             this.serviceID = serviceID;
             this.operationID = operationID;
         }
-
-        public string Serialize()
-        {
-            return Data;
-        }
     }
 }

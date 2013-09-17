@@ -28,16 +28,16 @@ namespace LibService
             return true;
         }
 
-        public ServiceMessage HandleMessage(ServiceMessage message)
+        public ServiceMessageResponse HandleMessage(ServiceMessage message)
         {
-            ServiceMessage response = null;
+            ServiceMessageResponse response = null;
 
             switch (message.operationID)
             {
                 case "GetVersion":
                     string encodedVersion = JsonConvert.SerializeObject(_version);
 
-                    response = new ServiceMessage(CommonService.Name, "GetVersion", encodedVersion);
+                    response = new ServiceMessageResponse(encodedVersion, HttpResponseCode.OK);
                     break;
                 default:
                     throw new ArgumentException("Invalid message received.");
