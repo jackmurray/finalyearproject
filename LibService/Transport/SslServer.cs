@@ -58,7 +58,7 @@ namespace LibService
             {
                 SslStream ssl = new SslStream(c.GetStream(), false, ValidateClientCert);
                 ssl.AuthenticateAsServer(_cert, true, System.Security.Authentication.SslProtocols.Tls, false);
-                LibTrace.Trace.GetInstance("LibSecurity").Information("Accepted SSL connection.");
+                LibTrace.Trace.GetInstance("LibService.Transport").Information("Accepted SSL connection.");
                 ServiceHandler handler = new ServiceHandler(ssl);
                 int numHandled = 0;
                 while (true)
@@ -66,7 +66,7 @@ namespace LibService
                     int ret = handler.HandleMessage();
                     if (ret == -1) //socket was closed. we're done here.
                     {
-                        LibTrace.Trace.GetInstance("LibSecurity")
+                        LibTrace.Trace.GetInstance("LibService.Transport")
                                 .Information("SslServer shutting down. Handled " + numHandled + " messages.");
                         return;
                     }
@@ -75,7 +75,7 @@ namespace LibService
             }
             catch (Exception ex)
             {
-                LibTrace.Trace.GetInstance("LibSecurity").Error("Exception in SslServer: " + ex.Message);
+                LibTrace.Trace.GetInstance("LibService.Transport").Error("Exception in SslServer: " + ex.Message);
                 c.Close();
                 return;
             }

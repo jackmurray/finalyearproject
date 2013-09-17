@@ -38,7 +38,7 @@ namespace LibService
         private static bool ValidateGeneric(object sender, X509Certificate certificate, X509Chain chain,
                                             SslPolicyErrors sslPolicyErrors, bool isServer)
         {
-            LibTrace.Trace Log = LibTrace.Trace.GetInstance("LibSecurity");
+            LibTrace.Trace Log = LibTrace.Trace.GetInstance("LibService.Transport");
             sslPolicyErrors &= ~SslPolicyErrors.RemoteCertificateChainErrors; //we don't care about cert chain errors sonce we don't have a proper PKI structure.
             sslPolicyErrors &= ~SslPolicyErrors.RemoteCertificateNameMismatch; //the name on our certs is just a GUID which we don't care about. all of our security comes from checking the
             //public key on the cert.
