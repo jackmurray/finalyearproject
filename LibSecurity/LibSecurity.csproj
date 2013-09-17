@@ -38,9 +38,6 @@
   <ItemGroup>
     <Compile Include="CertManager.cs" />
     <Compile Include="ChallengeResponse.cs" />
-    <Compile Include="SslClient.cs" />
-    <Compile Include="SslEndpointBase.cs" />
-    <Compile Include="SslServer.cs" />
     <Compile Include="Hasher.cs" />
     <Compile Include="KeyManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -52,10 +49,6 @@
     <ProjectReference Include="..\LibConfig\LibConfig.csproj">
       <Project>{37be8328-6872-494f-9458-d3540d7dc44f}</Project>
       <Name>LibConfig</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\LibService\LibService.csproj">
-      <Project>{a8d27f1f-33af-4280-aeea-8396a1fb0018}</Project>
-      <Name>LibService</Name>
     </ProjectReference>
     <ProjectReference Include="..\LibTrace\LibTrace.csproj">
       <Project>{aaa4347e-a677-438e-97da-bc8fb2f57822}</Project>

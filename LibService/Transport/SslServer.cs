@@ -8,9 +8,8 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using LibService;
 
-namespace LibSecurity
+namespace LibService
 {
     public class SslServer : SslEndpointBase
     {
@@ -57,7 +56,7 @@ namespace LibSecurity
         {
             try
             {
-                SslStream ssl = new SslStream(c.GetStream(), false, Util.ValidateClientCert);
+                SslStream ssl = new SslStream(c.GetStream(), false, ValidateClientCert);
                 ssl.AuthenticateAsServer(_cert, true, System.Security.Authentication.SslProtocols.Tls, false);
                 LibTrace.Trace.GetInstance("LibSecurity").Information("Accepted SSL connection.");
                 ServiceHandler handler = new ServiceHandler(ssl);
