@@ -42,6 +42,7 @@ namespace SpeakerReceiver
             new LibSSDP.SSDPService(key, cert).Start();
 
             LibService.ServiceRegistration.Register(new LibService.CommonService(GetBuildVersion()));
+            LibService.ServiceRegistration.Register(new LibService.PairingService());
             LibService.ServiceRegistration.Start(cert.ToDotNetCert(key), 10451);
             Console.ReadLine();
 

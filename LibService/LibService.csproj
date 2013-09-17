@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Clients\CommonServiceClient.cs" />
+    <Compile Include="Clients\PairingServiceClient.cs" />
     <Compile Include="HttpMessage.cs" />
     <Compile Include="ServiceMessageResponse.cs" />
     <Compile Include="Services\CommonService.cs" />
@@ -53,12 +54,17 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceMessage.cs" />
     <Compile Include="ServiceRegistration.cs" />
+    <Compile Include="Services\PairingService.cs" />
     <Compile Include="Services\ServiceBase.cs" />
     <Compile Include="Transport\SslClient.cs" />
     <Compile Include="Transport\SslEndpointBase.cs" />
     <Compile Include="Transport\SslServer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LibSecurity\LibSecurity.csproj">
+      <Project>{9ea6083b-8cae-4921-b916-b9d62168b80b}</Project>
+      <Name>LibSecurity</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LibTrace\LibTrace.csproj">
       <Project>{aaa4347e-a677-438e-97da-bc8fb2f57822}</Project>
       <Name>LibTrace</Name>
