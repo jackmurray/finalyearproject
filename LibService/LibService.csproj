@@ -47,13 +47,13 @@
     <Compile Include="HttpMessage.cs" />
     <Compile Include="ServiceMessageResponse.cs" />
     <Compile Include="Services\CommonService.cs" />
-    <Compile Include="IService.cs" />
     <Compile Include="Clients\ServiceClient.cs" />
     <Compile Include="ServiceEndpoint.cs" />
     <Compile Include="ServiceHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceMessage.cs" />
     <Compile Include="ServiceRegistration.cs" />
+    <Compile Include="Services\ServiceBase.cs" />
     <Compile Include="Transport\SslClient.cs" />
     <Compile Include="Transport\SslEndpointBase.cs" />
     <Compile Include="Transport\SslServer.cs" />

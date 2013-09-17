@@ -8,9 +8,9 @@ namespace LibService
 {
     public static class ServiceRegistration
     {
-        private static List<IService> Services = new List<IService>();
+        private static List<ServiceBase> Services = new List<ServiceBase>();
 
-        public static void Register(IService s)
+        public static void Register(ServiceBase s)
         {
             Services.Add(s);
         }
@@ -20,7 +20,7 @@ namespace LibService
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public static IService FindServiceForMessage(ServiceMessage message)
+        public static ServiceBase FindServiceForMessage(ServiceMessage message)
         {
             var firstOrDefault = Services.FirstOrDefault(s => s.CanHandleMessage(message));
             return firstOrDefault;

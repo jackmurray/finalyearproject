@@ -29,9 +29,9 @@ namespace LibService
             {
                 return -1; //socket closed.
             }
-            
 
-            IService service = ServiceRegistration.FindServiceForMessage(m);
+
+            ServiceBase service = ServiceRegistration.FindServiceForMessage(m);
             if (service == null)
                 throw new Exception("No suitable service handler found.");
 

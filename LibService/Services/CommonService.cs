@@ -7,28 +7,18 @@ using Newtonsoft.Json;
 
 namespace LibService
 {
-    public class CommonService : IService
+    public class CommonService : ServiceBase
     {
-        public static string Name = "CommonService";
-        private List<string> Operations = new List<string>() {"GetVersion"};
         private Version _version;
 
         public CommonService(Version version)
         {
+            Name = "CommonService";
+            Operations = new List<string>() { "GetVersion" };
             _version = version;
         }
 
-        public bool CanHandleMessage(ServiceMessage message)
-        {
-            if (message.serviceID != CommonService.Name)
-                return false;
-            if (!Operations.Contains(message.operationID))
-                return false;
-
-            return true;
-        }
-
-        public ServiceMessageResponse HandleMessage(ServiceMessage message)
+        public override ServiceMessageResponse HandleMessage(ServiceMessage message)
         {
             ServiceMessageResponse response = null;
 
