@@ -21,5 +21,10 @@ namespace LibService
 
             return true;
         }
+
+        protected ServiceMessageResponse Error(string msg)
+        {
+            return new ServiceMessageResponse(msg, HttpResponseCode.INT_SRV_ERR);
+        }
     }
 }
