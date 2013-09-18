@@ -16,7 +16,7 @@ namespace LibService
         {
             SendReq(m);
             ServiceMessageResponse resp = ReadResp();
-            if (resp.ResponseCode != HttpResponseCode.OK)
+            if (resp.ResponseCode != HttpResponseCode.OK) //convert the error into a .NET exception for easier handling.
             {
                 LibTrace.Trace.GetInstance("LibService").Error("Service error: " + resp.ResponseCode);
                 throw new ServiceException("Service error", resp.ResponseCode);
