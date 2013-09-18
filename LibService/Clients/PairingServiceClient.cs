@@ -20,5 +20,13 @@ namespace LibService
             ServiceMessageResponse response = Call(m);
             return LibUtil.Util.HexStringToBytes(response.Data);
         }
+
+        public bool Pair(byte[] challenge, byte[] sig)
+        {
+            var data = new Tuple<byte[], byte[]>(challenge, sig);
+            ServiceMessage m = new ServiceMessage("PairingService", "Pair", JsonConvert.SerializeObject(data));
+            ServiceMessageResponse response = Call(m);
+            return bool.Parse(response.Data);
+        }
     }
 }

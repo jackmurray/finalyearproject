@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using LibConfig;
 using LibSecurity;
+using Newtonsoft.Json;
 
 namespace LibService
 {
@@ -23,25 +25,41 @@ namespace LibService
 
         public override ServiceMessageResponse HandleMessage(ServiceMessage m)
         {
-            ServiceMessageResponse resp = null;
-
             switch (m.operationID)
             {
+                //Pair is intentionally non-verbose in it's errors returned to the client. This is to try and thwart attackers.
+                //Full logging is still done on the service host side though, so legitimate users can try and debug.
                 case "Pair":
-                    break;
+                    var recv = JsonConvert.DeserializeObject<Tuple<byte[], byte[]>>(m.Data); //tuple<challenge, sig>
+                    byte[] find = GeneratedChallenges.Find(a => a.SequenceEqual(recv.Item1));
+                    if (find == null) //can't use .Contains() since arrays don't implement Equals().
+                    {
+                        LibTrace.Trace.GetInstance("LibService").Error("Invalid challenge received in pairing request.");
+                        return new ServiceMessageResponse("False", HttpResponseCode.ACCESS_DENIED);
+                    }
+
+                    var check = new ChallengeResponse(recv.Item1);
+                    bool valid = check.Verify(Config.Get(Config.PAIRING_KEY), recv.Item2);
+                    GeneratedChallenges.Remove(find); //valid or not, we still remove the challenge.
+                    if (valid)
+                        return new ServiceMessageResponse("True", HttpResponseCode.OK);
+
+                    byte[] expectedsig = check.Sign(Config.Get(Config.PAIRING_KEY));
+                    
+                    //OK to log the expected signature, since it's no use anymore (challenge is invalidated).
+                    LibTrace.Trace.GetInstance("LibService").Error("Incorrect signature in pairing request. Expected " + LibUtil.Util.BytesToHexString(expectedsig)
+                    + " got " + LibUtil.Util.BytesToHexString(recv.Item2));
+                    return new ServiceMessageResponse("False", HttpResponseCode.ACCESS_DENIED);
 
                 case "GetPairingChallenge":
                     ChallengeResponse cr = new ChallengeResponse();
                     GeneratedChallenges.Add(cr.ChallengeBytes);
-                    resp = new ServiceMessageResponse(LibUtil.Util.BytesToHexString(cr.ChallengeBytes),
+                    return new ServiceMessageResponse(LibUtil.Util.BytesToHexString(cr.ChallengeBytes),
                                                       HttpResponseCode.OK);
-                    break;
 
                 default:
                     throw new ArgumentException("Invalid message received.");
             }
-
-            return resp;
         }
     }
 }
