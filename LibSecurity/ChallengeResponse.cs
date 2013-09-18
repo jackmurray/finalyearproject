@@ -46,6 +46,16 @@ namespace LibSecurity
         }
 
         /// <summary>
+        /// Sign a challenge using the given key.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public byte[] Sign(string key)
+        {
+            return Sign(Encoding.UTF8.GetBytes(key));
+        }
+
+        /// <summary>
         /// Verify the signature on a challenge with the given key.
         /// </summary>
         /// <param name="key"></param>
@@ -55,8 +65,14 @@ namespace LibSecurity
             return signature.SequenceEqual(CalculateSignature(key));
         }
 
+        public bool Verify(string key, byte[] signature)
+        {
+            return Verify(Encoding.UTF8.GetBytes(key), signature);
+        }
+
         private byte[] CalculateSignature(byte[] key)
         {
+            LibTrace.Trace.GetInstance("LibSecurity").Verbose("Beginning HMAC signature.");
             HMACSHA256 hash = new HMACSHA256(key);
             byte[] output = new byte[hash.HashSize/8];
             output = hash.ComputeHash(ChallengeBytes);
@@ -64,7 +80,7 @@ namespace LibSecurity
             {
                 output = hash.ComputeHash(output);
             }
-
+            LibTrace.Trace.GetInstance("LibSecurity").Verbose("HMAC signature complete.");
             return output;
         }
     }
