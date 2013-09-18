@@ -160,7 +160,21 @@ namespace SpeakerController
             IPEndPoint ep = Receivers[lstDevices.SelectedIndices[0]];
             SslClient ssl = new SslClient(cert.ToDotNetCert(key));
             ssl.Connect(ep);
-            TrustedKeys.Add(ssl.GetRemoteCert());
+
+            PairingServiceClient c = ssl.GetClient<PairingServiceClient>();
+            byte[] challenge = c.GetChallengeBytes();
+            Log.Verbose("Got challenge " + Util.BytesToHexString(challenge));
+            var cr = new ChallengeResponse(challenge);
+            byte[] sig = cr.Sign(Config.Get(Config.PAIRING_KEY));
+            bool res;
+            try
+            {
+                res = c.Pair(challenge, sig);
+            }
+            catch (ServiceException ex)
+            {
+                MessageBox.Show("Pairing failed with error code " + ex.Code + ". Check the error log on the target device for more information (look for LibService errors).", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 
