@@ -79,6 +79,7 @@ namespace LibSecurity
                 catch (Exception ex)
                 {
                     Log.Critical("Failed to load cert: " + ex.Message);
+                    throw;
                 }
             }
             else
