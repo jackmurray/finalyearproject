@@ -84,6 +84,11 @@ namespace LibConfig
             return bool.Parse(Get(key));
         }
 
+        public static int GetInt(string key)
+        {
+            return int.Parse(Get(key));
+        }
+
         /// <summary>
         /// Gets a config key, and interprets it's value as a path.
         /// </summary>
