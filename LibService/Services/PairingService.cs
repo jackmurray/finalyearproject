@@ -50,7 +50,10 @@ namespace LibService
                         GeneratedChallenges.Remove(find); //valid or not, we still remove the challenge.
                     }
                     if (valid)
+                    {
+                        TrustedKeys.Add(remoteParty); //we now trust the other end of the connection since they answered our challenge correctly.
                         return new ServiceMessageResponse("True", HttpResponseCode.OK);
+                    }
 
 
                     //OK to log the expected signature, since it's no use anymore (challenge is invalidated).
