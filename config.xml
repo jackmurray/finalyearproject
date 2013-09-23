@@ -7,4 +7,5 @@
 	<deviceFriendlyName>Unnamed Device</deviceFriendlyName>
 	<traceLevel>Verbose</traceLevel>
 	<pairingKey>EXAMPLEKEY</pairingKey>
+	<maxTimeDifference>30</maxTimeDifference>
 </config>
