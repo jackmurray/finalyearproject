@@ -30,9 +30,11 @@ namespace LibService
                 //Pair is intentionally non-verbose in it's errors returned to the client. This is to try and thwart attackers.
                 //Full logging is still done on the service host side though, so legitimate users can try and debug.
                 case "Pair":
+                    bool valid;
+                    var recv = JsonConvert.DeserializeObject<Tuple<byte[], byte[]>>(m.Data); //tuple<challenge, sig>
+                    byte[] expectedsig;
                     lock (GeneratedChallenges)
                     {
-                        var recv = JsonConvert.DeserializeObject<Tuple<byte[], byte[]>>(m.Data); //tuple<challenge, sig>
                         byte[] find = GeneratedChallenges.Find(a => a.SequenceEqual(recv.Item1));
                         if (find == null) //can't use .Contains() since arrays don't implement Equals().
                         {
@@ -42,21 +44,21 @@ namespace LibService
                         }
 
                         var check = new ChallengeResponse(recv.Item1);
-                        bool valid = check.Verify(Config.Get(Config.PAIRING_KEY), recv.Item2);
+                        expectedsig = check.Sign(Config.Get(Config.PAIRING_KEY));
+                        valid = expectedsig.SequenceEqual(recv.Item2);
                         GeneratedChallenges.Remove(find); //valid or not, we still remove the challenge.
-                        if (valid)
-                            return new ServiceMessageResponse("True", HttpResponseCode.OK);
-
-                        //Not really an issue for DoS since an attacker could just spam requests anyway.
-                        byte[] expectedsig = check.Sign(Config.Get(Config.PAIRING_KEY));
-
-                        //OK to log the expected signature, since it's no use anymore (challenge is invalidated).
-                        LibTrace.Trace.GetInstance("LibService")
-                                .Error("Incorrect signature in pairing request. Expected " +
-                                       LibUtil.Util.BytesToHexString(expectedsig)
-                                       + " got " + LibUtil.Util.BytesToHexString(recv.Item2));
-                        return new ServiceMessageResponse("False", HttpResponseCode.ACCESS_DENIED);
                     }
+                    if (valid)
+                        return new ServiceMessageResponse("True", HttpResponseCode.OK);
+
+
+                    //OK to log the expected signature, since it's no use anymore (challenge is invalidated).
+                    LibTrace.Trace.GetInstance("LibService")
+                            .Error("Incorrect signature in pairing request. Expected " +
+                                    LibUtil.Util.BytesToHexString(expectedsig)
+                                    + " got " + LibUtil.Util.BytesToHexString(recv.Item2));
+                    return new ServiceMessageResponse("False", HttpResponseCode.ACCESS_DENIED);
+                    
 
                 case "GetPairingChallenge":
                     lock (GeneratedChallenges)
