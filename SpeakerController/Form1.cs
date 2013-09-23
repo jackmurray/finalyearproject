@@ -79,12 +79,11 @@ namespace SpeakerController
                 bool result = v.Verify(args.StrippedPacket, Util.Base64ToByteArray(args.Packet.signature));
                 if (result)
                 {
-                    TimeSpan diff = DateTime.Now - args.Packet.Date;
-                    if (diff.TotalSeconds > Config.GetInt(Config.MAX_TIMEDIFF))
+                    TimeSpan diff = DateTime.Now.ToUniversalTime() - args.Packet.Date;
+                    if (Math.Abs(diff.TotalSeconds) > Config.GetInt(Config.MAX_TIMEDIFF))
                     {
                         c = Color.Red;
-                        Log.Critical("!!!Time check failed on SSDP packet. Diff was " + diff.TotalSeconds +
-                                     " seconds.!!!");
+                        Log.Critical("!!!Time check failed on SSDP packet. Diff was " + diff.TotalSeconds + " seconds.!!!");
                     }
                     else
                     {
@@ -95,8 +94,7 @@ namespace SpeakerController
                 else
                 {
                     c = Color.Red;
-                    Log.Critical(
-                        "!!!Incorrectly signed SSDP response from trusted device. This could be a result of a malicious entity attempting to impersonate a device.!!!");
+                    Log.Critical("!!!Incorrectly signed SSDP response from trusted device. This could be a result of a malicious entity attempting to impersonate a device.!!!");
                 }
             }
             BeginInvoke((Action)(() =>
