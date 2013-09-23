@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace LibService
@@ -10,7 +11,7 @@ namespace LibService
         protected string Name;
         protected List<string> Operations;
 
-        public abstract ServiceMessageResponse HandleMessage(ServiceMessage m);
+        public abstract ServiceMessageResponse HandleMessage(ServiceMessage m, X509Certificate remoteParty);
 
         public virtual bool CanHandleMessage(ServiceMessage message)
         {

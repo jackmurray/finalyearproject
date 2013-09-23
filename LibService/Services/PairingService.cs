@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using LibConfig;
 using LibSecurity;
@@ -23,7 +24,7 @@ namespace LibService
             Operations = new List<string>() {"Pair", "GetPairingChallenge"};
         }
 
-        public override ServiceMessageResponse HandleMessage(ServiceMessage m)
+        public override ServiceMessageResponse HandleMessage(ServiceMessage m, X509Certificate remoteParty)
         {
             switch (m.operationID)
             {

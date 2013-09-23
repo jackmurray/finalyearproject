@@ -37,7 +37,7 @@ namespace LibService
 
             try
             {
-                ServiceMessageResponse messageResponse = service.HandleMessage(m);
+                ServiceMessageResponse messageResponse = service.HandleMessage(m, _s.RemoteCertificate);
                 SendResp(messageResponse);
                 Log.Verbose("Message response sent.");
             }

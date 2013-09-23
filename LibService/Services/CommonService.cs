@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using LibUtil;
 using Newtonsoft.Json;
@@ -18,7 +19,7 @@ namespace LibService
             _version = version;
         }
 
-        public override ServiceMessageResponse HandleMessage(ServiceMessage message)
+        public override ServiceMessageResponse HandleMessage(ServiceMessage message, X509Certificate remoteParty)
         {
             ServiceMessageResponse response = null;
 
