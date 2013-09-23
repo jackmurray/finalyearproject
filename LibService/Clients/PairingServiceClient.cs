@@ -20,13 +20,24 @@ namespace LibService
             ServiceMessageResponse response = Call(m);
             return LibUtil.Util.HexStringToBytes(response.Data);
         }
-
+        
         public bool Pair(byte[] challenge, byte[] sig)
         {
-            var data = new Tuple<byte[], byte[]>(challenge, sig);
-            ServiceMessage m = new ServiceMessage("PairingService", "Pair", JsonConvert.SerializeObject(data));
-            ServiceMessageResponse response = Call(m);
-            return bool.Parse(response.Data);
+            try
+            {
+                var data = new Tuple<byte[], byte[]>(challenge, sig);
+                ServiceMessage m = new ServiceMessage("PairingService", "Pair", JsonConvert.SerializeObject(data));
+                ServiceMessageResponse response = Call(m);
+                return bool.Parse(response.Data);
+            }
+            catch (ServiceException ex)
+            {
+                //If we get an access denied, it means that pairing failed. Call() will generate an exception because the code is != 200, so we convert
+                //that back into a false return value for our caller.
+                if (ex.Code == HttpResponseCode.ACCESS_DENIED)
+                    return false;
+                else throw;
+            }
         }
     }
 }

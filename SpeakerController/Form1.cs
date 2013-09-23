@@ -180,10 +180,14 @@ namespace SpeakerController
             try
             {
                 res = c.Pair(challenge, sig);
+                if (res)
+                    MessageBox.Show("Pairing succeeded.");
+                else
+                    MessageBox.Show("Pairing failed.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch (ServiceException ex)
             {
-                MessageBox.Show("Pairing failed with error code " + ex.Code + ". Check the error log on the target device for more information (look for LibService errors).", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Pairing failed with error code " + ex.Code + ".", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
