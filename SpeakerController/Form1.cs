@@ -25,6 +25,7 @@ namespace SpeakerController
         private CertManager cert;
         private List<IPEndPoint> Receivers = new List<IPEndPoint>();
         private Trace Log;
+        private SSDPClient ssdpc;
 
         public Form1()
         {
@@ -57,10 +58,10 @@ namespace SpeakerController
         {
             lstDevices.Items.Clear();
             Receivers.Clear();
-            SSDPClient c = new SSDPClient();
-            c.OnResponsePacketReceived += c_OnResponsePacketReceived;
-            c.OnAnnouncePacketReceived += c_OnResponsePacketReceived;
-            c.StartDiscovery();
+            ssdpc = new SSDPClient();
+            ssdpc.OnResponsePacketReceived += c_OnResponsePacketReceived;
+            ssdpc.OnAnnouncePacketReceived += c_OnResponsePacketReceived;
+            ssdpc.StartDiscovery();
         }
 
         //this is called by the receiver thread, hence the Invoke().
@@ -191,6 +192,11 @@ namespace SpeakerController
             {
                 MessageBox.Show("Pairing failed with error code " + ex.Code + ".", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            ssdpc.Stop();
         }
     }
 

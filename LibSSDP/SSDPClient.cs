@@ -17,6 +17,7 @@ namespace LibSSDP
         public event ResponsePacketReceived OnAnnouncePacketReceived;
 
         private Thread announceListenerThread, responseHandlerThread;
+        private bool shuttingDown = false;
 
         public SSDPClient()
         {
@@ -28,40 +29,36 @@ namespace LibSSDP
         {
             SSDPSearchPacket p = SSDPSearchPacket.Build();
             p.Send(sender);
-            responseHandlerThread = new Thread(SenderResponseHandler);
+            responseHandlerThread = new Thread(SSDPClientThreadProc);
             responseHandlerThread.Name = "SSDP Response Processor";
-            responseHandlerThread.Start();
+            responseHandlerThread.Start(sender);
 
-            announceListenerThread = new Thread(AnnounceListenerResponseHandler);
+            announceListenerThread = new Thread(SSDPClientThreadProc);
             announceListenerThread.Name = "SSDP Announce Listener";
-            announceListenerThread.Start();
+            announceListenerThread.Start(listener);
         }
 
-        private void SenderResponseHandler()
+        private void SSDPClientThreadProc(object o)
         {
             byte[] data;
             IPEndPoint remoteEP = null;
+            UdpClient c = o as UdpClient;
+            c.Client.ReceiveTimeout = 1000; //force the loop to run each second so we can exit the thread when we need to
             while (true)
             {
-                data = sender.Receive(ref remoteEP);
                 try
                 {
-                    ParsePacket(data, remoteEP);
+                    if (shuttingDown)
+                        return;
+                    data = c.Receive(ref remoteEP);
                 }
-                catch (Exception ex)
+                catch (SocketException ex)
                 {
-                    Log.Verbose("Invalid packet received. Ignoring...");
+                    if (ex.SocketErrorCode == SocketError.TimedOut)
+                        continue;
+                    else throw;
                 }
-            }
-        }
 
-        private void AnnounceListenerResponseHandler()
-        {
-            byte[] data;
-            IPEndPoint remoteEP = null;
-            while (true)
-            {
-                data = listener.Receive(ref remoteEP);
                 try
                 {
                     ParsePacket(data, remoteEP);
@@ -112,10 +109,7 @@ namespace LibSSDP
 
         public void Stop()
         {
-            if (responseHandlerThread != null)
-                responseHandlerThread.Abort();
-            if (announceListenerThread != null)
-                announceListenerThread.Abort();
+            shuttingDown = true; //no locking needed since it's only ever written here.
         }
     }
 
