@@ -24,7 +24,7 @@ namespace SpeakerController
         private KeyManager key;
         private CertManager cert;
         private List<IPEndPoint> Receivers = new List<IPEndPoint>();
-        private Trace Log = Trace.GetInstance("SpeakerController");
+        private Trace Log;
 
         public Form1()
         {
@@ -133,6 +133,7 @@ namespace SpeakerController
         private void Setup()
         {
             LibTrace.Trace.ExtraListeners.Add(new DataGridTraceListener(this, dGridTrace));
+            Log = Trace.GetInstance("SpeakerController");
             Util.CreateItems();
             Config.LoadTrustedKeys();
         }
