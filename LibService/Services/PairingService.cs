@@ -32,7 +32,7 @@ namespace LibService
                 //Full logging is still done on the service host side though, so legitimate users can try and debug.
                 case "Pair":
                     bool valid;
-                    var recv = JsonConvert.DeserializeObject<Tuple<byte[], byte[]>>(m.Data); //tuple<challenge, sig>
+                    var recv = JsonConvert.DeserializeObject<Tuple<byte[], byte[], byte[]>>(m.Data); //tuple<challenge, sig, challenge2>
                     byte[] expectedsig;
                     lock (GeneratedChallenges)
                     {
@@ -52,7 +52,8 @@ namespace LibService
                     if (valid)
                     {
                         TrustedKeys.Add(remoteParty); //we now trust the other end of the connection since they answered our challenge correctly.
-                        return new ServiceMessageResponse("True", HttpResponseCode.OK);
+                        byte[] response2 = new ChallengeResponse(recv.Item3).Sign(Config.Get(Config.PAIRING_KEY)); //compute r2 to send back
+                        return new ServiceMessageResponse(JsonConvert.SerializeObject(response2), HttpResponseCode.OK);
                     }
 
 
@@ -61,7 +62,7 @@ namespace LibService
                             .Error("Incorrect signature in pairing request. Expected " +
                                     LibUtil.Util.BytesToHexString(expectedsig)
                                     + " got " + LibUtil.Util.BytesToHexString(recv.Item2));
-                    return new ServiceMessageResponse("False", HttpResponseCode.ACCESS_DENIED);
+                    return new ServiceMessageResponse("", HttpResponseCode.ACCESS_DENIED);
                     
 
                 case "GetPairingChallenge":

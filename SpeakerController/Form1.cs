@@ -181,10 +181,7 @@ namespace SpeakerController
             {
                 res = c.Pair(challenge, sig);
                 if (res)
-                {
                     MessageBox.Show("Pairing succeeded.");
-                    TrustedKeys.Add(ssl.GetRemoteCert()); //for now the check is only 1-way. we only trust the receiver because the user said so. TODO: 2-way auth (we make receiver answer a challenge too).
-                }
                 else
                     MessageBox.Show("Pairing failed.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

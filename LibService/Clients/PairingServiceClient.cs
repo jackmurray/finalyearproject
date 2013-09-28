@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Security;
 using System.Text;
+using LibConfig;
+using LibSecurity;
 using Newtonsoft.Json;
 
 namespace LibService
@@ -25,10 +27,17 @@ namespace LibService
         {
             try
             {
-                var data = new Tuple<byte[], byte[]>(challenge, sig);
+                ChallengeResponse cr = new ChallengeResponse();
+                var data = new Tuple<byte[], byte[], byte[]>(challenge, sig, cr.ChallengeBytes);
                 ServiceMessage m = new ServiceMessage("PairingService", "Pair", JsonConvert.SerializeObject(data));
                 ServiceMessageResponse response = Call(m);
-                return bool.Parse(response.Data);
+                bool correct =  cr.Verify(Config.Get(Config.PAIRING_KEY), JsonConvert.DeserializeObject<byte[]>(response.Data));
+                if (correct)
+                {
+                    TrustedKeys.Add(_s.RemoteCertificate);
+                    return true;
+                }
+                return false;
             }
             catch (ServiceException ex)
             {
