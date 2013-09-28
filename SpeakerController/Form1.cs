@@ -195,6 +195,11 @@ namespace SpeakerController
         {
             ssdpc.Stop();
         }
+
+        private void btnListPairedDevices_Click(object sender, EventArgs e)
+        {
+            new frmPairedDevices().ShowDialog();
+        }
     }
 
     public class DataGridTraceListener : TraceListener

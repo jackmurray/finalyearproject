@@ -40,6 +40,7 @@
             this.ID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Message = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.splitter1 = new System.Windows.Forms.Splitter();
+            this.btnListPairedDevices = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dGridTrace)).BeginInit();
             this.SuspendLayout();
             // 
@@ -82,11 +83,11 @@
             // 
             // btnTrustDevice
             // 
-            this.btnTrustDevice.Location = new System.Drawing.Point(109, 225);
+            this.btnTrustDevice.Location = new System.Drawing.Point(223, 12);
             this.btnTrustDevice.Name = "btnTrustDevice";
             this.btnTrustDevice.Size = new System.Drawing.Size(75, 23);
             this.btnTrustDevice.TabIndex = 6;
-            this.btnTrustDevice.Text = "Trust Device";
+            this.btnTrustDevice.Text = "Pair";
             this.btnTrustDevice.UseVisualStyleBackColor = true;
             this.btnTrustDevice.Click += new System.EventHandler(this.btnGetCert_Click);
             // 
@@ -160,11 +161,22 @@
             this.splitter1.TabIndex = 9;
             this.splitter1.TabStop = false;
             // 
+            // btnListPairedDevices
+            // 
+            this.btnListPairedDevices.Location = new System.Drawing.Point(223, 38);
+            this.btnListPairedDevices.Name = "btnListPairedDevices";
+            this.btnListPairedDevices.Size = new System.Drawing.Size(109, 23);
+            this.btnListPairedDevices.TabIndex = 10;
+            this.btnListPairedDevices.Text = "List Paired Devices";
+            this.btnListPairedDevices.UseVisualStyleBackColor = true;
+            this.btnListPairedDevices.Click += new System.EventHandler(this.btnListPairedDevices_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(832, 464);
+            this.Controls.Add(this.btnListPairedDevices);
             this.Controls.Add(this.splitter1);
             this.Controls.Add(this.dGridTrace);
             this.Controls.Add(this.lstDevices);
@@ -197,6 +209,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ID;
         private System.Windows.Forms.DataGridViewTextBoxColumn Message;
         private System.Windows.Forms.Splitter splitter1;
+        private System.Windows.Forms.Button btnListPairedDevices;
     }
 }
 

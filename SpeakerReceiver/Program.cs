@@ -20,6 +20,8 @@ namespace SpeakerReceiver
         private static void Main(string[] args)
         {
             Setup();
+            if (args.Length > 0)
+                ProcessArgs(args);
             Console.WriteLine("Build Flavour: " + GetBuildFlavour());
             foreach (Assembly a in Util.GetLoadedAssemblies())
                 Log.Verbose(a.GetName().Name + "-" + a.GetName().Version);
@@ -83,6 +85,25 @@ namespace SpeakerReceiver
         private static Version GetBuildVersion()
         {
             return System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
+        }
+
+        private static void ProcessArgs(string[] args)
+        {
+            if (args[0] == "--list-pairings")
+            {
+                var keys = TrustedKeys.GetAllKeys();
+                for (int i = 0; i < keys.Count; i++)
+                    Console.WriteLine(i + ": " + keys[i]);
+                Environment.Exit(0);
+            }
+            if (args[0] == "--delete-pairing")
+            {
+                if (args.Length != 2)
+                    throw new ArgumentException("Must provide cert index to delete");
+                int i = int.Parse(args[1]);
+                TrustedKeys.Remove(i);
+                Environment.Exit(0);
+            }
         }
     }
 }
