@@ -42,7 +42,7 @@ namespace LibConfig
 
         public static List<string> GetAllKeys()
         {
-            return new List<string>(KeyList);
+            return new List<string>(KeyList); //We return a new list rather than our internal one so we don't leak the reference outside the class.
         }
 
         public static X509Certificate Get(string key)
