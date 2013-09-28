@@ -56,5 +56,21 @@ namespace LibConfig
             fs.Read(buf, 0, (int)fs.Length);
             return new X509Certificate(buf);
         }
+
+        /// <summary>
+        /// Remove the key at index i in the internal array.
+        /// </summary>
+        /// <param name="i"></param>
+        public static void Remove(int i)
+        {
+            KeyList.RemoveAt(i);
+            Config.SaveTrustedKeys();
+        }
+
+        public static void Remove(string fingerprint)
+        {
+            KeyList.Remove(fingerprint);
+            Config.SaveTrustedKeys();
+        }
     }
 }
