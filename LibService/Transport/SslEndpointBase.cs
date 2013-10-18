@@ -53,7 +53,7 @@ namespace LibService
                 return false;
             }
 
-            Log.Information((isServer ? "Server" : "Client") + " cert: " + certificate.Subject);
+            Log.Information((isServer ? "Server" : "Client") + " cert: " + certificate.GetCertHashString());
             return true;
         }
     }
