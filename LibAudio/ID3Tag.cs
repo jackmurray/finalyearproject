@@ -25,7 +25,7 @@ namespace LibAudio
         {
             if (!CheckMagic())
                 throw new FormatException("Tried to parse a stream that didn't have an ID3 header!");
-
+            Skip(MAGIC.Length);
             MajorVersion = Read(1)[0];
             MinorVersion = Read(1)[0];
             Flags = Read(1)[0];

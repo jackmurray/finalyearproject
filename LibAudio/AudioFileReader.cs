@@ -10,6 +10,9 @@ namespace LibAudio
     {
         protected Stream _s;
 
+        public BitRate BitRate;
+        public Frequency Frequency;
+
         protected AudioFileReader(Stream s)
         {
             _s = s;
@@ -25,7 +28,7 @@ namespace LibAudio
             return ret;
         }
 
-        protected void Reset()
+        public void Reset()
         {
             _s.Position = 0;
         }
@@ -33,17 +36,18 @@ namespace LibAudio
         protected bool CheckBytes(byte[] expect)
         {
             byte[] read = Read(expect.Length);
+            this.SkipBack(expect.Length);
             if (expect.SequenceEqual(read))
                 return true;
             else return false;
         }
 
-        protected void Skip(int bytes)
+        public void Skip(int bytes)
         {
             _s.Seek(bytes, SeekOrigin.Current);
         }
 
-        protected void SkipBack(int bytes)
+        public void SkipBack(int bytes)
         {
             _s.Seek(-bytes, SeekOrigin.Current);
         }

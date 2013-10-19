@@ -206,12 +206,15 @@ namespace SpeakerController
         private void btnOpenFile_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            DialogResult r = ofd.ShowDialog();
-            if (r == DialogResult.OK)
+            DialogResult res = ofd.ShowDialog();
+            if (res == DialogResult.OK)
             {
                 Stream s = File.OpenRead(ofd.FileName);
-                MP3Format mp3 = new MP3Format(s);
-                mp3.Parse();
+                AudioFileReader r = SupportedAudio.FindReaderForFile(s);
+                if (r != null)
+                {
+                    MessageBox.Show(r.BitRate.ToString());
+                }
             }
         }
     }
