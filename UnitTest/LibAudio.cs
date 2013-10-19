@@ -26,15 +26,24 @@ namespace UnitTest
         [TestMethod]
         public void MP3WithID3Header()
         {
-            MP3Format mp3 = new MP3Format(File.OpenRead("D:\\Music\\Lacuna Coil\\Dark Adrenaline\\End of Time.mp3"));
+            Stream s = File.OpenRead("D:\\Music\\Lacuna Coil\\Dark Adrenaline\\End of Time.mp3");
+            ID3Tag t = new ID3Tag(s);
+            t.Parse();
+            MP3Format mp3 = new MP3Format(s);
+            mp3.Skip((int)t.Size);
             mp3.Parse();
-            Assert.AreEqual(mp3.BitRate, BitRate.OneHundredNinetyTwo);
-            Assert.AreEqual(mp3.Frequency, Frequency.FourtyFourPointOne);
+            Assert.AreEqual(mp3.BitRate, 192000);
+            Assert.AreEqual(mp3.Frequency, 44100);
+            s.Close();
 
-            mp3 = new MP3Format(File.OpenRead("D:\\Music\\Icon For Hire\\Scripted\\The Grey.mp3"));
+            s = File.OpenRead("D:\\Music\\Icon For Hire\\Scripted\\The Grey.mp3");
+            t = new ID3Tag(s);
+            t.Parse();
+            mp3 = new MP3Format(s);
+            mp3.Skip((int)t.Size);
             mp3.Parse();
-            Assert.AreEqual(mp3.BitRate, BitRate.ThreeHundredTwenty);
-            Assert.AreEqual(mp3.Frequency, Frequency.FourtyFourPointOne);
+            Assert.AreEqual(mp3.BitRate, 320000);
+            Assert.AreEqual(mp3.Frequency, 44100);
         }
     }
 }

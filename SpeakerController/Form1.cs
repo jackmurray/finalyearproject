@@ -214,6 +214,7 @@ namespace SpeakerController
                 if (r != null)
                 {
                     MessageBox.Show(r.BitRate.ToString());
+                    MessageBox.Show(r.Frequency.ToString());
                 }
             }
         }

@@ -10,8 +10,8 @@ namespace LibAudio
     {
         protected Stream _s;
 
-        public BitRate BitRate;
-        public Frequency Frequency;
+        public int BitRate;
+        public int Frequency;
 
         protected AudioFileReader(Stream s)
         {

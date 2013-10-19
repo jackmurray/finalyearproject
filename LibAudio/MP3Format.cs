@@ -14,6 +14,19 @@ namespace LibAudio
 
         }
 
+        private int[] FrequencyLookup = {44100, 48000, 32000};
+
+        private int[] BitRateLookup =
+            {
+                0, 32000, 40000, 48000, 56000, 64000, 80000, 96000, 112000, 128000, 160000,
+                192000, 224000, 256000, 320000
+            }; //values start at 1 for some reason
+
+        public int BytesPerFrame {
+            get { return (int)Math.Round((double)(1152*(BitRate/Frequency))/8); } //1152 is a magic value for MP3. There's always 1152 samples per frame.
+                                                         //Bitrate*Freq is the number of bits/sample, and the 8 is for bits -> bytes.
+        }
+
         /// <summary>
         /// Parses the input stream and extracts data from it.
         /// </summary>
@@ -24,14 +37,9 @@ namespace LibAudio
                 throw new FormatException("Expected MP3 header but didn't get one!");
 
             byte b = Read(1)[0];
-            int bitrate = (b & 0xF0) >> 4;
-                //Mask out the bits we want, and shift them over so we get the 'real' value (as if we'd just read that value and not masked it out).
-            if (!Enum.TryParse(bitrate.ToString(), out BitRate))
-                throw new FormatException("Invalid bitrate in input.");
-            int freq = (b & 0x0C) >> 2;
-            if (!Enum.TryParse(freq.ToString(), out Frequency))
-                throw new FormatException("Invalid frequency in input.");
+            this.BitRate = BitRateLookup[(b & 0xF0) >> 4]; //Mask out the bits we want, and shift them over so we get the 'real' value (as if we'd just read that value and not masked it out).
 
+            this.Frequency = FrequencyLookup[(b & 0x0C) >> 2];
         }
 
         public override bool CheckMagic()

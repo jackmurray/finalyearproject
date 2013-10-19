@@ -30,7 +30,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AudioConstants.cs" />
     <Compile Include="AudioFileReader.cs" />
     <Compile Include="ID3Tag.cs" />
     <Compile Include="MP3Format.cs" />
