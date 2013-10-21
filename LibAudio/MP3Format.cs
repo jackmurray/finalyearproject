@@ -59,6 +59,14 @@ namespace LibAudio
             else return false;
         }
 
+        public void EatGarbageData() //this will fail horribly if used on a non-mp3 stream.
+        {
+            while (!CheckMagic())
+            {
+                Skip(1);
+            }
+        }
+
         private bool CheckMagicAndEat()
         {
             bool res = CheckMagic();
