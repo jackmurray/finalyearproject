@@ -16,6 +16,8 @@ namespace LibAudio
 
         private int[] FrequencyLookup = {44100, 48000, 32000};
 
+        private bool Padding;
+
         private int[] BitRateLookup =
             {
                 0, 32000, 40000, 48000, 56000, 64000, 80000, 96000, 112000, 128000, 160000,
@@ -23,8 +25,9 @@ namespace LibAudio
             }; //values start at 1 for some reason
 
         public int BytesPerFrame {
-            get { return (int)Math.Round((double)(1152*(BitRate/Frequency))/8); } //1152 is a magic value for MP3. There's always 1152 samples per frame.
-                                                         //Bitrate*Freq is the number of bits/sample, and the 8 is for bits -> bytes.
+            get { double val = 144 * ((double)BitRate / Frequency); //need to force floating point math because we need the intermediate decimal
+                return (int)(val + (Padding ? 1 : 0)); 
+            }
         }
 
         /// <summary>
@@ -40,6 +43,7 @@ namespace LibAudio
             this.BitRate = BitRateLookup[(b & 0xF0) >> 4]; //Mask out the bits we want, and shift them over so we get the 'real' value (as if we'd just read that value and not masked it out).
 
             this.Frequency = FrequencyLookup[(b & 0x0C) >> 2];
+            this.Padding = ((b & 0x02) >> 1) == 1;
         }
 
         public override bool CheckMagic()
