@@ -20,6 +20,7 @@ namespace LibAudio
 
         public abstract void Parse();
         public abstract bool CheckMagic();
+        public abstract byte[] GetFrame();
 
         protected byte[] Read(int numBytes)
         {
@@ -54,6 +55,11 @@ namespace LibAudio
 
         public long Position {
             get { return _s.Position; }
+        }
+
+        public bool EndOfFile()
+        {
+            return _s.Position == _s.Length - 1;
         }
     }
 }

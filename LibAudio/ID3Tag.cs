@@ -56,5 +56,10 @@ namespace LibAudio
 
             return size;
         }
+
+        public override byte[] GetFrame()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

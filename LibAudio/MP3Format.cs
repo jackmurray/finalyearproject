@@ -14,15 +14,15 @@ namespace LibAudio
 
         }
 
-        private int[] FrequencyLookup = {44100, 48000, 32000};
-
-        private bool Padding;
-
-        private int[] BitRateLookup =
+        private const int MP3_HEADER_SIZE = 4;
+        private readonly int[] FrequencyLookup = {44100, 48000, 32000};
+        private readonly int[] BitRateLookup =
             {
                 0, 32000, 40000, 48000, 56000, 64000, 80000, 96000, 112000, 128000, 160000,
                 192000, 224000, 256000, 320000
             }; //values start at 1 for some reason
+
+        private bool Padding;
 
         public int BytesPerFrame {
             get { double val = 144 * ((double)BitRate / Frequency); //need to force floating point math because we need the intermediate decimal
@@ -73,6 +73,18 @@ namespace LibAudio
             if (res)
                 Skip(2);
             return res;
+        }
+
+        public override byte[] GetFrame()
+        {
+            byte[] buf = this.Read(this.BytesPerFrame - MP3_HEADER_SIZE); //the calculated bytes/frame includes the header length
+            if (!this.EndOfFile())
+            {
+                this.EatGarbageData(); //there may or may not be garbage data so we'll chomp 0+ bytes until we hit a header.
+                this.Parse(); //read the next header in case it's got a different padding setting.
+            }
+
+            return buf;
         }
     }
 }

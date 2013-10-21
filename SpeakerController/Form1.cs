@@ -216,6 +216,13 @@ namespace SpeakerController
                     MessageBox.Show(r.BitRate.ToString());
                     MessageBox.Show(r.Frequency.ToString());
                     MessageBox.Show((r as MP3Format).BytesPerFrame.ToString());
+                    int i = 0;
+                    while (!r.EndOfFile())
+                    {
+                        r.GetFrame();
+                        i++;
+                    }
+                    MessageBox.Show(i.ToString());
                 }
             }
         }
