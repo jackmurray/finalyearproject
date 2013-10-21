@@ -3,24 +3,20 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using LibTrace;
 
 namespace LibAudio
 {
     public abstract class AudioFileReader
     {
         protected Stream _s;
-
-        public int BitRate;
-        public int Frequency;
+        protected Trace _trace;
 
         protected AudioFileReader(Stream s)
         {
             _s = s;
+            _trace = Trace.GetInstance("LibAudio");
         }
-
-        public abstract void Parse();
-        public abstract bool CheckMagic();
-        public abstract byte[] GetFrame();
 
         protected byte[] Read(int numBytes)
         {

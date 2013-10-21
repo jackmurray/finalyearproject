@@ -21,7 +21,7 @@ namespace LibAudio
 
         }
 
-        public override void Parse()
+        public void Parse()
         {
             if (!CheckMagic())
                 throw new FormatException("Tried to parse a stream that didn't have an ID3 header!");
@@ -32,7 +32,7 @@ namespace LibAudio
             Size = ID3SizeFieldToInt(Read(4));
         }
 
-        public override bool CheckMagic()
+        public bool CheckMagic()
         {
             return CheckBytes(MAGIC);
         }
@@ -55,11 +55,6 @@ namespace LibAudio
             size += (uint)data[0] << 21;
 
             return size;
-        }
-
-        public override byte[] GetFrame()
-        {
-            throw new NotImplementedException();
         }
     }
 }

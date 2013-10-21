@@ -6,13 +6,16 @@ using System.Text;
 
 namespace LibAudio
 {
-    public class MP3Format : AudioFileReader
+    public class MP3Format : AudioFileReader, IAudioFormat
     {
         public MP3Format(Stream s)
             : base(s)
         {
 
         }
+
+        public int BitRate { get; private set; }
+        public int Frequency { get; private set; }
 
         private const int MP3_HEADER_SIZE = 4;
         private readonly int[] FrequencyLookup = {44100, 48000, 32000};
@@ -34,7 +37,7 @@ namespace LibAudio
         /// Parses the input stream and extracts data from it.
         /// </summary>
         /// <exception cref="FormatException">For invalid header formats.</exception>
-        public override void Parse()
+        public void Parse()
         {
             if (!CheckMagicAndEat())
                 throw new FormatException("Expected MP3 header but didn't get one!");
@@ -46,7 +49,7 @@ namespace LibAudio
             this.Padding = ((b & 0x02) >> 1) == 1;
         }
 
-        public override bool CheckMagic()
+        public bool CheckMagic()
         {
             byte[] MAGIC_1 = new byte[] {0xFF, 0xFB};
                 //The 12 '1' bits (FFF) are the MP3 sync bits, and the B means MPEG-1 Layer 3 no error protection
@@ -75,7 +78,7 @@ namespace LibAudio
             return res;
         }
 
-        public override byte[] GetFrame()
+        public byte[] GetFrame()
         {
             byte[] buf = this.Read(this.BytesPerFrame - MP3_HEADER_SIZE); //the calculated bytes/frame includes the header length
             if (!this.EndOfFile())
@@ -85,6 +88,21 @@ namespace LibAudio
             }
 
             return buf;
+        }
+
+        public byte[] GetDataForTime(float time)
+        {
+            //assume that the sample frequency never changes in the file. should always be the case.
+            int numFrames = (int)time*(this.Frequency/1152); //truncate, so we will probably be a little bit under what was asked for.
+            _trace.Verbose(time + " seconds asked for = " + numFrames + " MP3 frames");
+            MemoryStream ms = new MemoryStream(); //do it this way so that we can handle variable bitrate frames where we can't math the size ahead of time.
+            for (int i = 0; i < numFrames; i++)
+            {
+                byte[] temp = GetFrame();
+                ms.Write(temp, 0, temp.Length);
+            }
+
+            return ms.ToArray();
         }
     }
 }

@@ -14,24 +14,25 @@ namespace LibAudio
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static AudioFileReader FindReaderForFile(Stream s)
+        public static IAudioFormat FindReaderForFile(Stream s)
         {
-            AudioFileReader r = new ID3Tag(s);
-            if (r.CheckMagic())
+            ID3Tag id3 = new ID3Tag(s);
+            if (id3.CheckMagic())
             {
-                r.Parse();
-                r.Skip((int)(r as ID3Tag).Size);
+                id3.Parse();
+                id3.Skip((int)id3.Size);
             }
-            long pos = r.Position; //save this position so we can jump back here if an attempt fails.
+            long pos = id3.Position; //save this position so we can jump back here if an attempt fails.
 
+            IAudioFormat audio;
             MP3Format mp3 = new MP3Format(s);
             mp3.EatGarbageData();
             if (!mp3.CheckMagic())
                 return null;
-            r = mp3;
+            audio = mp3;
 
-            r.Parse();
-            return r;
+            audio.Parse();
+            return audio;
         }
     }
 }

@@ -210,7 +210,7 @@ namespace SpeakerController
             if (res == DialogResult.OK)
             {
                 Stream s = File.OpenRead(ofd.FileName);
-                AudioFileReader r = SupportedAudio.FindReaderForFile(s);
+                IAudioFormat r = SupportedAudio.FindReaderForFile(s);
                 if (r != null)
                 {
                     MessageBox.Show(r.BitRate.ToString());
