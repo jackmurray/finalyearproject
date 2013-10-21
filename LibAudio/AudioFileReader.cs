@@ -51,5 +51,9 @@ namespace LibAudio
         {
             _s.Seek(-bytes, SeekOrigin.Current);
         }
+
+        public long Position {
+            get { return _s.Position; }
+        }
     }
 }

@@ -22,10 +22,13 @@ namespace LibAudio
                 r.Parse();
                 r.Skip((int)(r as ID3Tag).Size);
             }
+            long pos = r.Position; //save this position so we can jump back here if an attempt fails.
 
-            r = new MP3Format(s);
-            if (!r.CheckMagic())
+            MP3Format mp3 = new MP3Format(s);
+            mp3.EatGarbageData();
+            if (!mp3.CheckMagic())
                 return null;
+            r = mp3;
 
             r.Parse();
             return r;
