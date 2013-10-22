@@ -216,13 +216,14 @@ namespace SpeakerController
                     MessageBox.Show(r.BitRate.ToString());
                     MessageBox.Show(r.Frequency.ToString());
                     MessageBox.Show((r as MP3Format).BytesPerFrame.ToString());
-                    int i = 0;
+                    float i = 0;
+                    int count = 0;
                     while (!r.EndOfFile())
                     {
-                        r.GetFrame();
-                        i++;
+                        i += r.GetDataForTime(0.01f).Item1;
+                        count++;
                     }
-                    MessageBox.Show(i.ToString());
+                    MessageBox.Show("Asked for " + count*0.01f + " seconds, got " + i);
                 }
             }
         }

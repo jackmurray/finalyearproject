@@ -10,7 +10,7 @@ namespace LibAudio
         void Parse();
         bool CheckMagic();
         byte[] GetFrame();
-        byte[] GetDataForTime(float time);
+        Tuple<float, byte[]> GetDataForTime(float time);
         bool EndOfFile();
 
         int BitRate {get;}
