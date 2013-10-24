@@ -37,7 +37,7 @@ namespace LibConfig
 
         public static bool Contains(string fingerprint)
         {
-            return KeyList.Contains(fingerprint);
+            return KeyList.Contains(fingerprint.ToLower());
         }
 
         public static List<string> GetAllKeys()
