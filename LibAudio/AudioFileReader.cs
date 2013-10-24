@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using LibTrace;
 
 namespace LibAudio
 {
     public abstract class AudioFileReader
     {
         protected Stream _s;
+        protected Trace _trace;
 
         protected AudioFileReader(Stream s)
         {
             _s = s;
+            _trace = Trace.GetInstance("LibAudio");
         }
-
-        public abstract void Parse();
-        public abstract bool CheckMagic();
 
         protected byte[] Read(int numBytes)
         {
@@ -25,7 +25,7 @@ namespace LibAudio
             return ret;
         }
 
-        protected void Reset()
+        public void Reset()
         {
             _s.Position = 0;
         }
@@ -33,19 +33,29 @@ namespace LibAudio
         protected bool CheckBytes(byte[] expect)
         {
             byte[] read = Read(expect.Length);
+            this.SkipBack(expect.Length);
             if (expect.SequenceEqual(read))
                 return true;
             else return false;
         }
 
-        protected void Skip(int bytes)
+        public void Skip(int bytes)
         {
             _s.Seek(bytes, SeekOrigin.Current);
         }
 
-        protected void SkipBack(int bytes)
+        public void SkipBack(int bytes)
         {
             _s.Seek(-bytes, SeekOrigin.Current);
+        }
+
+        public long Position {
+            get { return _s.Position; }
+        }
+
+        public bool EndOfFile()
+        {
+            return _s.Position == _s.Length - 1;
         }
     }
 }

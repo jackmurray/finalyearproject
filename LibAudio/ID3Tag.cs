@@ -21,18 +21,18 @@ namespace LibAudio
 
         }
 
-        public override void Parse()
+        public void Parse()
         {
             if (!CheckMagic())
                 throw new FormatException("Tried to parse a stream that didn't have an ID3 header!");
-
+            Skip(MAGIC.Length);
             MajorVersion = Read(1)[0];
             MinorVersion = Read(1)[0];
             Flags = Read(1)[0];
             Size = ID3SizeFieldToInt(Read(4));
         }
 
-        public override bool CheckMagic()
+        public bool CheckMagic()
         {
             return CheckBytes(MAGIC);
         }

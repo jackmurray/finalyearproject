@@ -4,12 +4,14 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using LibAudio;
 using LibConfig;
 using LibSSDP;
 using LibSecurity;
@@ -199,6 +201,30 @@ namespace SpeakerController
         private void btnListPairedDevices_Click(object sender, EventArgs e)
         {
             new frmPairedDevices().ShowDialog();
+        }
+
+        private void btnOpenFile_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            DialogResult res = ofd.ShowDialog();
+            if (res == DialogResult.OK)
+            {
+                Stream s = File.OpenRead(ofd.FileName);
+                IAudioFormat r = SupportedAudio.FindReaderForFile(s);
+                if (r != null)
+                {
+                    MessageBox.Show(r.BitRate.ToString());
+                    MessageBox.Show(r.Frequency.ToString());
+                    MessageBox.Show((r as MP3Format).BytesPerFrame.ToString());
+                    int i = 0;
+                    while (!r.EndOfFile())
+                    {
+                        r.GetFrame();
+                        i++;
+                    }
+                    MessageBox.Show(i.ToString());
+                }
+            }
         }
     }
 

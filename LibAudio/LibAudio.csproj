@@ -31,9 +31,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AudioFileReader.cs" />
+    <Compile Include="IAudioFormat.cs" />
     <Compile Include="ID3Tag.cs" />
     <Compile Include="MP3Format.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SupportedAudio.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LibTrace\LibTrace.csproj">
+      <Project>{aaa4347e-a677-438e-97da-bc8fb2f57822}</Project>
+      <Name>LibTrace</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

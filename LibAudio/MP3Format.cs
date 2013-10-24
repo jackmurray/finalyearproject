@@ -6,90 +6,103 @@ using System.Text;
 
 namespace LibAudio
 {
-    public class MP3Format : AudioFileReader
+    public class MP3Format : AudioFileReader, IAudioFormat
     {
-        public BitRate BitRate;
-        public Frequency Frequency;
-
-        public MP3Format(Stream s) : base(s)
+        public MP3Format(Stream s)
+            : base(s)
         {
 
+        }
+
+        public int BitRate { get; private set; }
+        public int Frequency { get; private set; }
+
+        private const int MP3_HEADER_SIZE = 4;
+        private readonly int[] FrequencyLookup = {44100, 48000, 32000};
+        private readonly int[] BitRateLookup =
+            {
+                0, 32000, 40000, 48000, 56000, 64000, 80000, 96000, 112000, 128000, 160000,
+                192000, 224000, 256000, 320000
+            }; //values start at 1 for some reason
+
+        private bool Padding;
+
+        public int BytesPerFrame {
+            get { double val = 144 * ((double)BitRate / Frequency); //need to force floating point math because we need the intermediate decimal
+                return (int)(val + (Padding ? 1 : 0)); 
+            }
         }
 
         /// <summary>
         /// Parses the input stream and extracts data from it.
         /// </summary>
         /// <exception cref="FormatException">For invalid header formats.</exception>
-        public override void Parse()
+        public void Parse()
         {
-            HeaderType t = DetermineType();
-            if (t == HeaderType.ID3)
-            {
-                Reset();
-                ID3Tag tag = new ID3Tag(_s);
-                tag.Parse();
-                Skip((int)tag.Size); //Skip over the rest of the ID3 header. We should now be pointing to the MP3 header, so we'll go ahead and parse that now.
-            }
-            if (!CheckMagic())
+            if (!CheckMagicAndEat())
                 throw new FormatException("Expected MP3 header but didn't get one!");
 
             byte b = Read(1)[0];
-            int bitrate = (b & 0xF0) >> 4; //Mask out the bits we want, and shift them over so we get the 'real' value (as if we'd just read that value and not masked it out).
-            if (!Enum.TryParse(bitrate.ToString(), out BitRate))
-                throw new FormatException("Invalid bitrate in input.");
-            int freq = (b & 0x0C) >> 2;
-            if (!Enum.TryParse(freq.ToString(), out Frequency))
-                throw new FormatException("Invalid frequency in input.");
-            
+            this.BitRate = BitRateLookup[(b & 0xF0) >> 4]; //Mask out the bits we want, and shift them over so we get the 'real' value (as if we'd just read that value and not masked it out).
+
+            this.Frequency = FrequencyLookup[(b & 0x0C) >> 2];
+            this.Padding = ((b & 0x02) >> 1) == 1;
         }
 
-        public override bool CheckMagic()
+        public bool CheckMagic()
         {
-            byte[] MAGIC_1 = new byte[] { 0xFF, 0xFB }; //The 12 '1' bits (FFF) are the MP3 sync bits, and the B means MPEG-1 Layer 3 no error protection
-            byte[] MAGIC_2 = new byte[] { 0xFF, 0xFA }; //A = with error protection
+            byte[] MAGIC_1 = new byte[] {0xFF, 0xFB};
+                //The 12 '1' bits (FFF) are the MP3 sync bits, and the B means MPEG-1 Layer 3 no error protection
+            byte[] MAGIC_2 = new byte[] {0xFF, 0xFA}; //A = with error protection
 
-            byte[] read = Read(2);
-            if (read.SequenceEqual(MAGIC_1))
+            if (CheckBytes(MAGIC_1))
                 return true;
-            else if (read.SequenceEqual(MAGIC_2))
+            else if (CheckBytes(MAGIC_2))
                 return true;
             else return false;
         }
 
-        private HeaderType DetermineType()
+        public void EatGarbageData() //this will fail horribly if used on a non-mp3 stream.
         {
-            ID3Tag t = new ID3Tag(_s);
-            if (t.CheckMagic()) //We have an ID3 header.
-                return HeaderType.ID3;
-
-            Reset(); //Go back to the start of the stream so we can try again for the MP3 header.
-
-            if (CheckMagic()) //We've got an MP3 header.
-                return HeaderType.MP3;
-
-            throw new FormatException("Unsupported file type.");
+            while (!CheckMagic())
+            {
+                Skip(1);
+            }
         }
-    }
 
-    public enum HeaderType
-    {
-        ID3,
-        MP3
-    };
+        private bool CheckMagicAndEat()
+        {
+            bool res = CheckMagic();
+            if (res)
+                Skip(2);
+            return res;
+        }
 
-    /// <summary>
-    /// MP3 bitrates, in KBit/s
-    /// </summary>
-    public enum BitRate
-    {
-        ThirtyTwo = 1, Fourty, FourtyEight, FiftySix, SixtyFour, Eighty, NinetySix, OneHundredTwelve, OneHundredTwentyEight, OneHundredSixty, OneHundredNinetyTwo, TwoHundredTwentyFour, TwoHundredFiftySix, ThreeHundredTwenty
-    }
+        public byte[] GetFrame()
+        {
+            byte[] buf = this.Read(this.BytesPerFrame - MP3_HEADER_SIZE); //the calculated bytes/frame includes the header length
+            if (!this.EndOfFile())
+            {
+                this.EatGarbageData(); //there may or may not be garbage data so we'll chomp 0+ bytes until we hit a header.
+                this.Parse(); //read the next header in case it's got a different padding setting.
+            }
 
-    /// <summary>
-    /// MP3 sampling frequencies, in KHz
-    /// </summary>
-    public enum Frequency
-    {
-        FourtyFourPointOne = 0, FourtyEight, ThirtyTwo
+            return buf;
+        }
+
+        public byte[] GetDataForTime(float time)
+        {
+            //assume that the sample frequency never changes in the file. should always be the case.
+            int numFrames = (int)time*(this.Frequency/1152); //truncate, so we will probably be a little bit under what was asked for.
+            _trace.Verbose(time + " seconds asked for = " + numFrames + " MP3 frames");
+            MemoryStream ms = new MemoryStream(); //do it this way so that we can handle variable bitrate frames where we can't math the size ahead of time.
+            for (int i = 0; i < numFrames; i++)
+            {
+                byte[] temp = GetFrame();
+                ms.Write(temp, 0, temp.Length);
+            }
+
+            return ms.ToArray();
+        }
     }
 }
