@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.IO;
 using LibTrace;
+using LibConfig;
 
 namespace LibService
 {
@@ -32,8 +33,16 @@ namespace LibService
 
 
             ServiceBase service = ServiceRegistration.FindServiceForMessage(m);
+            
             if (service == null)
                 throw new Exception("No suitable service handler found.");
+
+            if (!TrustedKeys.Contains(_s.RemoteCertificate.GetCertHashString()) && service.GetType() != typeof(PairingService))
+            {
+                Log.Error("Unpaired device tried to call a privileged service operation. Device fingerprint: " + _s.RemoteCertificate.GetCertHashString() + " service:operationID=" + m.serviceID + ":" + m.operationID);
+                SendResp(new ServiceMessageResponse("Access Denied", HttpResponseCode.AUTH_REQ));
+                return -1;
+            }
 
             try
             {
