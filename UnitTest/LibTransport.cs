@@ -40,5 +40,13 @@ namespace UnitTest
             new RTPOutputStream(new IPEndPoint(IPAddress.Parse("224.0.0.0"), 80));
             new RTPOutputStream(new IPEndPoint(IPAddress.Parse("239.255.255.255"), 80));
         }
+
+        [TestMethod]
+        public void TestRTPOutputStreamSend()
+        {
+            RTPPacket p = new RTPDataPacket(false, 1, 1, 1, new byte[] {0xDE, 0xAD, 0xBE, 0xEF});
+            IPEndPoint ep = new IPEndPoint(IPAddress.Parse("224.1.1.1"), 1000);
+            new RTPOutputStream(ep).Send(p);
+        }
     }
 }
