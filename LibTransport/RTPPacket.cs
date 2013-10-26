@@ -36,11 +36,12 @@ namespace LibTransport
         {
             MemoryStream ms = new MemoryStream();
             byte byte1 = 0x00, byte2 = 0x00;
-            if (Padding) byte1 &= 0x20;
-            byte1 &= (Version << 6);
+            if (Padding) byte1 |= 0x20;
 
-            byte2 &= (byte)(PayloadType);
-            if (Marker) byte2 &= 0x80;
+            byte1 |= (Version << 6);
+
+            byte2 |= (byte)(PayloadType);
+            if (Marker) byte2 |= 0x80;
 
             ms.WriteByte(byte1);
             ms.WriteByte(byte2);

@@ -66,14 +66,15 @@ namespace LibUtil
             return BitConverter.GetBytes(IPAddress.HostToNetworkOrder(val));
         }
 
+        //There are implicit conversions from uint -> long and ushort -> int, so we take to use Skip+ToArray to get only the bytes we wanted.
         public static byte[] Encode(uint val)
         {
-            return BitConverter.GetBytes(IPAddress.HostToNetworkOrder(val));
+            return BitConverter.GetBytes(IPAddress.HostToNetworkOrder(val)).Skip(4).ToArray();
         }
 
         public static byte[] Encode(ushort val)
         {
-            return BitConverter.GetBytes(IPAddress.HostToNetworkOrder(val));
+            return BitConverter.GetBytes(IPAddress.HostToNetworkOrder(val)).Skip(2).ToArray(); 
         }
 
         public static int Decode(byte[] val)
