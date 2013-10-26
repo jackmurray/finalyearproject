@@ -66,6 +66,16 @@ namespace LibUtil
             return BitConverter.GetBytes(IPAddress.HostToNetworkOrder(val));
         }
 
+        public static byte[] Encode(uint val)
+        {
+            return BitConverter.GetBytes(IPAddress.HostToNetworkOrder(val));
+        }
+
+        public static byte[] Encode(ushort val)
+        {
+            return BitConverter.GetBytes(IPAddress.HostToNetworkOrder(val));
+        }
+
         public static int Decode(byte[] val)
         {
             return Decode(val, 0);
