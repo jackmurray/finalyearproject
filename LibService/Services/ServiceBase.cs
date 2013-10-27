@@ -27,5 +27,10 @@ namespace LibService
         {
             return new ServiceMessageResponse(msg, HttpResponseCode.INT_SRV_ERR);
         }
+
+        protected ServiceMessageResponse Success(string msg = "")
+        {
+            return new ServiceMessageResponse(msg, HttpResponseCode.OK);
+        }
     }
 }
