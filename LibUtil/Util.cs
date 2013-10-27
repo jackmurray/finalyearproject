@@ -91,5 +91,11 @@ namespace LibUtil
         {
             return AppDomain.CurrentDomain.GetAssemblies().Where(a => a.GetName().Name.StartsWith("Lib") || a.GetName().Name.StartsWith("Speaker"));
         }
+
+        public static bool IsMulticastAddress(IPAddress ip)
+        {
+            //mask out the top 4 bits of the first octet and check if they're 1110 (which for multicast, they must be).
+            return (ip.GetAddressBytes()[0] & 0xF0) == 0xE0;
+        }
     }
 }
