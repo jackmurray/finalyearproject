@@ -227,6 +227,16 @@ namespace SpeakerController
                 }
             }
         }
+
+        private void btnJoinGroup_Click(object sender, EventArgs e)
+        {
+            IPEndPoint ep = Receivers[lstDevices.SelectedIndices[0]];
+            SslClient ssl = new SslClient(cert.ToDotNetCert(key));
+            ssl.Connect(ep);
+
+            TransportServiceClient c = ssl.GetClient<TransportServiceClient>();
+            c.JoinGroup(txtGroupAddr.Text);
+        }
     }
 
     public class DataGridTraceListener : TraceListener

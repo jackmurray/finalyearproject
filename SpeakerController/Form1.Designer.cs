@@ -42,6 +42,8 @@
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.btnListPairedDevices = new System.Windows.Forms.Button();
             this.btnOpenFile = new System.Windows.Forms.Button();
+            this.txtGroupAddr = new System.Windows.Forms.TextBox();
+            this.btnJoinGroup = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dGridTrace)).BeginInit();
             this.SuspendLayout();
             // 
@@ -182,11 +184,31 @@
             this.btnOpenFile.UseVisualStyleBackColor = true;
             this.btnOpenFile.Click += new System.EventHandler(this.btnOpenFile_Click);
             // 
+            // txtGroupAddr
+            // 
+            this.txtGroupAddr.Location = new System.Drawing.Point(705, 118);
+            this.txtGroupAddr.Name = "txtGroupAddr";
+            this.txtGroupAddr.Size = new System.Drawing.Size(100, 20);
+            this.txtGroupAddr.TabIndex = 12;
+            this.txtGroupAddr.Text = "224.1.1.1";
+            // 
+            // btnJoinGroup
+            // 
+            this.btnJoinGroup.Location = new System.Drawing.Point(705, 144);
+            this.btnJoinGroup.Name = "btnJoinGroup";
+            this.btnJoinGroup.Size = new System.Drawing.Size(75, 23);
+            this.btnJoinGroup.TabIndex = 13;
+            this.btnJoinGroup.Text = "Join Group";
+            this.btnJoinGroup.UseVisualStyleBackColor = true;
+            this.btnJoinGroup.Click += new System.EventHandler(this.btnJoinGroup_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(832, 464);
+            this.Controls.Add(this.btnJoinGroup);
+            this.Controls.Add(this.txtGroupAddr);
             this.Controls.Add(this.btnOpenFile);
             this.Controls.Add(this.btnListPairedDevices);
             this.Controls.Add(this.splitter1);
@@ -223,6 +245,8 @@
         private System.Windows.Forms.Splitter splitter1;
         private System.Windows.Forms.Button btnListPairedDevices;
         private System.Windows.Forms.Button btnOpenFile;
+        private System.Windows.Forms.TextBox txtGroupAddr;
+        private System.Windows.Forms.Button btnJoinGroup;
     }
 }
 

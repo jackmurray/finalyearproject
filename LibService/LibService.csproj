@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="Clients\CommonServiceClient.cs" />
     <Compile Include="Clients\PairingServiceClient.cs" />
+    <Compile Include="Clients\TransportServiceClient.cs" />
     <Compile Include="HttpMessage.cs" />
     <Compile Include="ServiceMessageResponse.cs" />
     <Compile Include="Services\CommonService.cs" />
@@ -56,6 +57,7 @@
     <Compile Include="ServiceRegistration.cs" />
     <Compile Include="Services\PairingService.cs" />
     <Compile Include="Services\ServiceBase.cs" />
+    <Compile Include="Services\TransportService.cs" />
     <Compile Include="Transport\SslClient.cs" />
     <Compile Include="Transport\SslEndpointBase.cs" />
     <Compile Include="Transport\SslServer.cs" />

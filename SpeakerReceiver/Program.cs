@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
@@ -45,6 +46,7 @@ namespace SpeakerReceiver
 
             LibService.ServiceRegistration.Register(new LibService.CommonService(GetBuildVersion()));
             LibService.ServiceRegistration.Register(new LibService.PairingService());
+            LibService.ServiceRegistration.Register(new LibService.TransportService(new UdpClient()));
             LibService.ServiceRegistration.Start(cert.ToDotNetCert(key), 10451);
             Console.ReadLine();
 
