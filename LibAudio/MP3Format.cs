@@ -101,7 +101,7 @@ namespace LibAudio
         public Tuple<float, byte[]> GetDataForTime(float time)
         {
             //assume that the sample frequency never changes in the file. should always be the case.
-            float framesPerSec = (float)this.Frequency/1152;
+            float framesPerSec = 1/this.GetFrameLength();
             int numFrames = (int)(time * framesPerSec);
             if (numFrames == 0) numFrames = 1; //always read at least one frame.
                 //truncate, so we will probably be a little bit under what was asked for.
@@ -118,6 +118,12 @@ namespace LibAudio
             float timeRead = numFrames * (i / numFrames) * 1/framesPerSec; //numFrames * fraction that we provided * secsPerFrame = total time read
             _trace.Verbose(time + " seconds asked for = " + numFrames + " MP3 frames. Giving " + timeRead);
             return new Tuple<float, byte[]>(timeRead, ms.ToArray());
+        }
+
+        public float GetFrameLength()
+        {
+            //assume that the sample frequency never changes in the file. should always be the case.
+            return 1152 / (float)this.Frequency;
         }
     }
 }
