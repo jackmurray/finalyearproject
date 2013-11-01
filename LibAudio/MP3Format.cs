@@ -53,6 +53,8 @@ namespace LibAudio
 
             this.Frequency = FrequencyLookup[(b & 0x0C) >> 2];
             this.Padding = ((b & 0x02) >> 1) == 1;
+
+            this.SkipBack(3); //we don't read the last byte of the header, so only skip back 3 not 4.
         }
 
         public bool CheckMagic()
@@ -86,8 +88,8 @@ namespace LibAudio
 
         public byte[] GetFrame()
         {
-            byte[] buf = this.Read(this.BytesPerFrame - MP3_HEADER_SIZE);
-                //the calculated bytes/frame includes the header length
+            byte[] buf = this.Read(this.BytesPerFrame);
+
             if (!this.EndOfFile())
             {
                 this.EatGarbageData();
