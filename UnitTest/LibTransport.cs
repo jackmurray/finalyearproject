@@ -48,5 +48,11 @@ namespace UnitTest
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse("224.1.1.1"), 1000);
             new RTPOutputStream(ep).Send(p);
         }
+
+        [TestMethod]
+        public void TestRTPPacketTimeStamp()
+        {
+            RTPPacket.BuildTimestamp(DateTime.UtcNow);
+        }
     }
 }

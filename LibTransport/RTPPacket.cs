@@ -53,5 +53,20 @@ namespace LibTransport
 
             return ms.ToArray();
         }
+
+        public static uint BuildTimestamp(DateTime dt)
+        {
+            TimeSpan fullspan = (dt - new DateTime(1970, 1, 1, 0, 0, 0));
+            long secs = (long)fullspan.TotalSeconds;
+            ushort rtpsecs = (ushort)(secs % (1 << 16));
+            double frac = fullspan.TotalSeconds - secs;
+            double shifted = frac * (1 << 16);
+            uint fixpoint = ((uint)shifted);
+
+            uint ret = rtpsecs;
+            ret <<= 16;
+            ret += fixpoint;
+            return ret;
+        }
     }
 }
