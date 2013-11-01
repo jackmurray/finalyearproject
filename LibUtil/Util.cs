@@ -87,6 +87,16 @@ namespace LibUtil
             return IPAddress.NetworkToHostOrder(BitConverter.ToInt32(val, offset));
         }
 
+        public static uint DecodeUint(byte[] val, int offset)
+        {
+            return (uint)IPAddress.NetworkToHostOrder(BitConverter.ToInt32(val, offset));
+        }
+
+        public static ushort DecodeUshort(byte[] val, int offset)
+        {
+            return (ushort)IPAddress.NetworkToHostOrder(BitConverter.ToInt16(val, offset));
+        }
+
         public static IEnumerable<Assembly> GetLoadedAssemblies()
         {
             return AppDomain.CurrentDomain.GetAssemblies().Where(a => a.GetName().Name.StartsWith("Lib") || a.GetName().Name.StartsWith("Speaker"));
