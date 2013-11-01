@@ -11,17 +11,19 @@ namespace LibService
 {
     public class TransportService : ServiceBase
     {
-        private UdpClient _c;
+        public delegate void JoinGroupHandler(IPAddress ip);
+
+        private JoinGroupHandler Handler_JoinGroup;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="c">New UdpClient object that will be used for communication. Initialise it as AF_INET but don't do anything else.</param>
-        public TransportService(UdpClient c)
+        public TransportService(JoinGroupHandler Handler_JoinGroup)
         {
             Name = "TransportService";
             Operations = new List<string>() {"JoinGroup"};
-            _c = c;
+            this.Handler_JoinGroup = Handler_JoinGroup;
         }
 
         public override ServiceMessageResponse HandleMessage(ServiceMessage m, X509Certificate remoteParty)
@@ -36,7 +38,7 @@ namespace LibService
                         return Error("IP address was not a multicast group address.");
                     try
                     {
-                        _c.JoinMulticastGroup(ip);
+                        this.Handler_JoinGroup(ip);
                         return Success();
                     }
                     catch (Exception ex)

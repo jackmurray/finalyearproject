@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Security.Cryptography;
@@ -17,6 +18,7 @@ namespace SpeakerReceiver
     class Program
     {
         private static Trace Log;
+        private static UdpClient c = new UdpClient();
 
         private static void Main(string[] args)
         {
@@ -46,7 +48,7 @@ namespace SpeakerReceiver
 
             LibService.ServiceRegistration.Register(new LibService.CommonService(GetBuildVersion()));
             LibService.ServiceRegistration.Register(new LibService.PairingService());
-            LibService.ServiceRegistration.Register(new LibService.TransportService(new UdpClient()));
+            LibService.ServiceRegistration.Register(new LibService.TransportService(Handler_TransportService_JoinGroup));
             LibService.ServiceRegistration.Start(cert.ToDotNetCert(key), 10451);
             Console.ReadLine();
 
@@ -106,6 +108,11 @@ namespace SpeakerReceiver
                 TrustedKeys.Remove(i);
                 Environment.Exit(0);
             }
+        }
+
+        public static void Handler_TransportService_JoinGroup(IPAddress ip)
+        {
+            c.JoinMulticastGroup(ip);
         }
     }
 }
