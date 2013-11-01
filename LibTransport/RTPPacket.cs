@@ -68,5 +68,31 @@ namespace LibTransport
             ret += fixpoint;
             return ret;
         }
+
+        public static RTPPacket Parse(byte[] data)
+        {
+            if ((data[0] & 0xC0) != 0x80)
+                throw new FormatException("RTP version must be 2.");
+
+            bool Padding = ((data[0] & 0x20) != 0x00);
+
+            if ((data[0] & 0x10) != 0x00)
+                throw new FormatException("RTP extensions are not supported.");
+
+            if ((data[0] & 0x0F) != 0x00)
+                throw new FormatException("CSRC not supported.");
+
+            bool isControl = ((data[1] & 0x80) != 0x00);
+
+            if ((data[1] & 0x7F) != PayloadType)
+                throw new FormatException("Payload type must be 35.");
+
+            ushort seq = Util.DecodeUshort(data, 2);
+            uint timestamp = Util.DecodeUint(data, 4);
+            uint ssrc = Util.DecodeUint(data, 8);
+            byte[] payload = data.Skip(12).ToArray();
+
+            return new RTPDataPacket(Padding, seq, timestamp, ssrc, payload); //TODO: return control packets when implemented.
+        }
     }
 }

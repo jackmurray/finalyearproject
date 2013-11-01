@@ -54,5 +54,18 @@ namespace UnitTest
         {
             RTPPacket.BuildTimestamp(DateTime.UtcNow);
         }
+
+        [TestMethod]
+        public void TestRTPPacketParse()
+        {
+            var p = new RTPDataPacket(false, 1234, 5678, 9090, new byte[] {0x13, 0x37});
+            var p2 = RTPPacket.Parse(p.Serialise());
+            Assert.AreEqual(p.Marker, p2.Marker);
+            Assert.AreEqual(p.Padding, p2.Padding);
+            Assert.AreEqual(p.SequenceNumber, p2.SequenceNumber);
+            Assert.IsTrue(p.Payload.SequenceEqual(p2.Payload));
+            Assert.AreEqual(p.SyncSource, p2.SyncSource);
+            Assert.AreEqual(p.Timestamp, p2.Timestamp);
+        }
     }
 }
