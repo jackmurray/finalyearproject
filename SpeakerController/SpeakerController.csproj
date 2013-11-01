@@ -106,6 +106,10 @@
       <Project>{aaa4347e-a677-438e-97da-bc8fb2f57822}</Project>
       <Name>LibTrace</Name>
     </ProjectReference>
+    <ProjectReference Include="..\LibTransport\LibTransport.csproj">
+      <Project>{372a07ed-0515-4836-bb52-a48b79742ca5}</Project>
+      <Name>LibTransport</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LibUtil\LibUtil.csproj">
       <Project>{85997238-2a70-41b1-9a58-dcd4ce5606bc}</Project>
       <Name>LibUtil</Name>

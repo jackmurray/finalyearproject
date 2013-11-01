@@ -44,6 +44,7 @@
             this.btnOpenFile = new System.Windows.Forms.Button();
             this.txtGroupAddr = new System.Windows.Forms.TextBox();
             this.btnJoinGroup = new System.Windows.Forms.Button();
+            this.btnStream = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dGridTrace)).BeginInit();
             this.SuspendLayout();
             // 
@@ -202,11 +203,22 @@
             this.btnJoinGroup.UseVisualStyleBackColor = true;
             this.btnJoinGroup.Click += new System.EventHandler(this.btnJoinGroup_Click);
             // 
+            // btnStream
+            // 
+            this.btnStream.Location = new System.Drawing.Point(405, 195);
+            this.btnStream.Name = "btnStream";
+            this.btnStream.Size = new System.Drawing.Size(75, 23);
+            this.btnStream.TabIndex = 14;
+            this.btnStream.Text = "Stream";
+            this.btnStream.UseVisualStyleBackColor = true;
+            this.btnStream.Click += new System.EventHandler(this.btnStream_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(832, 464);
+            this.Controls.Add(this.btnStream);
             this.Controls.Add(this.btnJoinGroup);
             this.Controls.Add(this.txtGroupAddr);
             this.Controls.Add(this.btnOpenFile);
@@ -247,6 +259,7 @@
         private System.Windows.Forms.Button btnOpenFile;
         private System.Windows.Forms.TextBox txtGroupAddr;
         private System.Windows.Forms.Button btnJoinGroup;
+        private System.Windows.Forms.Button btnStream;
     }
 }
 

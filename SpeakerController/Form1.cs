@@ -16,6 +16,7 @@ using LibConfig;
 using LibSSDP;
 using LibSecurity;
 using LibService;
+using LibTransport;
 using LibUtil;
 using Trace = LibTrace.Trace;
 
@@ -28,6 +29,7 @@ namespace SpeakerController
         private List<IPEndPoint> Receivers = new List<IPEndPoint>();
         private Trace Log;
         private SSDPClient ssdpc;
+        private IAudioFormat audio;
 
         public Form1()
         {
@@ -211,7 +213,7 @@ namespace SpeakerController
             {
                 Stream s = File.OpenRead(ofd.FileName);
                 IAudioFormat r = SupportedAudio.FindReaderForFile(s);
-                if (r != null)
+                /*if (r != null)
                 {
                     MessageBox.Show(r.BitRate.ToString());
                     MessageBox.Show(r.Frequency.ToString());
@@ -224,7 +226,8 @@ namespace SpeakerController
                         count++;
                     }
                     MessageBox.Show("Asked for " + count*0.01f + " seconds, got " + i);
-                }
+                }*/
+                this.audio = r;
             }
         }
 
@@ -236,6 +239,12 @@ namespace SpeakerController
 
             TransportServiceClient c = ssl.GetClient<TransportServiceClient>();
             c.JoinGroup(txtGroupAddr.Text);
+        }
+
+        private void btnStream_Click(object sender, EventArgs e)
+        {
+            RTPOutputStream stream = new RTPOutputStream(new IPEndPoint(IPAddress.Parse(txtGroupAddr.Text), 10452));
+            stream.Stream(audio);
         }
     }
 
