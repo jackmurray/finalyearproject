@@ -55,7 +55,7 @@ namespace LibTransport
         public void Stream(IAudioFormat audio)
         {
             this.audio = audio;
-            this.basetimestamp = DateTime.Now.AddSeconds(LibConfig.Config.GetInt(LibConfig.Config.STREAM_BUFFER_TIME));
+            this.basetimestamp = DateTime.UtcNow.AddSeconds(LibConfig.Config.GetInt(LibConfig.Config.STREAM_BUFFER_TIME));
             Log.Verbose("Base timestamp: " + basetimestamp + ":" + basetimestamp.Millisecond);
             this.Send(this.BuildPacket(audio.GetFrame()));
         }
