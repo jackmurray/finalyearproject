@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using LibSecurity;
 using LibTrace;
 using LibConfig;
+using LibTransport;
 using LibUtil;
 
 
@@ -18,7 +19,7 @@ namespace SpeakerReceiver
     class Program
     {
         private static Trace Log;
-        private static UdpClient c = new UdpClient();
+        private static StreamReceiver r;
 
         private static void Main(string[] args)
         {
@@ -112,7 +113,10 @@ namespace SpeakerReceiver
 
         public static void Handler_TransportService_JoinGroup(IPAddress ip)
         {
-            c.JoinMulticastGroup(ip);
+            if (r != null)
+                r.Stop();
+            r = new StreamReceiver(new RTPInputStream(new IPEndPoint(ip, 10452)));
+            r.Start();
         }
     }
 }
