@@ -75,7 +75,7 @@ namespace LibSSDP
             SSDPPacket p = SSDPPacket.Parse(Encoding.ASCII.GetString(data));
             if (p == null)
             {
-                Log.Verbose("We got an SSDP packet, but it's not one of ours. Ignoring...");
+                //Log.Verbose("We got an SSDP packet, but it's not one of ours. Ignoring...");
                 return;
             }
             else //Got a valid packet.
