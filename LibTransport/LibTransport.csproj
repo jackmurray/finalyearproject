@@ -34,6 +34,7 @@
     <Compile Include="RTPOutputStream.cs" />
     <Compile Include="RTPPacket.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RTPStreamBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LibAudio\LibAudio.csproj">

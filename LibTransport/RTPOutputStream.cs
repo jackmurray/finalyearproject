@@ -9,26 +9,16 @@ using LibTrace;
 
 namespace LibTransport
 {
-    public class RTPOutputStream
+    public class RTPOutputStream : RTPStreamBase
     {
-        private UdpClient c;
-        private IPEndPoint ep;
         private IAudioFormat audio;
         private ushort seq = 0;
         private uint syncid = (uint)new Random().Next();
         private DateTime basetimestamp;
-        private static Trace Log = Trace.GetInstance("LibTransport");
 
-        public RTPOutputStream(IPEndPoint ep)
+        public RTPOutputStream(IPEndPoint ep) : base(ep)
         {
-            if (ep.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork)
-                throw new ArgumentException("IP endpoint must be AF_INET. IPv6 is currently not supported.");
-            if (!LibUtil.Util.IsMulticastAddress(ep.Address))
-                throw new ArgumentException("IP address must be in the range 224.0.0.0/4 (multicast)");
-
-            c = new UdpClient(AddressFamily.InterNetwork);
-            c.JoinMulticastGroup(ep.Address);
-            this.ep = ep;
+            
         }
 
         public void Send(RTPPacket p)
