@@ -69,6 +69,19 @@ namespace LibTransport
             return ret;
         }
 
+        public static DateTime BuildDateTime(uint timestamp, DateTime basetime)
+        {
+            ushort msecbits = (ushort) (timestamp & 0x0000FFFF);
+            double msec = (double)msecbits/(1 << 16);
+            uint secsbits = timestamp & 0xFFFF0000;
+            secsbits >>= 16;
+
+            long unixtime = (long)(basetime - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds;
+            DateTime ret = basetime.Subtract(new TimeSpan(0, 0, (int)(unixtime%(1 << 16))));
+
+            return ret.AddSeconds(secsbits).AddSeconds(msec);
+        }
+
         public static RTPPacket Parse(byte[] data)
         {
             if ((data[0] & 0xC0) != 0x80)
