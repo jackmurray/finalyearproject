@@ -30,6 +30,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="RTPControlPacket.cs" />
     <Compile Include="RTPDataPacket.cs" />
     <Compile Include="RTPInputStream.cs" />
     <Compile Include="RTPOutputStream.cs" />

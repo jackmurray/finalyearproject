@@ -105,7 +105,21 @@ namespace LibTransport
             uint ssrc = Util.DecodeUint(data, 8);
             byte[] payload = data.Skip(12).ToArray();
 
-            return new RTPDataPacket(Padding, seq, timestamp, ssrc, payload); //TODO: return control packets when implemented.
+            if (!isControl)
+                return new RTPDataPacket(Padding, seq, timestamp, ssrc, payload);
+            else
+            {
+                if (payload.Length < 1)
+                    throw new FormatException("Got a control packet with no payload!");
+
+                RTPControlAction a = (RTPControlAction) payload[0];
+                byte[] extradata = new byte[0];
+
+                if (payload.Length > 1)
+                    extradata = payload.Skip(1).ToArray(); //take the payload minus the first byte as the extra data.
+
+                return new RTPControlPacket(a, extradata, seq, timestamp, ssrc);
+            }
         }
     }
 }

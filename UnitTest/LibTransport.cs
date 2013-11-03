@@ -70,6 +70,15 @@ namespace UnitTest
             Assert.IsTrue(p.Payload.SequenceEqual(p2.Payload));
             Assert.AreEqual(p.SyncSource, p2.SyncSource);
             Assert.AreEqual(p.Timestamp, p2.Timestamp);
+
+            var p3 = new RTPControlPacket(RTPControlAction.Play, null, 1234, 5678, 9090);
+            var p4 = RTPPacket.Parse(p3.Serialise());
+            Assert.IsTrue(p3.Payload.SequenceEqual(p4.Payload));
+            //no need to test anything other than payload as the logic/code doesn't change for the other fields.
+
+            p3 = new RTPControlPacket(RTPControlAction.Pause, new byte[]{0x01, 0x02}, 1234, 5678, 9090);
+            p4 = RTPPacket.Parse(p3.Serialise());
+            Assert.IsTrue(p3.Payload.SequenceEqual(p4.Payload));
         }
     }
 }
