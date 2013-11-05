@@ -14,6 +14,8 @@ namespace SpeakerReceiver
         private RTPInputStream s;
         private bool shouldRun = true;
         private Thread t;
+        private DateTime basetime;
+        private Trace Log = Trace.GetInstance("LibTransport");
 
         public StreamReceiver(RTPInputStream s)
         {
@@ -36,6 +38,26 @@ namespace SpeakerReceiver
             this.t.Start();
         }
 
+        private void HandlePacket(RTPPacket _p)
+        {
+            if (_p.Marker) //control packet
+            {
+                RTPControlPacket p = _p as RTPControlPacket;
+                switch (p.Action)
+                {
+                    case RTPControlAction.Play:
+                        this.basetime = p.ComputeBaseTime();
+                        Log.Verbose("Taking " + basetime + ":" + basetime.Millisecond + " as the base time stamp.");
+                        break;
+                }
+            }
+            else //data packet
+            {
+                if (basetime == null)
+                    return; //if we haven't yet got a basetime we can't proceed processing a data packet.
+            }
+        }
+
         private void ThreadProc()
         {
             RTPPacket p;
@@ -44,8 +66,7 @@ namespace SpeakerReceiver
                 try
                 {
                     p = s.Receive();
-                    DateTime dt = RTPPacket.BuildDateTime(p.Timestamp, DateTime.UtcNow); //change utcnow to the actual base timestamp when the control protocol is implemented.
-                    Trace.GetInstance("LibTransport").Verbose("Packet timestamp: " + dt + ":" + dt.Millisecond);
+                    HandlePacket(p);
                 }
                 catch (SocketException ex)
                 {

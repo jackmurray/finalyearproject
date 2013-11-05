@@ -76,6 +76,7 @@ namespace LibTransport
             uint secsbits = timestamp & 0xFFFF0000;
             secsbits >>= 16;
 
+            basetime = basetime.Subtract(new TimeSpan(0, 0, 0, 0, basetime.Millisecond));
             long unixtime = (long)(basetime - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds;
             DateTime ret = basetime.Subtract(new TimeSpan(0, 0, (int)(unixtime%(1 << 16))));
 

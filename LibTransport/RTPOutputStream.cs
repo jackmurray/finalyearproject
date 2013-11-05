@@ -35,6 +35,13 @@ namespace LibTransport
             return new RTPDataPacket(false, sequence, ts, this.syncid, data);
         }
 
+        protected RTPPacket BuildPlayPacket()
+        {
+            DateTime now = DateTime.UtcNow;
+            this.basetimestamp = now.AddSeconds(LibConfig.Config.GetInt(LibConfig.Config.STREAM_BUFFER_TIME));
+            return RTPControlPacket.BuildPlayPacket(++this.seq, RTPPacket.BuildTimestamp(this.basetimestamp), syncid);
+        }
+
         protected uint nextTimestamp()
         {
             DateTime packetdt = basetimestamp.AddMilliseconds(seq*audio.GetFrameLength());
@@ -45,7 +52,7 @@ namespace LibTransport
         public void Stream(IAudioFormat audio)
         {
             this.audio = audio;
-            this.basetimestamp = DateTime.UtcNow.AddSeconds(LibConfig.Config.GetInt(LibConfig.Config.STREAM_BUFFER_TIME));
+            this.Send(this.BuildPlayPacket());
             Log.Verbose("Base timestamp: " + basetimestamp + ":" + basetimestamp.Millisecond);
             this.Send(this.BuildPacket(audio.GetFrame()));
         }

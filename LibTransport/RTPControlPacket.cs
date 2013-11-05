@@ -17,6 +17,31 @@ namespace LibTransport
             this.Action = Action;
             this.ExtraData = ExtraData;
         }
+
+        public DateTime ComputeBaseTime()
+        {
+            if (this.Action != RTPControlAction.Play)
+                throw new InvalidOperationException("Can only call ComputeBaseTime on a Play packet.");
+
+            DateTime sendingTimestamp = new DateTime(LibUtil.Util.DecodeLong(ExtraData, 0));
+            //Latency code disabled for now. Might need it in future if sync is an issue.
+            //TimeSpan latency = DateTime.UtcNow - sendingTimestamp; //time it took for the packet to get here.
+
+            //LibTrace.Trace.GetInstance("LibTransport").Verbose("Calculated play packet latency as " + latency.TotalMilliseconds + "ms");
+
+            DateTime basetime = RTPPacket.BuildDateTime(this.Timestamp, sendingTimestamp)/* - latency*/;
+            return basetime;
+        }
+
+        /// <summary>
+        /// Build a play packet based at the current UTC time.
+        /// </summary>
+        /// <returns></returns>
+        public static RTPControlPacket BuildPlayPacket(ushort SequenceNumber, uint Timestamp, uint SyncSource)
+        {
+            byte[] extra = LibUtil.Util.Encode(DateTime.UtcNow.Ticks);
+            return new RTPControlPacket(RTPControlAction.Play, extra, SequenceNumber, Timestamp, SyncSource);
+        }
     }
 
     public enum RTPControlAction {Play, Pause, Stop, RotateKey}
