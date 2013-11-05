@@ -44,6 +44,8 @@ namespace LibAudio
         /// <exception cref="FormatException">For invalid header formats.</exception>
         public void Parse()
         {
+            if (EndOfFile())
+                return;
             if (!CheckMagicAndEat())
                 throw new FormatException("Expected MP3 header but didn't get one!");
 
@@ -72,7 +74,7 @@ namespace LibAudio
 
         public void EatGarbageData() //this will fail horribly if used on a non-mp3 stream.
         {
-            while (!CheckMagic())
+            while (!EndOfFile() && !CheckMagic())
             {
                 Skip(1);
             }
