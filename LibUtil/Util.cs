@@ -77,6 +77,11 @@ namespace LibUtil
             return BitConverter.GetBytes(IPAddress.HostToNetworkOrder(val)).Skip(2).ToArray(); 
         }
 
+        public static byte[] Encode(long val)
+        {
+            return BitConverter.GetBytes(IPAddress.HostToNetworkOrder(val));
+        }
+
         public static int Decode(byte[] val)
         {
             return Decode(val, 0);
@@ -95,6 +100,11 @@ namespace LibUtil
         public static ushort DecodeUshort(byte[] val, int offset)
         {
             return (ushort)IPAddress.NetworkToHostOrder(BitConverter.ToInt16(val, offset));
+        }
+
+        public static long DecodeLong(byte[] val, int offset)
+        {
+            return (long) IPAddress.NetworkToHostOrder(BitConverter.ToInt64(val, offset));
         }
 
         public static IEnumerable<Assembly> GetLoadedAssemblies()
