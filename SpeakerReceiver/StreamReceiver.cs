@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using LibTransport;
 using LibTrace;
+using LibAudio;
 
 namespace SpeakerReceiver
 {
@@ -16,6 +17,7 @@ namespace SpeakerReceiver
         private Thread t;
         private DateTime basetime;
         private Trace Log = Trace.GetInstance("LibTransport");
+        private AudioPlayer player = null;
 
         public StreamReceiver(RTPInputStream s)
         {
@@ -34,6 +36,7 @@ namespace SpeakerReceiver
 
         public void Start()
         {
+            this.player = new AudioPlayer();
             this.t = new Thread(ThreadProc);
             this.t.Start();
         }
@@ -55,6 +58,8 @@ namespace SpeakerReceiver
             {
                 if (basetime == null)
                     return; //if we haven't yet got a basetime we can't proceed processing a data packet.
+
+                player.Write(_p.Payload);
             }
         }
 

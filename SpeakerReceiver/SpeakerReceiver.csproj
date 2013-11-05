@@ -42,6 +42,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LibAudio\LibAudio.csproj">
+      <Project>{f4041fc6-caeb-4476-a06d-ce301258e500}</Project>
+      <Name>LibAudio</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LibConfig\LibConfig.csproj">
       <Project>{37be8328-6872-494f-9458-d3540d7dc44f}</Project>
       <Name>LibConfig</Name>

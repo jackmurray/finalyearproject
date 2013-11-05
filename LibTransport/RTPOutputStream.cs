@@ -54,7 +54,8 @@ namespace LibTransport
             this.audio = audio;
             this.Send(this.BuildPlayPacket());
             Log.Verbose("Base timestamp: " + basetimestamp + ":" + basetimestamp.Millisecond);
-            this.Send(this.BuildPacket(audio.GetFrame()));
+            while (!audio.EndOfFile())
+                this.Send(this.BuildPacket(audio.GetFrame()));
         }
     }
 }

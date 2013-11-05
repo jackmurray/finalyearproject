@@ -31,6 +31,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AudioFileReader.cs" />
+    <Compile Include="AudioPlayer.cs" />
     <Compile Include="IAudioFormat.cs" />
     <Compile Include="ID3Tag.cs" />
     <Compile Include="MP3Format.cs" />
