@@ -55,7 +55,7 @@ namespace LibAudio
 
         public bool EndOfFile()
         {
-            return _s.Position == _s.Length - 1;
+            return _s.Position >= _s.Length - 1;
         }
     }
 }
