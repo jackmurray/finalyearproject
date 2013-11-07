@@ -84,7 +84,8 @@ namespace LibTransport
             if (audio.EndOfFile())
             {
                 continueStreaming = false;
-                StreamingCompleted(this, null);
+                if (this.StreamingCompleted != null)
+                    StreamingCompleted(this, null);
             }
         }
     }
