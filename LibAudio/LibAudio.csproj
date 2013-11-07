@@ -39,6 +39,10 @@
     <Compile Include="SupportedAudio.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LibConfig\LibConfig.csproj">
+      <Project>{37be8328-6872-494f-9458-d3540d7dc44f}</Project>
+      <Name>LibConfig</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LibTrace\LibTrace.csproj">
       <Project>{aaa4347e-a677-438e-97da-bc8fb2f57822}</Project>
       <Name>LibTrace</Name>

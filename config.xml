@@ -9,4 +9,6 @@
 	<pairingKey>EXAMPLEKEY</pairingKey>
 	<maxTimeDifference>30</maxTimeDifference>
 	<streamBufferTime>2</streamBufferTime>
+	<playerExecutable>vlc</playerExecutable>
+	<playerArgs>-</playerArgs>
 </config>

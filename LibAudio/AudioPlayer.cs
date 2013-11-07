@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using LibConfig;
 
 namespace LibAudio
 {
@@ -22,12 +23,15 @@ namespace LibAudio
                 p.Kill();
             }
 
+            string program = Config.Get(Config.PLAYER_EXECUTABLE);
+            string args = Config.Exists(Config.PLAYER_ARGUMENTS) ? Config.Get(Config.PLAYER_ARGUMENTS) : "";
+
             p = new Process
                 {
                     StartInfo =
                         {
-                            FileName = "mpg123",
-                            Arguments = "-",
+                            FileName = program,
+                            Arguments = args,
                             UseShellExecute = false,
                             RedirectStandardInput = true
                         }

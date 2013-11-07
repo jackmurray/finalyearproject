@@ -26,6 +26,8 @@ namespace LibConfig
         public const string PAIRING_KEY = "pairingKey"; //This must be the same on all devices.
         public const string MAX_TIMEDIFF = "maxTimeDifference";
         public const string STREAM_BUFFER_TIME = "streamBufferTime"; //The number of seconds of audio data to pre-buffer.
+        public const string PLAYER_EXECUTABLE = "playerExecutable";
+        public const string PLAYER_ARGUMENTS = "playerArgs";
 
         public static bool IsRunningOnMono { get; private set; }
 
