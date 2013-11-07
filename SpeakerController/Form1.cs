@@ -30,6 +30,7 @@ namespace SpeakerController
         private Trace Log;
         private SSDPClient ssdpc;
         private IAudioFormat audio;
+        private RTPOutputStream stream;
 
         public Form1()
         {
@@ -243,7 +244,7 @@ namespace SpeakerController
 
         private void btnStream_Click(object sender, EventArgs e)
         {
-            RTPOutputStream stream = new RTPOutputStream(new IPEndPoint(IPAddress.Parse(txtGroupAddr.Text), 10452));
+            this.stream = new RTPOutputStream(new IPEndPoint(IPAddress.Parse(txtGroupAddr.Text), 10452));
             stream.Stream(audio);
         }
     }

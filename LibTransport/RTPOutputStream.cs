@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using LibAudio;
 using LibTrace;
 
@@ -15,6 +16,10 @@ namespace LibTransport
         private ushort seq = 0;
         private uint syncid = (uint)new Random().Next();
         private DateTime basetimestamp;
+
+        public delegate void StreamingCompletedHandler(object sender, EventArgs args);
+        public event StreamingCompletedHandler StreamingCompleted;
+        private bool continueStreaming = true;
 
         public RTPOutputStream(IPEndPoint ep) : base(ep)
         {
@@ -54,8 +59,33 @@ namespace LibTransport
             this.audio = audio;
             this.Send(this.BuildPlayPacket());
             Log.Verbose("Base timestamp: " + basetimestamp + ":" + basetimestamp.Millisecond);
-            while (!audio.EndOfFile())
-                this.Send(this.BuildPacket(audio.GetFrame()));
+            new Thread(StreamThreadProc).Start();
+        }
+
+        private void StreamThreadProc()
+        {
+            int timerinterval = (int)Math.Truncate(1000 * audio.GetFrameLength()); //truncate to 3 decimal places.
+
+            while (continueStreaming)
+            {
+                uint startTicks;
+                int elapsedTicks, remainingTicks;
+                startTicks = (uint) Environment.TickCount;
+                TimerTick();
+                elapsedTicks = (int)((uint)Environment.TickCount - startTicks);
+                remainingTicks = timerinterval - elapsedTicks;
+                if (remainingTicks > 0) Thread.Sleep(remainingTicks);
+            }
+        }
+
+        private void TimerTick()
+        {
+            this.Send(this.BuildPacket(audio.GetFrame()));
+            if (audio.EndOfFile())
+            {
+                continueStreaming = false;
+                StreamingCompleted(this, null);
+            }
         }
     }
 }
