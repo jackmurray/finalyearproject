@@ -32,6 +32,8 @@ namespace SpeakerController
         private IAudioFormat audio;
         private RTPOutputStream stream;
 
+        public bool ShouldAdvanceLog { get { return !chkLogPause.Checked; } }
+
         public Form1()
         {
             InitializeComponent();
@@ -251,10 +253,10 @@ namespace SpeakerController
 
     public class DataGridTraceListener : TraceListener
     {
-        private Form _f;
+        private Form1 _f;
         private DataGridView _dgrid;
 
-        public DataGridTraceListener(Form f, DataGridView dgrid)
+        public DataGridTraceListener(Form1 f, DataGridView dgrid)
         {
             _f = f;
             _dgrid = dgrid;
@@ -286,7 +288,8 @@ namespace SpeakerController
                     row.Cells[2].Value = id;
                     row.Cells[3].Value = message;
                     _dgrid.Rows.Add(row);
-                    _dgrid.FirstDisplayedScrollingRowIndex = _dgrid.Rows.Count - 1;
+                    if (_f.ShouldAdvanceLog)
+                        _dgrid.FirstDisplayedScrollingRowIndex = _dgrid.Rows.Count - 1;
                 }));
         }
 

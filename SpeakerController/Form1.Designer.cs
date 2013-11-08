@@ -45,6 +45,7 @@
             this.txtGroupAddr = new System.Windows.Forms.TextBox();
             this.btnJoinGroup = new System.Windows.Forms.Button();
             this.btnStream = new System.Windows.Forms.Button();
+            this.chkLogPause = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dGridTrace)).BeginInit();
             this.SuspendLayout();
             // 
@@ -213,11 +214,24 @@
             this.btnStream.UseVisualStyleBackColor = true;
             this.btnStream.Click += new System.EventHandler(this.btnStream_Click);
             // 
+            // chkLogPause
+            // 
+            this.chkLogPause.Appearance = System.Windows.Forms.Appearance.Button;
+            this.chkLogPause.AutoSize = true;
+            this.chkLogPause.Location = new System.Drawing.Point(797, 242);
+            this.chkLogPause.Name = "chkLogPause";
+            this.chkLogPause.Size = new System.Drawing.Size(23, 23);
+            this.chkLogPause.TabIndex = 16;
+            this.chkLogPause.Text = "II";
+            this.chkLogPause.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.chkLogPause.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(832, 464);
+            this.Controls.Add(this.chkLogPause);
             this.Controls.Add(this.btnStream);
             this.Controls.Add(this.btnJoinGroup);
             this.Controls.Add(this.txtGroupAddr);
@@ -260,6 +274,7 @@
         private System.Windows.Forms.TextBox txtGroupAddr;
         private System.Windows.Forms.Button btnJoinGroup;
         private System.Windows.Forms.Button btnStream;
+        private System.Windows.Forms.CheckBox chkLogPause;
     }
 }
 
