@@ -42,6 +42,11 @@ namespace LibTransport
             byte[] extra = LibUtil.Util.Encode(DateTime.UtcNow.Ticks);
             return new RTPControlPacket(RTPControlAction.Play, extra, SequenceNumber, Timestamp, SyncSource);
         }
+
+        public static RTPControlPacket BuildStopPacket(ushort SequenceNumber, uint Timestamp, uint SyncSource)
+        {
+            return new RTPControlPacket(RTPControlAction.Stop, null, SequenceNumber, Timestamp, SyncSource);
+        }
     }
 
     public enum RTPControlAction {Play, Pause, Stop, RotateKey}

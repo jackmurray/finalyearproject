@@ -47,9 +47,14 @@ namespace LibTransport
             return RTPControlPacket.BuildPlayPacket(++this.seq, RTPPacket.BuildTimestamp(this.basetimestamp), syncid);
         }
 
+        protected RTPPacket BuildStopPacket()
+        {
+            return RTPControlPacket.BuildStopPacket(++this.seq, this.nextTimestamp(), this.syncid);
+        }
+
         protected uint nextTimestamp()
         {
-            DateTime packetdt = basetimestamp.AddMilliseconds(seq*audio.GetFrameLength());
+            DateTime packetdt = basetimestamp.AddMilliseconds(seq*audio.GetFrameLength()*1000);
             Log.Verbose("Packet timestamp: " + packetdt + ":"+packetdt.Millisecond);
             return RTPPacket.BuildTimestamp(packetdt);
         }
@@ -83,6 +88,7 @@ namespace LibTransport
             this.Send(this.BuildPacket(audio.GetFrame()));
             if (audio.EndOfFile())
             {
+                this.Send(this.BuildStopPacket());
                 continueStreaming = false;
                 if (this.StreamingCompleted != null)
                     StreamingCompleted(this, null);

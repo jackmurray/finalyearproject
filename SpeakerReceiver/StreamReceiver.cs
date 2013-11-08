@@ -52,6 +52,9 @@ namespace SpeakerReceiver
                         this.basetime = p.ComputeBaseTime();
                         Log.Verbose("Taking " + basetime + ":" + basetime.Millisecond + " as the base time stamp.");
                         break;
+                    case RTPControlAction.Stop:
+                        this.player.Reset();
+                        break;
                 }
             }
             else //data packet
