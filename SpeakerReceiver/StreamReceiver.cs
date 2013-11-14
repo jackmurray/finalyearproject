@@ -14,10 +14,12 @@ namespace SpeakerReceiver
     {
         private RTPInputStream s;
         private bool shouldRun = true;
-        private Thread t;
+        private Thread receiveThread;
         private DateTime basetime;
         private Trace Log = Trace.GetInstance("LibTransport");
         private AudioPlayer player = null;
+
+        private List<RTPDataPacket> Buffer = new List<RTPDataPacket>();
 
         public StreamReceiver(RTPInputStream s)
         {
@@ -28,7 +30,7 @@ namespace SpeakerReceiver
         public void Stop()
         {
             shouldRun = false;
-            while (t.IsAlive)
+            while (receiveThread.IsAlive)
             {
             }
             return;
@@ -37,8 +39,8 @@ namespace SpeakerReceiver
         public void Start()
         {
             this.player = new AudioPlayer();
-            this.t = new Thread(ThreadProc);
-            this.t.Start();
+            this.receiveThread = new Thread(ReceiveThreadProc);
+            this.receiveThread.Start();
         }
 
         private void HandlePacket(RTPPacket _p)
@@ -62,11 +64,11 @@ namespace SpeakerReceiver
                 if (basetime == null)
                     return; //if we haven't yet got a basetime we can't proceed processing a data packet.
 
-                player.Write(_p.Payload);
+                Buffer.Add(_p as RTPDataPacket);
             }
         }
 
-        private void ThreadProc()
+        private void ReceiveThreadProc()
         {
             RTPPacket p;
             while (shouldRun)
