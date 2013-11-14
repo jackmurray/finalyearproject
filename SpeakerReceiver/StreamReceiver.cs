@@ -14,7 +14,7 @@ namespace SpeakerReceiver
     {
         private RTPInputStream s;
         private bool shouldRun = true;
-        private Thread receiveThread;
+        private Thread receiveThread, playerThread;
         private DateTime basetime;
         private Trace Log = Trace.GetInstance("LibTransport");
         private AudioPlayer player = null;
@@ -30,7 +30,7 @@ namespace SpeakerReceiver
         public void Stop()
         {
             shouldRun = false;
-            while (receiveThread.IsAlive)
+            while (receiveThread.IsAlive && playerThread.IsAlive)
             {
             }
             return;
@@ -41,6 +41,9 @@ namespace SpeakerReceiver
             this.player = new AudioPlayer();
             this.receiveThread = new Thread(ReceiveThreadProc);
             this.receiveThread.Start();
+
+            this.playerThread = new Thread(PlayerThreadProc);
+            this.playerThread.Start();
         }
 
         private void HandlePacket(RTPPacket _p)
@@ -83,6 +86,14 @@ namespace SpeakerReceiver
                     if (ex.SocketErrorCode != SocketError.TimedOut)
                         throw;
                 }
+            }
+        }
+
+        private void PlayerThreadProc()
+        {
+            while (shouldRun)
+            {
+                
             }
         }
     }
