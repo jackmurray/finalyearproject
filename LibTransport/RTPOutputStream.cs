@@ -36,7 +36,7 @@ namespace LibTransport
         {
             uint ts = this.nextTimestamp(); //get the timestamp before incrementing seq, so that the first timestamp will be basetime+0.
             ushort sequence = ++this.seq;
-            Log.Verbose("Building RTP packet seq:" + sequence);
+            //Log.Verbose("Building RTP packet seq:" + sequence);
             return new RTPDataPacket(false, sequence, ts, this.syncid, data);
         }
 
@@ -55,7 +55,7 @@ namespace LibTransport
         protected uint nextTimestamp()
         {
             DateTime packetdt = basetimestamp.AddMilliseconds(seq*audio.GetFrameLength()*1000);
-            Log.Verbose("Packet timestamp: " + packetdt + ":"+packetdt.Millisecond);
+            //Log.Verbose("Packet timestamp: " + packetdt + ":"+packetdt.Millisecond);
             return RTPPacket.BuildTimestamp(packetdt);
         }
 
@@ -93,6 +93,11 @@ namespace LibTransport
                 if (this.StreamingCompleted != null)
                     StreamingCompleted(this, null);
             }
+        }
+
+        public void Stop()
+        {
+            this.continueStreaming = false;
         }
     }
 }
