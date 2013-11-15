@@ -68,6 +68,7 @@ namespace SpeakerReceiver
                     return; //if we haven't yet got a basetime we can't proceed processing a data packet.
 
                 Buffer.Add(_p as RTPDataPacket);
+                player.Write(_p.Payload);
             }
         }
 
