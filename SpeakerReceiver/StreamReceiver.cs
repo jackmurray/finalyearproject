@@ -27,10 +27,14 @@ namespace SpeakerReceiver
             s.SetReceiveTimeout(1000);
         }
 
+        /// <summary>
+        /// Shut down all receiver threads.
+        /// </summary>
         public void Stop()
         {
+            //only call this method from outside the streamreceiver, because the internal threads are the ones being shut down!
             shouldRun = false;
-            while (receiveThread.IsAlive && playerThread.IsAlive)
+            while (receiveThread.IsAlive || playerThread.IsAlive)
             {
             }
             return;
@@ -43,7 +47,20 @@ namespace SpeakerReceiver
             this.receiveThread.Start();
 
             this.playerThread = new Thread(PlayerThreadProc);
-            this.playerThread.Start();
+        }
+
+        /// <summary>
+        /// Call from the receive thread to reset the player thread.
+        /// </summary>
+        private void Reset()
+        {
+            shouldRun = false;
+            while (playerThread.IsAlive)
+            {
+            }
+            shouldRun = true;
+            Buffer.Clear();
+            this.playerThread = new Thread(PlayerThreadProc);
         }
 
         private void HandlePacket(RTPPacket _p)
@@ -58,7 +75,7 @@ namespace SpeakerReceiver
                         Log.Verbose("Taking " + basetime + ":" + basetime.Millisecond + " as the base time stamp.");
                         break;
                     case RTPControlAction.Stop:
-                        this.player.Reset();
+                        this.Reset();
                         break;
                 }
             }
@@ -67,8 +84,13 @@ namespace SpeakerReceiver
                 if (basetime == null)
                     return; //if we haven't yet got a basetime we can't proceed processing a data packet.
 
-                Buffer.Add(_p as RTPDataPacket);
-                player.Write(_p.Payload);
+                lock (Buffer)
+                {
+                    Buffer.Add(_p as RTPDataPacket);
+                }
+
+                if (this.playerThread != null && this.playerThread.ThreadState == ThreadState.Unstarted)
+                    this.playerThread.Start();
             }
         }
 
@@ -90,11 +112,39 @@ namespace SpeakerReceiver
             }
         }
 
+        /// <summary>
+        /// Code executed by the audio player thread. This thread isn't started until there is at least one packet in the buffer.
+        /// </summary>
         private void PlayerThreadProc()
         {
+            int i = 0;
             while (shouldRun)
             {
-                
+                RTPDataPacket p = null;
+                while (p == null)
+                {
+                    //this section uses Monitor directly instead of the lock statement because we don't want to sleep holding the lock or have to acquire it twice
+                    Monitor.Enter(Buffer);
+                    if (Buffer.Count > i)
+                    {
+                        p = Buffer[i];
+                        Monitor.Exit(Buffer);
+                        i++;
+                    }
+                    else
+                    {
+                        Monitor.Exit(Buffer);
+                        Thread.Sleep(1);
+                        if (!shouldRun) return;
+                    }
+                }
+                DateTime packetactiontime = RTPPacket.BuildDateTime(p.Timestamp, this.basetime);
+                if (packetactiontime > DateTime.UtcNow)
+                {
+                    TimeSpan sleeptime = packetactiontime - DateTime.UtcNow;
+                    Thread.Sleep((int) sleeptime.TotalMilliseconds);
+                }
+                player.Write(p.Payload);
             }
         }
     }
