@@ -20,7 +20,7 @@ namespace LibAudio
         {
             if (p != null)
             {
-                p.Kill();
+                p.StandardInput.Close();
             }
 
             string program = Config.Get(Config.PLAYER_EXECUTABLE);
