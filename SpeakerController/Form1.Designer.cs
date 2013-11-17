@@ -46,6 +46,7 @@
             this.btnJoinGroup = new System.Windows.Forms.Button();
             this.btnStream = new System.Windows.Forms.Button();
             this.chkLogPause = new System.Windows.Forms.CheckBox();
+            this.btnStreamTestSound = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dGridTrace)).BeginInit();
             this.SuspendLayout();
             // 
@@ -226,11 +227,22 @@
             this.chkLogPause.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.chkLogPause.UseVisualStyleBackColor = true;
             // 
+            // btnStreamTestSound
+            // 
+            this.btnStreamTestSound.Location = new System.Drawing.Point(389, 224);
+            this.btnStreamTestSound.Name = "btnStreamTestSound";
+            this.btnStreamTestSound.Size = new System.Drawing.Size(109, 23);
+            this.btnStreamTestSound.TabIndex = 17;
+            this.btnStreamTestSound.Text = "Send Test Sound";
+            this.btnStreamTestSound.UseVisualStyleBackColor = true;
+            this.btnStreamTestSound.Click += new System.EventHandler(this.btnStreamTestSound_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(832, 464);
+            this.Controls.Add(this.btnStreamTestSound);
             this.Controls.Add(this.chkLogPause);
             this.Controls.Add(this.btnStream);
             this.Controls.Add(this.btnJoinGroup);
@@ -275,6 +287,7 @@
         private System.Windows.Forms.Button btnJoinGroup;
         private System.Windows.Forms.Button btnStream;
         private System.Windows.Forms.CheckBox chkLogPause;
+        private System.Windows.Forms.Button btnStreamTestSound;
     }
 }
 

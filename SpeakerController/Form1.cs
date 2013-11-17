@@ -250,6 +250,14 @@ namespace SpeakerController
             this.stream = new RTPOutputStream(new IPEndPoint(IPAddress.Parse(txtGroupAddr.Text), 10452));
             stream.Stream(audio);
         }
+
+        private void btnStreamTestSound_Click(object sender, EventArgs e)
+        {
+            Stream s = File.OpenRead("test.mp3");
+            IAudioFormat r = SupportedAudio.FindReaderForFile(s);
+            this.audio = r;
+            btnStream_Click(this, null);
+        }
     }
 
     public class DataGridTraceListener : TraceListener
