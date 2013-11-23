@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using LibSecurity;
 using LibTrace;
 
 namespace LibTransport
@@ -10,6 +11,7 @@ namespace LibTransport
         protected UdpClient c;
         protected IPEndPoint ep;
         protected static Trace Log = Trace.GetInstance("LibTransport");
+        protected PacketEncrypter crypto;
 
         protected RTPStreamBase(IPEndPoint ep)
         {
@@ -21,6 +23,8 @@ namespace LibTransport
             c = new UdpClient(AddressFamily.InterNetwork);
             c.JoinMulticastGroup(ep.Address);
             this.ep = ep;
+
+            this.crypto = new PacketEncrypter(IPAddress.IPv6Loopback.GetAddressBytes(), 1); //convenient 128 bits
         }
     }
 }

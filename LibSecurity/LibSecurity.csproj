@@ -40,6 +40,7 @@
     <Compile Include="ChallengeResponse.cs" />
     <Compile Include="Hasher.cs" />
     <Compile Include="KeyManager.cs" />
+    <Compile Include="PacketEncrypter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Signer.cs" />
     <Compile Include="Util.cs" />
