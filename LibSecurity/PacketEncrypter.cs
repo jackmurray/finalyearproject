@@ -35,6 +35,11 @@ namespace LibSecurity
             cipher.Init(true, new ParametersWithIV(this.key, iv));
         }
 
+        /// <summary>
+        /// Create a new instance for encryption. Nonce will be generated with CSPRNG.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="ctr"></param>
         public PacketEncrypter(byte[] key, long ctr)
         {
             RandomNumberGenerator rand = new RNGCryptoServiceProvider();
@@ -44,7 +49,7 @@ namespace LibSecurity
         }
 
         /// <summary>
-        /// For decryption, when the nonce must be specified (as transmitted by the controller).
+        /// Create a new instance for encryption or decryption with the specified nonce.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="ctr"></param>
@@ -52,6 +57,28 @@ namespace LibSecurity
         public PacketEncrypter(byte[] key, long ctr, byte[] nonce)
         {
             this.Init(key, nonce, ctr);
+        }
+
+        public byte[] Encrypt(byte[] data)
+        {
+            int realDataLength = data.Length;
+            //BC has a bug that forces you to round this up to the nearest blocksize multiple. because we're in CTR mode we only really need a buffer the same size as our data...
+            int bufSize = realDataLength;
+            int diff = realDataLength%cipher.GetBlockSize();
+            bufSize += diff != 0 ? (cipher.GetBlockSize() - diff) : 0; 
+            byte[] output = new byte[bufSize];
+            int bytesLeft = data.Length;
+
+            //will process only a whole number of blocks. there can be 0 - 15 bytes left unprocessed after this call.
+            bytesLeft -= cipher.ProcessBytes(data, output, 0);
+
+            if (bytesLeft == 0)
+                return output;
+            else
+            {
+                cipher.DoFinal(output, realDataLength - bytesLeft);
+            }
+            return output.Take(realDataLength).ToArray();
         }
     }
 }
