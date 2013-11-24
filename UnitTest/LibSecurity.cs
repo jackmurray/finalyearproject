@@ -58,5 +58,14 @@ namespace UnitTest
             Assert.IsTrue(
                 output.SequenceEqual(NIST_RESULT1));
         }
+
+        [TestMethod]
+        public void TestPacketCryptoPartialBlock()
+        {
+            PacketEncrypter enc = SetupEncrypter();
+            byte[] output = enc.Encrypt(NIST_DATA1.Take(NIST_DATA1.Length-1).ToArray());
+            Assert.IsTrue(
+                output.SequenceEqual(NIST_RESULT1.Take(NIST_RESULT1.Length-1).ToArray()));
+        }
     }
 }
