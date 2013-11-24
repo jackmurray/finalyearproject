@@ -11,4 +11,5 @@
 	<streamBufferTime>2</streamBufferTime>
 	<playerExecutable>vlc</playerExecutable>
 	<playerArgs>-</playerArgs>
+	<enableEncryption>true</enableEncryption>
 </config>

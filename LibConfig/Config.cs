@@ -28,6 +28,7 @@ namespace LibConfig
         public const string STREAM_BUFFER_TIME = "streamBufferTime"; //The number of seconds of audio data to pre-buffer.
         public const string PLAYER_EXECUTABLE = "playerExecutable";
         public const string PLAYER_ARGUMENTS = "playerArgs";
+        public const string ENABLE_ENCRYPTION = "enableEncryption";
 
         public static bool IsRunningOnMono { get; private set; }
 
