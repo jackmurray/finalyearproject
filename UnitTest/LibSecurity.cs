@@ -41,19 +41,19 @@ namespace UnitTest
             Assert.IsFalse(cr.Verify(key, sig)); //fails because the sig is invalid now
         }
 
-        private PacketEncrypter SetupEncrypter()
+        private PacketEncrypter SetupEncrypter(bool forEncryption)
         {
             //this is the NIST test data for AES-CTR
             byte[] key = new byte[] { 0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c, };
             byte[] nonce = new byte[] { 0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7 };
             long ctr = -506097522914230529; //0xf8f9fafbfcfdfeff in signed long
-            return new PacketEncrypter(key, ctr, nonce);
+            return new PacketEncrypter(key, ctr, nonce, forEncryption);
         }
 
         [TestMethod]
         public void TestPacketCryptoExactBlock()
         {
-            PacketEncrypter enc = SetupEncrypter();
+            PacketEncrypter enc = SetupEncrypter(true);
             byte[] output = enc.Encrypt(NIST_DATA1);
             Assert.IsTrue(
                 output.SequenceEqual(NIST_RESULT1));
@@ -62,10 +62,30 @@ namespace UnitTest
         [TestMethod]
         public void TestPacketCryptoPartialBlock()
         {
-            PacketEncrypter enc = SetupEncrypter();
+            PacketEncrypter enc = SetupEncrypter(true);
             byte[] output = enc.Encrypt(NIST_DATA1.Take(NIST_DATA1.Length-1).ToArray());
             Assert.IsTrue(
                 output.SequenceEqual(NIST_RESULT1.Take(NIST_RESULT1.Length-1).ToArray()));
+        }
+
+        [TestMethod]
+        public void TestPacketCryptoDecryptExactBlock()
+        {
+            PacketEncrypter enc = SetupEncrypter(true);
+            byte[] cipher = enc.Encrypt(NIST_DATA1);
+            enc = SetupEncrypter(false);
+            byte[] plain = enc.Decrypt(cipher);
+            Assert.IsTrue(plain.SequenceEqual(NIST_DATA1));
+        }
+
+        [TestMethod]
+        public void TestPacketCryptoDecryptPartialBlock()
+        {
+            PacketEncrypter enc = SetupEncrypter(true);
+            byte[] cipher = enc.Encrypt(NIST_DATA1.Take(NIST_DATA1.Length - 1).ToArray());
+            enc = SetupEncrypter(false);
+            byte[] plain = enc.Decrypt(cipher);
+            Assert.IsTrue(plain.SequenceEqual(NIST_DATA1.Take(NIST_DATA1.Length - 1).ToArray()));
         }
     }
 }

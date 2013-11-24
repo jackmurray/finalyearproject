@@ -17,8 +17,9 @@ namespace LibSecurity
         private IBufferedCipher cipher = CipherUtilities.GetCipher("AES/CTR/NoPadding");
         private KeyParameter key;
         private byte[] nonce;
+        private bool mode;
 
-        private void Init(byte[] key, byte[] nonce, long ctr)
+        private void Init(bool forEncryption, byte[] key, byte[] nonce, long ctr)
         {
             this.key = new KeyParameter(key);
 
@@ -32,7 +33,8 @@ namespace LibSecurity
             byte[] ctrbytes = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(ctr));
             Array.Copy(ctrbytes, 0, iv, iv.Length - 8, 8);
 
-            cipher.Init(true, new ParametersWithIV(this.key, iv));
+            cipher.Init(forEncryption, new ParametersWithIV(this.key, iv));
+            mode = forEncryption;
         }
 
         /// <summary>
@@ -45,7 +47,7 @@ namespace LibSecurity
             RandomNumberGenerator rand = new RNGCryptoServiceProvider();
             nonce = new byte[cipher.GetBlockSize() / 2]; 
             rand.GetBytes(nonce);
-            this.Init(key, nonce, ctr);
+            this.Init(true, key, nonce, ctr);
         }
 
         /// <summary>
@@ -54,12 +56,18 @@ namespace LibSecurity
         /// <param name="key"></param>
         /// <param name="ctr"></param>
         /// <param name="nonce"></param>
-        public PacketEncrypter(byte[] key, long ctr, byte[] nonce)
+        public PacketEncrypter(byte[] key, long ctr, byte[] nonce, bool forEncryption)
         {
-            this.Init(key, nonce, ctr);
+            this.Init(forEncryption, key, nonce, ctr);
         }
 
-        public byte[] Encrypt(byte[] data)
+        /// <summary>
+        /// Performs the AES-CTR transform. The actual operation for encryption and decryption is the same (a block of data, either cipher or plain text is XOR'd with the result of AESEncrypt(counter)).
+        /// Because of the nature of this algorithm we can therefore use the exact same code for both.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        private byte[] Transform(byte[] data)
         {
             int realDataLength = data.Length;
             //BC has a bug that forces you to round this up to the nearest blocksize multiple. because we're in CTR mode we only really need a buffer the same size as our data...
@@ -79,6 +87,18 @@ namespace LibSecurity
                 cipher.DoFinal(output, realDataLength - bytesLeft);
             }
             return output.Take(realDataLength).ToArray();
+        }
+
+        public byte[] Encrypt(byte[] data)
+        {
+            if (mode != true) throw new InvalidOperationException("This instance was initialised for encryption only!");
+            return Transform(data);
+        }
+
+        public byte[] Decrypt(byte[] data)
+        {
+            if (mode != false) throw new InvalidOperationException("This instance was initialised for encryption only!");
+            return Transform(data);
         }
     }
 }
