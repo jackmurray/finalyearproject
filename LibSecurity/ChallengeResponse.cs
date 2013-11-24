@@ -10,7 +10,6 @@ namespace LibSecurity
     {
         public const int CHALLENGE_SIZE = 32;
         public const int ROUNDS = 10000; //takes about 3 seconds on the Pi. Not as many rounds as I'd like but it's a hard perf limit.
-        private static RandomNumberGenerator rand = new RNGCryptoServiceProvider();
 
         public byte[] ChallengeBytes { get; private set; }
 
@@ -19,8 +18,7 @@ namespace LibSecurity
         /// </summary>
         public ChallengeResponse()
         {
-            ChallengeBytes = new byte[CHALLENGE_SIZE];
-            rand.GetBytes(ChallengeBytes);
+            ChallengeBytes = CryptRandom.GetBytes(CHALLENGE_SIZE);
         }
 
         /// <summary>

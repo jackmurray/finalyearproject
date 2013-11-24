@@ -44,10 +44,7 @@ namespace LibSecurity
         /// <param name="ctr"></param>
         public PacketEncrypter(byte[] key, long ctr)
         {
-            RandomNumberGenerator rand = new RNGCryptoServiceProvider();
-            nonce = new byte[cipher.GetBlockSize() / 2]; 
-            rand.GetBytes(nonce);
-            this.Init(true, key, nonce, ctr);
+            this.Init(true, key, CryptRandom.GetBytes(cipher.GetBlockSize() / 2), ctr);
         }
 
         /// <summary>
