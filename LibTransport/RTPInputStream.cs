@@ -18,7 +18,7 @@ namespace LibTransport
         {
             this.key = key;
             this.nonce = nonce;
-            this.crypto = new PacketEncrypter(key, 0, nonce, true); //this can be used for packets received in sequence. another instance must be created to handle out of sequence packets.
+            this.crypto = new PacketEncrypter(key, 0, nonce, false); //this can be used for packets received in sequence. another instance must be created to handle out of sequence packets.
         }
 
         public void SetReceiveTimeout(int ms)
