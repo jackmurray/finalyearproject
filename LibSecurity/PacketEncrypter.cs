@@ -19,12 +19,18 @@ namespace LibSecurity
         private byte[] nonce;
         private bool mode;
 
-        private void Init(bool forEncryption, byte[] key, byte[] nonce, long ctr)
+        public const int KEY_LENGTH = 16;
+        public const int NONCE_LENGTH = 8; //hardcoded to AES128 values.
+
+        private void Init(byte[] key, long ctr, byte[] nonce, bool forEncryption)
         {
+            if (key.Length != KEY_LENGTH)
+                throw new ArgumentException("Key must be " + KEY_LENGTH + " bytes.");
+
             this.key = new KeyParameter(key);
 
             int bs = cipher.GetBlockSize();
-            if (nonce.Length != bs - 8) //only the top part of the IV will be the nonce. bottom 8 bytes will be counter.
+            if (nonce.Length != bs - 8 || nonce.Length != NONCE_LENGTH) //only the top part of the IV will be the nonce. bottom 8 bytes will be counter.
                 throw new ArgumentException("Nonce must be == blockSize - 8 in length");
 
             byte[] iv = new byte[bs];
@@ -38,16 +44,6 @@ namespace LibSecurity
         }
 
         /// <summary>
-        /// Create a new instance for encryption. Nonce will be generated with CSPRNG.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="ctr"></param>
-        public PacketEncrypter(byte[] key, long ctr)
-        {
-            this.Init(true, key, CryptRandom.GetBytes(cipher.GetBlockSize() / 2), ctr);
-        }
-
-        /// <summary>
         /// Create a new instance for encryption or decryption with the specified nonce.
         /// </summary>
         /// <param name="key"></param>
@@ -55,7 +51,7 @@ namespace LibSecurity
         /// <param name="nonce"></param>
         public PacketEncrypter(byte[] key, long ctr, byte[] nonce, bool forEncryption)
         {
-            this.Init(forEncryption, key, nonce, ctr);
+            this.Init(key, ctr, nonce, forEncryption);
         }
 
         /// <summary>
@@ -96,6 +92,16 @@ namespace LibSecurity
         {
             if (mode != false) throw new InvalidOperationException("This instance was initialised for encryption only!");
             return Transform(data);
+        }
+
+        public static byte[] GenerateKey()
+        {
+            return CryptRandom.GetBytes(KEY_LENGTH);
+        }
+
+        public static byte[] GenerateNonce()
+        {
+            return CryptRandom.GetBytes(NONCE_LENGTH);
         }
     }
 }

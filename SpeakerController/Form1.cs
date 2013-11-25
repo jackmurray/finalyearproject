@@ -32,12 +32,17 @@ namespace SpeakerController
         private IAudioFormat audio;
         private RTPOutputStream stream;
 
+        private byte[] enckey, nonce;
+
         public bool ShouldAdvanceLog { get { return !chkLogPause.Checked; } }
 
         public Form1()
         {
             InitializeComponent();
             Text = string.Format("{0}-{1}", GetBuildVersion(), GetBuildFlavour());
+
+            enckey = PacketEncrypter.GenerateKey();
+            nonce = PacketEncrypter.GenerateNonce();
         }
 
         public static string GetBuildFlavour()
@@ -247,7 +252,9 @@ namespace SpeakerController
 
         private void btnStream_Click(object sender, EventArgs e)
         {
-            this.stream = new RTPOutputStream(new IPEndPoint(IPAddress.Parse(txtGroupAddr.Text), 10452));
+            this.stream = new RTPOutputStream(new IPEndPoint(IPAddress.Parse(txtGroupAddr.Text), 10452), Config.GetFlag("enableEncryption"), enckey, nonce);
+            enckey = PacketEncrypter.GenerateKey();
+            nonce = PacketEncrypter.GenerateNonce(); //reset the key/nonce for the next time this is called. only the rtpoutputstream needs the key/nonce after it's created.
             stream.Stream(audio);
         }
 

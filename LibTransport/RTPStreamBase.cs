@@ -11,9 +11,13 @@ namespace LibTransport
         protected UdpClient c;
         protected IPEndPoint ep;
         protected static Trace Log = Trace.GetInstance("LibTransport");
-        protected PacketEncrypter crypto;
 
-        protected RTPStreamBase(IPEndPoint ep)
+        protected PacketEncrypter crypto;
+        protected bool useEncryption;
+        protected byte[] key, nonce;
+        //CTR is the sequence value. don't need a separate value here.
+
+        protected RTPStreamBase(IPEndPoint ep, bool useEncryption)
         {
             if (ep.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork)
                 throw new ArgumentException("IP endpoint must be AF_INET. IPv6 is currently not supported.");
@@ -24,7 +28,8 @@ namespace LibTransport
             c.JoinMulticastGroup(ep.Address);
             this.ep = ep;
 
-            this.crypto = new PacketEncrypter(IPAddress.IPv6Loopback.GetAddressBytes(), 1); //convenient 128 bits
+            this.useEncryption = useEncryption;
+            Log.Information("Creating RTP stream endpoint. Encryption = " + this.useEncryption);
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using LibAudio;
+using LibSecurity;
 using LibTrace;
 
 namespace LibTransport
@@ -21,8 +22,20 @@ namespace LibTransport
         public event StreamingCompletedHandler StreamingCompleted;
         private bool continueStreaming = true;
 
-        public RTPOutputStream(IPEndPoint ep) : base(ep)
+        public RTPOutputStream(IPEndPoint ep, bool useEncryption) : base(ep, useEncryption)
         {
+            
+        }
+
+        public RTPOutputStream(IPEndPoint ep, bool useEncryption, byte[] key, byte[] nonce) : this(ep, useEncryption)
+        {
+            if (!useEncryption)
+                throw new ArgumentException("This constructor must have useEncryption set to true.");
+
+            this.key = key;
+            this.nonce = nonce;
+            this.crypto = new PacketEncrypter(key, seq + 1, nonce, true);
+            //will need to be adjusted when sequence epochs are implemented.
             
         }
 
