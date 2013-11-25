@@ -48,7 +48,10 @@ namespace LibService
             {
                 ServiceMessageResponse messageResponse = service.HandleMessage(m, _s.RemoteCertificate);
                 SendResp(messageResponse);
-                Log.Verbose("Message response sent.");
+                if (messageResponse.ResponseCode == HttpResponseCode.OK)
+                    Log.Verbose("Message response sent.");
+                else
+                    Log.Error("Error in service " + m.serviceID + "/" + m.operationID + ": " + messageResponse.Data);
             }
             catch (Exception ex)
             {
