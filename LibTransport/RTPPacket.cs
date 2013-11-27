@@ -33,12 +33,12 @@ namespace LibTransport
             this.Payload = Payload;
         }
 
-        private MemoryStream SerialiseHeader()
+        private MemoryStream SerialiseHeader(bool includeExtension = false)
         {
             MemoryStream ms = new MemoryStream();
             byte byte1 = 0x00, byte2 = 0x00;
             if (Padding) byte1 |= 0x20;
-
+            if (includeExtension) byte1 |= 0x10;
             byte1 |= (Version << 6);
 
             byte2 |= (byte)(PayloadType);
@@ -62,7 +62,7 @@ namespace LibTransport
 
         public byte[] SerialiseEncrypted(PacketEncrypter crypto, long encryption_ctr)
         {
-            MemoryStream ms = SerialiseHeader();
+            MemoryStream ms = SerialiseHeader(true);
             //TODO: Write CTR into RTP header.
             ms.Write(crypto.Encrypt(Payload), 0, Payload.Length);
             return ms.ToArray();
