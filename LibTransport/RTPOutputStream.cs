@@ -15,6 +15,7 @@ namespace LibTransport
     {
         private IAudioFormat audio;
         private ushort seq = 0;
+        private long encryption_ctr = 0;
         private uint syncid = (uint)new Random().Next();
         private DateTime basetimestamp;
 
@@ -34,15 +35,15 @@ namespace LibTransport
 
             this.key = key;
             this.nonce = nonce;
-            this.crypto = new PacketEncrypter(key, seq + 1, nonce, true);
-            //will need to be adjusted when sequence epochs are implemented.
-            
+            this.crypto = new PacketEncrypter(key, encryption_ctr, nonce, true);
         }
 
         public void Send(RTPPacket p)
         {
-            byte[] data = p.Serialise();
+            byte[] data = useEncryption == false ? p.Serialise() : p.SerialiseEncrypted(crypto, encryption_ctr);
             c.Send(data, data.Length, ep);
+            encryption_ctr += p.GetCounterIncrement(crypto);
+            this.crypto.Init(this.key, encryption_ctr, nonce, true);
         }
 
         protected RTPPacket BuildPacket(byte[] data)

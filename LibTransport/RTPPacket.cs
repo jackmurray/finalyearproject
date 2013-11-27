@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using LibSecurity;
 using LibUtil;
 
 namespace LibTransport
@@ -32,7 +33,7 @@ namespace LibTransport
             this.Payload = Payload;
         }
 
-        public byte[] Serialise()
+        private MemoryStream SerialiseHeader()
         {
             MemoryStream ms = new MemoryStream();
             byte byte1 = 0x00, byte2 = 0x00;
@@ -49,9 +50,27 @@ namespace LibTransport
             ms.Write(Util.Encode(Timestamp), 0, 4);
             ms.Write(Util.Encode(SyncSource), 0, 4);
 
-            ms.Write(Payload, 0, Payload.Length);
+            return ms;
+        }
 
+        public byte[] Serialise()
+        {
+            MemoryStream ms = SerialiseHeader();
+            ms.Write(Payload, 0, Payload.Length);
             return ms.ToArray();
+        }
+
+        public byte[] SerialiseEncrypted(PacketEncrypter crypto, long encryption_ctr)
+        {
+            MemoryStream ms = SerialiseHeader();
+            //TODO: Write CTR into RTP header.
+            ms.Write(crypto.Encrypt(Payload), 0, Payload.Length);
+            return ms.ToArray();
+        }
+
+        public int GetCounterIncrement(PacketEncrypter crypto)
+        {
+            return ((int)(Payload.Length / crypto.GetBlockSize())) + 1;
         }
 
         public static uint BuildTimestamp(DateTime dt)
