@@ -22,7 +22,14 @@ namespace LibSecurity
         public const int KEY_LENGTH = 16;
         public const int NONCE_LENGTH = 8; //hardcoded to AES128 values.
 
-        private void Init(byte[] key, long ctr, byte[] nonce, bool forEncryption)
+        /// <summary>
+        /// Automatically called by the constructor to set up the cipher. Can be called at any time to reset the state, and change the counter.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="ctr"></param>
+        /// <param name="nonce"></param>
+        /// <param name="forEncryption"></param>
+        public void Init(byte[] key, long ctr, byte[] nonce, bool forEncryption)
         {
             if (key.Length != KEY_LENGTH)
                 throw new ArgumentException("Key must be " + KEY_LENGTH + " bytes.");
@@ -52,6 +59,11 @@ namespace LibSecurity
         public PacketEncrypter(byte[] key, long ctr, byte[] nonce, bool forEncryption)
         {
             this.Init(key, ctr, nonce, forEncryption);
+        }
+
+        public int GetBlockSize()
+        {
+            return cipher.GetBlockSize();
         }
 
         /// <summary>
