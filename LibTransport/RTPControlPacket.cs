@@ -11,8 +11,8 @@ namespace LibTransport
         public byte[] ExtraData { get; protected set; }
 
         //Call the base constructor with a Payload built from the Action and the ExtraData converted to a new byte[]
-        public RTPControlPacket(RTPControlAction Action, byte[] ExtraData, ushort SequenceNumber, uint Timestamp, uint SyncSource) : 
-            base(false, true, SequenceNumber, Timestamp, SyncSource, new byte[]{(byte)Action}.Concat(ExtraData ?? new byte[0]).ToArray())
+        public RTPControlPacket(RTPControlAction Action, byte[] ExtraData, bool Extension, ushort SequenceNumber, uint Timestamp, uint SyncSource, byte[] ExtensionData) : 
+            base(false, true, Extension, SequenceNumber, Timestamp, SyncSource, new byte[]{(byte)Action}.Concat(ExtraData ?? new byte[0]).ToArray(), ExtensionData)
         {
             this.Action = Action;
             this.ExtraData = ExtraData;
@@ -40,12 +40,13 @@ namespace LibTransport
         public static RTPControlPacket BuildPlayPacket(ushort SequenceNumber, uint Timestamp, uint SyncSource)
         {
             byte[] extra = LibUtil.Util.Encode(DateTime.UtcNow.Ticks);
-            return new RTPControlPacket(RTPControlAction.Play, extra, SequenceNumber, Timestamp, SyncSource);
+            //extension stuff set to false/null as it'll be set later.
+            return new RTPControlPacket(RTPControlAction.Play, extra, false, SequenceNumber, Timestamp, SyncSource, null);
         }
 
         public static RTPControlPacket BuildStopPacket(ushort SequenceNumber, uint Timestamp, uint SyncSource)
         {
-            return new RTPControlPacket(RTPControlAction.Stop, null, SequenceNumber, Timestamp, SyncSource);
+            return new RTPControlPacket(RTPControlAction.Stop, null, false, SequenceNumber, Timestamp, SyncSource, null);
         }
     }
 

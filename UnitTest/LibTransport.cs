@@ -44,7 +44,7 @@ namespace UnitTest
         [TestMethod]
         public void TestRTPOutputStreamSend()
         {
-            RTPPacket p = new RTPDataPacket(false, 1, 1, 1, new byte[] {0xDE, 0xAD, 0xBE, 0xEF});
+            RTPPacket p = new RTPDataPacket(false, false, 1, 1, 1, new byte[] {0xDE, 0xAD, 0xBE, 0xEF}, null);
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse("224.1.1.1"), 1000);
             new RTPOutputStream(ep, false).Send(p);
         }
@@ -62,7 +62,7 @@ namespace UnitTest
         [TestMethod]
         public void TestRTPPacketParse()
         {
-            var p = new RTPDataPacket(false, 1234, 5678, 9090, new byte[] {0x13, 0x37});
+            var p = new RTPDataPacket(false, false, 1234, 5678, 9090, new byte[] {0x13, 0x37}, null);
             var p2 = RTPPacket.Parse(p.Serialise());
             Assert.AreEqual(p.Marker, p2.Marker);
             Assert.AreEqual(p.Padding, p2.Padding);
@@ -71,12 +71,12 @@ namespace UnitTest
             Assert.AreEqual(p.SyncSource, p2.SyncSource);
             Assert.AreEqual(p.Timestamp, p2.Timestamp);
 
-            var p3 = new RTPControlPacket(RTPControlAction.Play, null, 1234, 5678, 9090);
+            var p3 = new RTPControlPacket(RTPControlAction.Play, null, false, 1234, 5678, 9090, null);
             var p4 = RTPPacket.Parse(p3.Serialise());
             Assert.IsTrue(p3.Payload.SequenceEqual(p4.Payload));
             //no need to test anything other than payload as the logic/code doesn't change for the other fields.
 
-            p3 = new RTPControlPacket(RTPControlAction.Pause, new byte[]{0x01, 0x02}, 1234, 5678, 9090);
+            p3 = new RTPControlPacket(RTPControlAction.Pause, new byte[]{0x01, 0x02}, false, 1234, 5678, 9090, null);
             p4 = RTPPacket.Parse(p3.Serialise());
             Assert.IsTrue(p3.Payload.SequenceEqual(p4.Payload));
         }

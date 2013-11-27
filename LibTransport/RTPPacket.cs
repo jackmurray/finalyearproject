@@ -15,24 +15,28 @@ namespace LibTransport
     {
         public const short Version = 2;
         public bool Padding {get; protected set;}
+        public bool HasExtension { get; protected set; }
         public bool Marker { get; protected set; }
         public const ushort PayloadType = 35;
         public ushort SequenceNumber { get; protected set; }
         public uint Timestamp {get; protected set;}
         public uint SyncSource { get; protected set; }
         public byte[] Payload { get; protected set;}
+        public byte[] ExtensionData { get; protected set; }
 
         protected byte[] extensionHeaderID = {0x00, 0x00};
 
-        protected RTPPacket(bool Padding, bool Marker, ushort SequenceNumber, uint Timestamp,
-                         uint SyncSource, byte[] Payload)
+        protected RTPPacket(bool Padding, bool Extension, bool Marker, ushort SequenceNumber, uint Timestamp,
+                         uint SyncSource, byte[] Payload, byte[] ExtensionData)
         {
             this.Padding = Padding;
+            this.HasExtension = Extension;
             this.Marker = Marker;
             this.SequenceNumber = SequenceNumber;
             this.Timestamp = Timestamp;
             this.SyncSource = SyncSource;
             this.Payload = Payload;
+            this.ExtensionData = ExtensionData;
         }
 
         private MemoryStream SerialiseHeader(bool includeExtension = false)
@@ -126,8 +130,15 @@ namespace LibTransport
 
             bool Padding = ((data[0] & 0x20) != 0x00);
 
-            if ((data[0] & 0x10) != 0x00)
-                throw new FormatException("RTP extensions are not supported.");
+            bool extension = false;
+            byte[] extensionData = new byte[0]; //initialiser is to shut the compiler up. it complains about a possible uninitialised access in the data.Skip() ternary but it's actually ok because it'll never be accessed if it wasn't set.
+            if ((data[0] & 0x10) != 0x00) //packet has extension header and is encrypted
+            {
+                extension = true;
+                //ignoring the extension type ID for now. it would be at index 12.
+                int extensionLen = Util.DecodeUshort(data, 14) * 4;
+                extensionData = data.Skip(16).Take(extensionLen).ToArray();
+            }
 
             if ((data[0] & 0x0F) != 0x00)
                 throw new FormatException("CSRC not supported.");
@@ -140,10 +151,10 @@ namespace LibTransport
             ushort seq = Util.DecodeUshort(data, 2);
             uint timestamp = Util.DecodeUint(data, 4);
             uint ssrc = Util.DecodeUint(data, 8);
-            byte[] payload = data.Skip(12).ToArray();
+            byte[] payload = data.Skip(12 + (extension == true ? extensionData.Length : 0)).ToArray();
 
             if (!isControl)
-                return new RTPDataPacket(Padding, seq, timestamp, ssrc, payload);
+                return new RTPDataPacket(Padding, extension, seq, timestamp, ssrc, payload, extensionData);
             else
             {
                 if (payload.Length < 1)
@@ -155,7 +166,7 @@ namespace LibTransport
                 if (payload.Length > 1)
                     extradata = payload.Skip(1).ToArray(); //take the payload minus the first byte as the extra data.
 
-                return new RTPControlPacket(a, extradata, seq, timestamp, ssrc);
+                return new RTPControlPacket(a, extradata, extension, seq, timestamp, ssrc, extensionData);
             }
         }
     }

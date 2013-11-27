@@ -7,8 +7,8 @@ namespace LibTransport
 {
     public class RTPDataPacket : RTPPacket
     {
-        public RTPDataPacket(bool Padding, ushort SequenceNumber, uint Timestamp, uint SyncSource, byte[] Payload)
-            : base(Padding, false, SequenceNumber, Timestamp, SyncSource, Payload)
+        public RTPDataPacket(bool Padding, bool Extension, ushort SequenceNumber, uint Timestamp, uint SyncSource, byte[] Payload, byte[] ExtensionData)
+            : base(Padding, Extension, false, SequenceNumber, Timestamp, SyncSource, Payload, ExtensionData)
         {
             
         }
