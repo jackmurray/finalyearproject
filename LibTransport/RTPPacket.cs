@@ -70,7 +70,9 @@ namespace LibTransport
 
         public int GetCounterIncrement(PacketEncrypter crypto)
         {
-            return ((int)(Payload.Length / crypto.GetBlockSize())) + 1;
+            int wholeBlocks = Payload.Length/crypto.GetBlockSize();
+            int extra = Payload.Length%crypto.GetBlockSize();
+            return wholeBlocks + (extra != 0 ? 1 : 0);
         }
 
         public static uint BuildTimestamp(DateTime dt)
