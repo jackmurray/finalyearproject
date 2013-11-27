@@ -22,6 +22,8 @@ namespace LibTransport
         public uint SyncSource { get; protected set; }
         public byte[] Payload { get; protected set;}
 
+        protected byte[] extensionHeaderID = {0x00, 0x00};
+
         protected RTPPacket(bool Padding, bool Marker, ushort SequenceNumber, uint Timestamp,
                          uint SyncSource, byte[] Payload)
         {
@@ -63,7 +65,20 @@ namespace LibTransport
         public byte[] SerialiseEncrypted(PacketEncrypter crypto, long encryption_ctr)
         {
             MemoryStream ms = SerialiseHeader(true);
-            //TODO: Write CTR into RTP header.
+            ms.Write(extensionHeaderID, 0, extensionHeaderID.Length);
+
+            MemoryStream extensionHeader = new MemoryStream();
+            byte[] encodedctr = Util.Encode(encryption_ctr);
+            extensionHeader.Write(encodedctr, 0, encodedctr.Length);
+
+            byte[] extensionData = extensionHeader.ToArray();
+            ushort extensionLen = (ushort) ((extensionHeader.Length / 4)); //RTP counts the number of 32-bit blocks.
+            extensionLen += (ushort)(extensionHeader.Length % 4 != 0 ? 1 : 0);
+
+            byte[] encodedExtensionLen = Util.Encode(extensionLen);
+            ms.Write(encodedExtensionLen, 0, encodedExtensionLen.Length);
+            ms.Write(extensionData, 0, extensionData.Length);
+
             ms.Write(crypto.Encrypt(Payload), 0, Payload.Length);
             return ms.ToArray();
         }
