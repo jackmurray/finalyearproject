@@ -66,14 +66,20 @@ namespace LibTransport
             return ms.ToArray();
         }
 
-        public byte[] SerialiseEncrypted(PacketEncrypter crypto, long encryption_ctr)
+        public byte[] SerialiseEncrypted(PacketEncrypter crypto, long encryption_ctr, Signer s = null)
         {
             MemoryStream ms = SerialiseHeader(true);
             ms.Write(extensionHeaderID, 0, extensionHeaderID.Length);
 
             MemoryStream extensionHeader = new MemoryStream();
             byte[] encodedctr = Util.Encode(encryption_ctr);
-            extensionHeader.Write(encodedctr, 0, encodedctr.Length);
+            extensionHeader.Write(encodedctr, 0, encodedctr.Length);//write the 8-byte CTR
+
+            if (s != null)
+            {
+                byte[] sig = s.Sign(Payload);
+                extensionHeader.Write(sig, 0, sig.Length);
+            }
 
             byte[] extensionData = extensionHeader.ToArray();
             ushort extensionLen = (ushort) ((extensionHeader.Length / 4)); //RTP counts the number of 32-bit blocks.

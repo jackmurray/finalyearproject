@@ -18,6 +18,7 @@ namespace LibTransport
         private long encryption_ctr = 0;
         private uint syncid = (uint)new Random().Next();
         private DateTime basetimestamp;
+        private Signer signer = null;
 
         public delegate void StreamingCompletedHandler(object sender, EventArgs args);
         public event StreamingCompletedHandler StreamingCompleted;
@@ -38,9 +39,16 @@ namespace LibTransport
             this.crypto = new PacketEncrypter(key, encryption_ctr, nonce, true);
         }
 
+        public RTPOutputStream(IPEndPoint ep, bool useEncryption, byte[] key, byte[] nonce, Signer s)
+            : this(ep, useEncryption, key, nonce)
+        {
+            this.signer = s;
+            this.useAuthentication = true;
+        }
+
         public void Send(RTPPacket p)
         {
-            byte[] data = useEncryption == false ? p.Serialise() : p.SerialiseEncrypted(crypto, encryption_ctr);
+            byte[] data = useEncryption == false ? p.Serialise() : p.SerialiseEncrypted(crypto, encryption_ctr, signer);
             c.Send(data, data.Length, ep);
             encryption_ctr += p.GetCounterIncrement(crypto);
             this.crypto.Init(this.key, encryption_ctr, nonce, true);
