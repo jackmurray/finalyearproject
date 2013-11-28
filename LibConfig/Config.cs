@@ -29,6 +29,7 @@ namespace LibConfig
         public const string PLAYER_EXECUTABLE = "playerExecutable";
         public const string PLAYER_ARGUMENTS = "playerArgs";
         public const string ENABLE_ENCRYPTION = "enableEncryption";
+        public const string ENABLE_AUTHENTICATION = "enableAuthentication";
 
         public static bool IsRunningOnMono { get; private set; }
 

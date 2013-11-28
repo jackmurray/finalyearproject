@@ -12,4 +12,5 @@
 	<playerExecutable>vlc</playerExecutable>
 	<playerArgs>-</playerArgs>
 	<enableEncryption>true</enableEncryption>
+	<enableAuthentication>true</enableAuthentication>
 </config>
