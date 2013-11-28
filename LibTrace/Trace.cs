@@ -14,13 +14,13 @@ namespace LibTrace
         private TraceSource s;
         private int id = 0;
         private static readonly Dictionary<string, Trace> Objects = new Dictionary<string, Trace>();
-        private SourceLevels Level = Config.GetTraceLevel(); //the same for all sources at the moment. TODO: per-component tracing setting.
+        private static SourceLevels StartLevel = Config.GetTraceLevel(); //the same for all sources at the moment. TODO: per-component tracing setting.
 
         public static List<TraceListener> ExtraListeners = new List<TraceListener>();
 
         protected Trace(string sourceName)
         {
-            s = new TraceSource(sourceName, Level);
+            s = new TraceSource(sourceName, StartLevel);
             s.Listeners.Clear();
             s.Listeners.Add(GetTraceListener(sourceName));
             if (Config.GetFlag(Config.WRITE_TRACE_TO_CONSOLE))
@@ -74,7 +74,7 @@ namespace LibTrace
 
         private void DoLog(string message, TraceEventType type)
         {
-            if (Config.IsRunningOnMono && !ShouldLog(this.Level, type)) //There's a bug in mono where trace event filtering doesn't work properly, so we have to do it ourselves.
+            if (Config.IsRunningOnMono && !ShouldLog(StartLevel, type)) //There's a bug in mono where trace event filtering doesn't work properly, so we have to do it ourselves.
                 return;
 
             string formatted = FormatMessage(message);
@@ -115,6 +115,15 @@ namespace LibTrace
         public void Dispose()
         {
             Close();
+        }
+
+        public static void SetLevel(SourceLevels level)
+        {
+            Trace.StartLevel = level;
+            foreach (var kvp in Objects)
+            {
+                kvp.Value.s.Switch.Level = level;
+            }
         }
     }
 }
