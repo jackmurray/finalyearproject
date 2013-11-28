@@ -123,7 +123,7 @@ namespace LibTransport
             return ret.AddSeconds(secsbits).AddSeconds(msec);
         }
 
-        public static RTPPacket Parse(byte[] data)
+        public static RTPPacket Parse(byte[] data, byte[] key = null, byte[] nonce = null)
         {
             if ((data[0] & 0xC0) != 0x80)
                 throw new FormatException("RTP version must be 2.");
@@ -151,7 +151,13 @@ namespace LibTransport
             ushort seq = Util.DecodeUshort(data, 2);
             uint timestamp = Util.DecodeUint(data, 4);
             uint ssrc = Util.DecodeUint(data, 8);
-            byte[] payload = data.Skip(12 + (extension == true ? extensionData.Length : 0)).ToArray();
+            byte[] payload = data.Skip(12 + (extension == true ? extensionData.Length+4 : 0)).ToArray(); //if the extension flag is set, the payload is at 12 (length of base header) + extensionDataLength + 4 (for the extension header info fields)
+
+            if (key != null && nonce != null)
+            {
+                var crypto = new PacketEncrypter(key, Util.DecodeLong(extensionData, 0), nonce, false);
+                payload = crypto.Decrypt(payload);
+            }
 
             if (!isControl)
                 return new RTPDataPacket(Padding, extension, seq, timestamp, ssrc, payload, extensionData);
