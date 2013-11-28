@@ -132,6 +132,8 @@ namespace LibConfig
             }
             IsLoaded = true;
             IsRunningOnMono = Config.MonoCheck();
+
+            Config.SanityCheck();
         }
 
         public static System.Diagnostics.SourceLevels GetTraceLevel()
@@ -173,6 +175,12 @@ namespace LibConfig
         private static bool MonoCheck()
         {
             return Type.GetType("Mono.Runtime") != null;
+        }
+
+        private static void SanityCheck()
+        {
+            if (Config.GetFlag(ENABLE_AUTHENTICATION) && !Config.GetFlag(ENABLE_ENCRYPTION))
+                throw new ConfigException("Authentication requires encryption to be enabled.");
         }
     }
 
