@@ -18,7 +18,6 @@ namespace LibTransport
         {
             this.key = key;
             this.nonce = nonce;
-            this.crypto = new PacketEncrypter(key, 0, nonce, false); //this can be used for packets received in sequence. another instance must be created to handle out of sequence packets.
         }
 
         public void SetReceiveTimeout(int ms)
@@ -30,7 +29,11 @@ namespace LibTransport
         {
             IPEndPoint remoteHost = null;
             byte[] data = c.Receive(ref remoteHost);
-            return RTPPacket.Parse(data);
+
+            RTPPacket p;
+            p = LibConfig.Config.GetFlag(LibConfig.Config.ENABLE_ENCRYPTION) ? RTPPacket.Parse(data, key, nonce) : RTPPacket.Parse(data);
+
+            return p;
         }
     }
 }

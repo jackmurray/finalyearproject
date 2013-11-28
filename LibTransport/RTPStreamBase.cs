@@ -12,7 +12,7 @@ namespace LibTransport
         protected IPEndPoint ep;
         protected static Trace Log = Trace.GetInstance("LibTransport");
 
-        protected PacketEncrypter crypto;
+        protected PacketEncrypter crypto = null;
         protected bool useEncryption;
         protected byte[] key, nonce;
         //CTR is the sequence value. don't need a separate value here.

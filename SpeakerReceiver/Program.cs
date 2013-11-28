@@ -49,7 +49,7 @@ namespace SpeakerReceiver
 
             LibService.ServiceRegistration.Register(new LibService.CommonService(GetBuildVersion()));
             LibService.ServiceRegistration.Register(new LibService.PairingService());
-            LibService.ServiceRegistration.Register(new LibService.TransportService(Handler_TransportService_JoinGroup));
+            LibService.ServiceRegistration.Register(new LibService.TransportService(Handler_TransportService_JoinGroup, Handler_TransportService_JoinGroupEncrypted));
             LibService.ServiceRegistration.Start(cert.ToDotNetCert(key), 10451);
             Console.ReadLine();
 
@@ -115,7 +115,15 @@ namespace SpeakerReceiver
         {
             if (r != null)
                 r.Stop();
-            r = new StreamReceiver(new RTPInputStream(new IPEndPoint(ip, 10452), Config.GetFlag("enableEncryption")));
+            r = new StreamReceiver(new RTPInputStream(new IPEndPoint(ip, 10452), Config.GetFlag(Config.ENABLE_ENCRYPTION)));
+            r.Start();
+        }
+
+        public static void Handler_TransportService_JoinGroupEncrypted(IPAddress ip, byte[] key, byte[] nonce)
+        {
+            if (r != null)
+                r.Stop();
+            r = new StreamReceiver(new RTPInputStream(new IPEndPoint(ip, 10452), Config.GetFlag(Config.ENABLE_ENCRYPTION), key, nonce));
             r.Start();
         }
     }

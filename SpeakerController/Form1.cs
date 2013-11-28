@@ -247,12 +247,15 @@ namespace SpeakerController
             ssl.Connect(ep);
 
             TransportServiceClient c = ssl.GetClient<TransportServiceClient>();
-            c.JoinGroup(txtGroupAddr.Text);
+            if (Config.GetFlag(Config.ENABLE_ENCRYPTION))
+                c.JoinGroupEncrypted(txtGroupAddr.Text, this.enckey, this.nonce);
+            else
+                c.JoinGroup(txtGroupAddr.Text);
         }
 
         private void btnStream_Click(object sender, EventArgs e)
         {
-            this.stream = new RTPOutputStream(new IPEndPoint(IPAddress.Parse(txtGroupAddr.Text), 10452), Config.GetFlag("enableEncryption"), enckey, nonce);
+            this.stream = new RTPOutputStream(new IPEndPoint(IPAddress.Parse(txtGroupAddr.Text), 10452), Config.GetFlag(Config.ENABLE_ENCRYPTION), enckey, nonce);
             enckey = PacketEncrypter.GenerateKey();
             nonce = PacketEncrypter.GenerateNonce(); //reset the key/nonce for the next time this is called. only the rtpoutputstream needs the key/nonce after it's created.
             stream.Stream(audio);
