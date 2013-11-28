@@ -12,7 +12,7 @@ namespace LibTransport
 
         //Call the base constructor with a Payload built from the Action and the ExtraData converted to a new byte[]
         public RTPControlPacket(RTPControlAction Action, byte[] ExtraData, bool Extension, ushort SequenceNumber, uint Timestamp, uint SyncSource, byte[] ExtensionData) : 
-            base(false, true, Extension, SequenceNumber, Timestamp, SyncSource, new byte[]{(byte)Action}.Concat(ExtraData ?? new byte[0]).ToArray(), ExtensionData)
+            base(false, Extension, true, SequenceNumber, Timestamp, SyncSource, new byte[]{(byte)Action}.Concat(ExtraData ?? new byte[0]).ToArray(), ExtensionData)
         {
             this.Action = Action;
             this.ExtraData = ExtraData;
