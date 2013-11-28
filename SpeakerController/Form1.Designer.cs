@@ -47,6 +47,7 @@
             this.btnStream = new System.Windows.Forms.Button();
             this.chkLogPause = new System.Windows.Forms.CheckBox();
             this.btnStreamTestSound = new System.Windows.Forms.Button();
+            this.cmbLogLevel = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.dGridTrace)).BeginInit();
             this.SuspendLayout();
             // 
@@ -237,11 +238,28 @@
             this.btnStreamTestSound.UseVisualStyleBackColor = true;
             this.btnStreamTestSound.Click += new System.EventHandler(this.btnStreamTestSound_Click);
             // 
+            // cmbLogLevel
+            // 
+            this.cmbLogLevel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbLogLevel.FormattingEnabled = true;
+            this.cmbLogLevel.Items.AddRange(new object[] {
+            "Critical",
+            "Error",
+            "Warning",
+            "Information",
+            "Verbose"});
+            this.cmbLogLevel.Location = new System.Drawing.Point(536, 13);
+            this.cmbLogLevel.Name = "cmbLogLevel";
+            this.cmbLogLevel.Size = new System.Drawing.Size(121, 21);
+            this.cmbLogLevel.TabIndex = 18;
+            this.cmbLogLevel.SelectedIndexChanged += new System.EventHandler(this.cmbLogLevel_SelectedIndexChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(832, 464);
+            this.Controls.Add(this.cmbLogLevel);
             this.Controls.Add(this.btnStreamTestSound);
             this.Controls.Add(this.chkLogPause);
             this.Controls.Add(this.btnStream);
@@ -288,6 +306,7 @@
         private System.Windows.Forms.Button btnStream;
         private System.Windows.Forms.CheckBox chkLogPause;
         private System.Windows.Forms.Button btnStreamTestSound;
+        private System.Windows.Forms.ComboBox cmbLogLevel;
     }
 }
 

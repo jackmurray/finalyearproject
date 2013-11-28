@@ -255,7 +255,10 @@ namespace SpeakerController
 
         private void btnStream_Click(object sender, EventArgs e)
         {
-            this.stream = new RTPOutputStream(new IPEndPoint(IPAddress.Parse(txtGroupAddr.Text), 10452), Config.GetFlag(Config.ENABLE_ENCRYPTION), enckey, nonce);
+            if (Config.GetFlag(Config.ENABLE_AUTHENTICATION))
+                this.stream = new RTPOutputStream(new IPEndPoint(IPAddress.Parse(txtGroupAddr.Text), 10452), Config.GetFlag(Config.ENABLE_ENCRYPTION), enckey, nonce, Signer.Create(key));
+            else
+                this.stream = new RTPOutputStream(new IPEndPoint(IPAddress.Parse(txtGroupAddr.Text), 10452), Config.GetFlag(Config.ENABLE_ENCRYPTION), enckey, nonce);
             enckey = PacketEncrypter.GenerateKey();
             nonce = PacketEncrypter.GenerateNonce(); //reset the key/nonce for the next time this is called. only the rtpoutputstream needs the key/nonce after it's created.
             stream.Stream(audio);
@@ -267,6 +270,12 @@ namespace SpeakerController
             IAudioFormat r = SupportedAudio.FindReaderForFile(s);
             this.audio = r;
             btnStream_Click(this, null);
+        }
+
+        private void cmbLogLevel_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SourceLevels l = (SourceLevels)Enum.Parse(typeof (SourceLevels), cmbLogLevel.SelectedItem as string);
+            Trace.SetLevel(l);
         }
     }
 
