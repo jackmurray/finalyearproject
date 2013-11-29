@@ -48,6 +48,8 @@
             this.chkLogPause = new System.Windows.Forms.CheckBox();
             this.btnStreamTestSound = new System.Windows.Forms.Button();
             this.cmbLogLevel = new System.Windows.Forms.ComboBox();
+            this.chkEnableEncrypt = new System.Windows.Forms.CheckBox();
+            this.chkEnableAuth = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dGridTrace)).BeginInit();
             this.SuspendLayout();
             // 
@@ -254,11 +256,35 @@
             this.cmbLogLevel.TabIndex = 18;
             this.cmbLogLevel.SelectedIndexChanged += new System.EventHandler(this.cmbLogLevel_SelectedIndexChanged);
             // 
+            // chkEnableEncrypt
+            // 
+            this.chkEnableEncrypt.AutoSize = true;
+            this.chkEnableEncrypt.Location = new System.Drawing.Point(536, 41);
+            this.chkEnableEncrypt.Name = "chkEnableEncrypt";
+            this.chkEnableEncrypt.Size = new System.Drawing.Size(112, 17);
+            this.chkEnableEncrypt.TabIndex = 19;
+            this.chkEnableEncrypt.Text = "Enable Encryption";
+            this.chkEnableEncrypt.UseVisualStyleBackColor = true;
+            this.chkEnableEncrypt.CheckedChanged += new System.EventHandler(this.chkEnableEncrypt_CheckedChanged);
+            // 
+            // chkEnableAuth
+            // 
+            this.chkEnableAuth.AutoSize = true;
+            this.chkEnableAuth.Location = new System.Drawing.Point(536, 65);
+            this.chkEnableAuth.Name = "chkEnableAuth";
+            this.chkEnableAuth.Size = new System.Drawing.Size(130, 17);
+            this.chkEnableAuth.TabIndex = 20;
+            this.chkEnableAuth.Text = "Enable Authentication";
+            this.chkEnableAuth.UseVisualStyleBackColor = true;
+            this.chkEnableAuth.CheckedChanged += new System.EventHandler(this.chkEnableAuth_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(832, 464);
+            this.Controls.Add(this.chkEnableAuth);
+            this.Controls.Add(this.chkEnableEncrypt);
             this.Controls.Add(this.cmbLogLevel);
             this.Controls.Add(this.btnStreamTestSound);
             this.Controls.Add(this.chkLogPause);
@@ -307,6 +333,8 @@
         private System.Windows.Forms.CheckBox chkLogPause;
         private System.Windows.Forms.Button btnStreamTestSound;
         private System.Windows.Forms.ComboBox cmbLogLevel;
+        private System.Windows.Forms.CheckBox chkEnableEncrypt;
+        private System.Windows.Forms.CheckBox chkEnableAuth;
     }
 }
 

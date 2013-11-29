@@ -165,6 +165,10 @@ namespace SpeakerController
             txtFriendlyName.Text = name;
 
             DoDiscovery();
+
+            cmbLogLevel.SelectedItem = Config.Get(Config.TRACE_LEVEL).ToString();
+            chkEnableEncrypt.Checked = Config.GetFlag(Config.ENABLE_ENCRYPTION);
+            chkEnableAuth.Checked = Config.GetFlag(Config.ENABLE_AUTHENTICATION);
         }
 
         private void SetFriendlyName(string name)
@@ -276,6 +280,17 @@ namespace SpeakerController
         {
             SourceLevels l = (SourceLevels)Enum.Parse(typeof (SourceLevels), cmbLogLevel.SelectedItem as string);
             Trace.SetLevel(l);
+            Config.Set(Config.TRACE_LEVEL, cmbLogLevel.SelectedItem as string);
+        }
+
+        private void chkEnableEncrypt_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.Set(Config.ENABLE_ENCRYPTION, (chkEnableEncrypt.Checked ? bool.TrueString : bool.FalseString));
+        }
+
+        private void chkEnableAuth_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.Set(Config.ENABLE_AUTHENTICATION, (chkEnableAuth.Checked ? bool.TrueString : bool.FalseString));
         }
     }
 
