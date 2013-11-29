@@ -254,11 +254,26 @@ namespace SpeakerController
             SslClient ssl = new SslClient(cert.ToDotNetCert(key));
             ssl.Connect(ep);
 
-            TransportServiceClient c = ssl.GetClient<TransportServiceClient>();
+            TransportServiceClient tclient = ssl.GetClient<TransportServiceClient>();
+            CommonServiceClient commonclient = ssl.GetClient<CommonServiceClient>();
+
+            //check remote party has same or higher versions for all components.
+            var remoteversions = commonclient.GetVersions();
+            foreach (var kvp in Util.GetComponentVersions())
+            {
+                if (!remoteversions.Keys.Contains(kvp.Key))
+                    throw new Exception("Remote party did not specify a version for " + kvp.Key);
+
+                if (remoteversions[kvp.Key] < kvp.Value)
+                    throw new Exception("Remote party specified version " + remoteversions[kvp.Key] + " for component " + kvp.Key + ". Need version " + kvp.Value + " or higher.");
+
+                Log.Verbose("[Version Check] ["+kvp.Key+"] Remote: " + remoteversions[kvp.Key] + " Local: " + kvp.Value);
+            }
+
             if (Config.GetFlag(Config.ENABLE_ENCRYPTION))
-                c.JoinGroupEncrypted(txtGroupAddr.Text, this.enckey, this.nonce);
+                tclient.JoinGroupEncrypted(txtGroupAddr.Text, this.enckey, this.nonce);
             else
-                c.JoinGroup(txtGroupAddr.Text);
+                tclient.JoinGroup(txtGroupAddr.Text);
         }
 
         private void btnStream_Click(object sender, EventArgs e)
