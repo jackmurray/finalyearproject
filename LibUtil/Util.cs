@@ -13,6 +13,20 @@ namespace LibUtil
 {
     public static class Util
     {
+        public static Dictionary<string, Version> GetComponentVersions()
+        {
+            var ret = new Dictionary<string, Version>();
+            foreach (Assembly a in Util.GetLoadedAssemblies())
+            {
+                AssemblyName n = a.GetName();
+                if (n.Name == "SpeakerController" || n.Name == "SpeakerReceiver")
+                    ret.Add("Core", n.Version);
+                else
+                    ret.Add(n.Name, n.Version);
+            }
+            return ret;
+        }
+
         public static string BytesToHexString(byte[] data)
         {
             return BitConverter.ToString(data).Replace("-", String.Empty).ToLower();
