@@ -13,11 +13,11 @@ namespace LibService
         {
         }
 
-        public Version GetVersion()
+        public Dictionary<string, Version> GetVersions()
         {
-            ServiceMessage m = new ServiceMessage("CommonService", "GetVersion", null);
+            ServiceMessage m = new ServiceMessage("CommonService", "GetVersions", null);
             ServiceMessageResponse response = Call(m);
-            return JsonConvert.DeserializeObject<Version>(response.Data);
+            return JsonConvert.DeserializeObject<Dictionary<string,Version>>(response.Data);
         }
     }
 }

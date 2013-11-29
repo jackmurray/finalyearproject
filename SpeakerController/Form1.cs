@@ -128,8 +128,12 @@ namespace SpeakerController
 
             try
             {
-                Version response = client.GetVersion();
-                MessageBox.Show(response.ToString());
+                var response = client.GetVersions();
+                StringBuilder sb = new StringBuilder();
+                foreach (var kvp in response)
+                    sb.AppendLine(kvp.Key + " = " + kvp.Value);
+
+                MessageBox.Show(sb.ToString());
             }
             catch (ServiceException ex)
             {

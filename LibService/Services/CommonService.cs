@@ -10,13 +10,10 @@ namespace LibService
 {
     public class CommonService : ServiceBase
     {
-        private Version _version;
-
-        public CommonService(Version version)
+        public CommonService()
         {
             Name = "CommonService";
-            Operations = new List<string>() { "GetVersion" };
-            _version = version;
+            Operations = new List<string>() { "GetVersions" };
         }
 
         public override ServiceMessageResponse HandleMessage(ServiceMessage message, X509Certificate remoteParty)
@@ -25,10 +22,10 @@ namespace LibService
 
             switch (message.operationID)
             {
-                case "GetVersion":
-                    string encodedVersion = JsonConvert.SerializeObject(_version);
+                case "GetVersions":
+                    string encodedData = JsonConvert.SerializeObject(Util.GetComponentVersions());
 
-                    response = new ServiceMessageResponse(encodedVersion, HttpResponseCode.OK);
+                    response = new ServiceMessageResponse(encodedData, HttpResponseCode.OK);
                     break;
                 default:
                     throw new ArgumentException("Invalid message received.");
