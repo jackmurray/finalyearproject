@@ -31,8 +31,6 @@ namespace LibConfig
         public const string ENABLE_ENCRYPTION = "enableEncryption";
         public const string ENABLE_AUTHENTICATION = "enableAuthentication";
 
-        public static bool IsRunningOnMono { get; private set; }
-
         public static string Get(string key)
         {
             lock (configLock) //we don't wanna accidentally try and read something while we're updating it.
@@ -131,7 +129,6 @@ namespace LibConfig
                 throw new ConfigException("Unable to load config: " + ex.Message);
             }
             IsLoaded = true;
-            IsRunningOnMono = Config.MonoCheck();
 
             Config.SanityCheck();
         }
@@ -170,11 +167,6 @@ namespace LibConfig
             }
             keysxml.AppendChild(root);
             keysxml.Save(System.IO.Path.Combine(GetPath(CRYPTO_PATH), TRUSTED_KEYS_FILENAME));
-        }
-
-        private static bool MonoCheck()
-        {
-            return Type.GetType("Mono.Runtime") != null;
         }
 
         private static void SanityCheck()

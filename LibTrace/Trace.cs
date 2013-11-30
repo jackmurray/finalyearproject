@@ -74,7 +74,7 @@ namespace LibTrace
 
         private void DoLog(string message, TraceEventType type)
         {
-            if (Config.IsRunningOnMono && !ShouldLog(StartLevel, type)) //There's a bug in mono where trace event filtering doesn't work properly, so we have to do it ourselves.
+            if (LibUtil.Util.IsRunningOnMono && !ShouldLog(StartLevel, type)) //There's a bug in mono where trace event filtering doesn't work properly, so we have to do it ourselves.
                 return;
 
             string formatted = FormatMessage(message);

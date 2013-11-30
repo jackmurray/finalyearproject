@@ -26,11 +26,11 @@ namespace SpeakerReceiver
             Setup();
             if (args.Length > 0)
                 ProcessArgs(args);
-            Console.WriteLine("Build Flavour: " + GetBuildFlavour());
+            Log.Information("Build Flavour: " + GetBuildFlavour());
             foreach (Assembly a in Util.GetLoadedAssemblies())
                 Log.Verbose(a.GetName().Name + "-" + a.GetName().Version);
             
-            Console.WriteLine("Platform: " + (Config.IsRunningOnMono ? "Mono" : "MS.NET"));
+            Log.Information("Platform: " + (Util.IsRunningOnMono ? "Mono" : "MS.NET"));
             
             KeyManager key = null;
             CertManager cert = null;
@@ -41,7 +41,7 @@ namespace SpeakerReceiver
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Failed to load key/cert. Exiting. " + ex.Message);
+                Log.Critical("Failed to load key/cert. Exiting. " + ex.Message);
                 Exit();
             }
             
@@ -51,6 +51,7 @@ namespace SpeakerReceiver
             LibService.ServiceRegistration.Register(new LibService.PairingService());
             LibService.ServiceRegistration.Register(new LibService.TransportService(Handler_TransportService_JoinGroup, Handler_TransportService_JoinGroupEncrypted));
             LibService.ServiceRegistration.Start(cert.ToDotNetCert(key), 10451);
+            Console.WriteLine("SpeakerReceiver ready.");
             Console.ReadLine();
 
             Cleanup();

@@ -13,6 +13,8 @@ namespace LibUtil
 {
     public static class Util
     {
+        public static bool IsRunningOnMono { get {return Type.GetType("Mono.Runtime") != null;} }
+
         public static Dictionary<string, Version> GetComponentVersions()
         {
             var ret = new Dictionary<string, Version>();

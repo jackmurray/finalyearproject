@@ -41,6 +41,10 @@
       <Project>{37be8328-6872-494f-9458-d3540d7dc44f}</Project>
       <Name>LibConfig</Name>
     </ProjectReference>
+    <ProjectReference Include="..\LibUtil\LibUtil.csproj">
+      <Project>{85997238-2a70-41b1-9a58-dcd4ce5606bc}</Project>
+      <Name>LibUtil</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
