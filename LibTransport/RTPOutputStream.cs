@@ -29,18 +29,17 @@ namespace LibTransport
             
         }
 
-        public RTPOutputStream(IPEndPoint ep, bool useEncryption, byte[] key, byte[] nonce) : this(ep, useEncryption)
+        public RTPOutputStream(IPEndPoint ep, bool useEncryption, PacketEncrypterKeyManager pekm) : this(ep, useEncryption)
         {
             if (!useEncryption)
                 throw new ArgumentException("This constructor must have useEncryption set to true.");
 
-            this.key = key;
-            this.nonce = nonce;
-            this.crypto = new PacketEncrypter(key, encryption_ctr, nonce, true);
+            this.pekm = pekm;
+            this.crypto = new PacketEncrypter(pekm, encryption_ctr, true);
         }
 
-        public RTPOutputStream(IPEndPoint ep, bool useEncryption, byte[] key, byte[] nonce, Signer s)
-            : this(ep, useEncryption, key, nonce)
+        public RTPOutputStream(IPEndPoint ep, bool useEncryption, PacketEncrypterKeyManager pekm, Signer s)
+            : this(ep, useEncryption, pekm)
         {
             this.signer = s;
             this.useAuthentication = true;
@@ -51,7 +50,7 @@ namespace LibTransport
             byte[] data = useEncryption == false ? p.Serialise() : p.SerialiseEncrypted(crypto, encryption_ctr, signer);
             c.Send(data, data.Length, ep);
             encryption_ctr += p.GetCounterIncrement(crypto);
-            this.crypto.Init(this.key, encryption_ctr, nonce, true);
+            this.crypto.Init(pekm, encryption_ctr, true);
         }
 
         protected RTPPacket BuildPacket(byte[] data)

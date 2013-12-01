@@ -14,7 +14,7 @@ namespace LibTransport
 
         protected PacketEncrypter crypto = null;
         protected bool useEncryption, useAuthentication;
-        protected byte[] key, nonce;
+        protected PacketEncrypterKeyManager pekm = null;
         //CTR is the sequence value. don't need a separate value here.
 
         protected RTPStreamBase(IPEndPoint ep, bool useEncryption)

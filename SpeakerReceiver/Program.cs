@@ -124,7 +124,7 @@ namespace SpeakerReceiver
         {
             if (r != null)
                 r.Stop();
-            r = new StreamReceiver(new RTPInputStream(new IPEndPoint(ip, 10452), Config.GetFlag(Config.ENABLE_ENCRYPTION), key, nonce));
+            r = new StreamReceiver(new RTPInputStream(new IPEndPoint(ip, 10452), Config.GetFlag(Config.ENABLE_ENCRYPTION), new PacketEncrypterKeyManager(key, nonce)));
             r.Start();
         }
     }

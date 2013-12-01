@@ -15,12 +15,7 @@ namespace LibSecurity
     public class PacketEncrypter
     {
         private IBufferedCipher cipher = CipherUtilities.GetCipher("AES/CTR/NoPadding");
-        private KeyParameter key;
-        private byte[] nonce;
         private bool mode;
-
-        public const int KEY_LENGTH = 16;
-        public const int NONCE_LENGTH = 8; //hardcoded to AES128 values.
 
         /// <summary>
         /// Automatically called by the constructor to set up the cipher. Can be called at any time to reset the state, and change the counter.
@@ -29,24 +24,20 @@ namespace LibSecurity
         /// <param name="ctr"></param>
         /// <param name="nonce"></param>
         /// <param name="forEncryption"></param>
-        public void Init(byte[] key, long ctr, byte[] nonce, bool forEncryption)
+        public void Init(PacketEncrypterKeyManager pekm, long ctr, bool forEncryption)
         {
-            if (key.Length != KEY_LENGTH)
-                throw new ArgumentException("Key must be " + KEY_LENGTH + " bytes.");
-
-            this.key = new KeyParameter(key);
+            var kp = new KeyParameter(pekm.Key);
 
             int bs = cipher.GetBlockSize();
-            if (nonce.Length != bs - 8 || nonce.Length != NONCE_LENGTH) //only the top part of the IV will be the nonce. bottom 8 bytes will be counter.
-                throw new ArgumentException("Nonce must be == blockSize - 8 in length");
+            
 
             byte[] iv = new byte[bs];
-            Array.Copy(nonce, iv, nonce.Length);
+            Array.Copy(pekm.Nonce, iv, pekm.Nonce.Length);
             //Once BC ingests the IV it will increment the bottom byte(s) of the array, so we put the counter into network/bigendian order
             byte[] ctrbytes = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(ctr));
             Array.Copy(ctrbytes, 0, iv, iv.Length - 8, 8);
 
-            cipher.Init(forEncryption, new ParametersWithIV(this.key, iv));
+            cipher.Init(forEncryption, new ParametersWithIV(kp, iv));
             mode = forEncryption;
         }
 
@@ -56,9 +47,9 @@ namespace LibSecurity
         /// <param name="key"></param>
         /// <param name="ctr"></param>
         /// <param name="nonce"></param>
-        public PacketEncrypter(byte[] key, long ctr, byte[] nonce, bool forEncryption)
+        public PacketEncrypter(PacketEncrypterKeyManager pekm, long ctr, bool forEncryption)
         {
-            this.Init(key, ctr, nonce, forEncryption);
+            this.Init(pekm, ctr, forEncryption);
         }
 
         public int GetBlockSize()
@@ -104,16 +95,6 @@ namespace LibSecurity
         {
             if (mode != false) throw new InvalidOperationException("This instance was initialised for encryption only!");
             return Transform(data);
-        }
-
-        public static byte[] GenerateKey()
-        {
-            return CryptRandom.GetBytes(KEY_LENGTH);
-        }
-
-        public static byte[] GenerateNonce()
-        {
-            return CryptRandom.GetBytes(NONCE_LENGTH);
         }
     }
 }

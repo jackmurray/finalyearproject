@@ -47,7 +47,7 @@ namespace UnitTest
             byte[] key = new byte[] { 0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c, };
             byte[] nonce = new byte[] { 0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7 };
             long ctr = -506097522914230529; //0xf8f9fafbfcfdfeff in signed long
-            return new PacketEncrypter(key, ctr, nonce, forEncryption);
+            return new PacketEncrypter(new PacketEncrypterKeyManager(key, nonce), ctr, forEncryption);
         }
 
         [TestMethod]

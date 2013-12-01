@@ -32,7 +32,7 @@ namespace SpeakerController
         private IAudioFormat audio;
         private RTPOutputStream stream;
 
-        private byte[] enckey, nonce;
+        private PacketEncrypterKeyManager pekm = new PacketEncrypterKeyManager();
 
         public bool ShouldAdvanceLog { get { return !chkLogPause.Checked; } }
 
@@ -40,9 +40,6 @@ namespace SpeakerController
         {
             InitializeComponent();
             Text = string.Format("{0}-{1}", GetBuildVersion(), GetBuildFlavour());
-
-            enckey = PacketEncrypter.GenerateKey();
-            nonce = PacketEncrypter.GenerateNonce();
         }
 
         public static string GetBuildFlavour()
@@ -271,7 +268,7 @@ namespace SpeakerController
             }
 
             if (Config.GetFlag(Config.ENABLE_ENCRYPTION))
-                tclient.JoinGroupEncrypted(txtGroupAddr.Text, this.enckey, this.nonce);
+                tclient.JoinGroupEncrypted(txtGroupAddr.Text, this.pekm.Key, this.pekm.Nonce);
             else
                 tclient.JoinGroup(txtGroupAddr.Text);
         }
@@ -279,11 +276,10 @@ namespace SpeakerController
         private void btnStream_Click(object sender, EventArgs e)
         {
             if (Config.GetFlag(Config.ENABLE_AUTHENTICATION))
-                this.stream = new RTPOutputStream(new IPEndPoint(IPAddress.Parse(txtGroupAddr.Text), 10452), Config.GetFlag(Config.ENABLE_ENCRYPTION), enckey, nonce, Signer.Create(key));
+                this.stream = new RTPOutputStream(new IPEndPoint(IPAddress.Parse(txtGroupAddr.Text), 10452), Config.GetFlag(Config.ENABLE_ENCRYPTION), pekm, Signer.Create(key));
             else
-                this.stream = new RTPOutputStream(new IPEndPoint(IPAddress.Parse(txtGroupAddr.Text), 10452), Config.GetFlag(Config.ENABLE_ENCRYPTION), enckey, nonce);
-            enckey = PacketEncrypter.GenerateKey();
-            nonce = PacketEncrypter.GenerateNonce(); //reset the key/nonce for the next time this is called. only the rtpoutputstream needs the key/nonce after it's created.
+                this.stream = new RTPOutputStream(new IPEndPoint(IPAddress.Parse(txtGroupAddr.Text), 10452), Config.GetFlag(Config.ENABLE_ENCRYPTION), pekm);
+            
             stream.Stream(audio);
         }
 
