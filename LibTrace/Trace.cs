@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using LibConfig;
+using LibUtil;
 
 namespace LibTrace
 {
@@ -107,7 +108,7 @@ namespace LibTrace
 
         private string GetLogName(string sourceName)
         {
-            string path = Config.Get(Config.LOG_PATH);
+            string path = Util.ResolvePath(Config.Get(Config.LOG_PATH));
             string name = sourceName + ".log";
             return System.IO.Path.Combine(path, name);
         }

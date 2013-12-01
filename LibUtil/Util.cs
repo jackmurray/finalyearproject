@@ -6,7 +6,6 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using LibConfig;
 using System.IO;
 
 namespace LibUtil
@@ -68,15 +67,6 @@ namespace LibUtil
                                  utc.Second);
         }
 
-        public static void CreateItems()
-        {
-            Util.MkDir(Config.Get(Config.LOG_PATH));
-            Util.MkDir(Config.Get(Config.CRYPTO_PATH));
-            Util.MkDir(Path.Combine(Config.GetPath(Config.CRYPTO_PATH), "trustedKeys"));
-            if (!File.Exists(Path.Combine(Config.GetPath(Config.CRYPTO_PATH), Config.TRUSTED_KEYS_FILENAME)))
-                Config.SaveTrustedKeys(); //If the file didn't exist then we can call this and it'll make it for us.
-        }
-
         public static byte[] Encode(int val)
         {
             return BitConverter.GetBytes(IPAddress.HostToNetworkOrder(val));
@@ -132,6 +122,27 @@ namespace LibUtil
         {
             //mask out the top 4 bits of the first octet and check if they're 1110 (which for multicast, they must be).
             return (ip.GetAddressBytes()[0] & 0xF0) == 0xE0;
+        }
+
+        public static string ResolvePath(params string[] args)
+        {
+            string basedir =
+                Environment.ExpandEnvironmentVariables(Environment.OSVersion.Platform == PlatformID.Win32NT
+                                                           ? "%LOCALAPPDATA%"
+                                                           : "%HOME%");
+            string appdir = Environment.ExpandEnvironmentVariables(Environment.OSVersion.Platform == PlatformID.Win32NT
+                                                           ? "mcspkr"
+                                                           : ".mcspkr");
+            string typedir = Util.IsController() ? "controller" : "receiver";
+
+            var ret = new List<string>() {basedir, appdir, typedir};
+            ret.AddRange(args);
+            return System.IO.Path.Combine(ret.ToArray());
+        }
+
+        public static bool IsController()
+        {
+            return Util.GetLoadedAssemblies().Count(a => a.GetName().Name == "SpeakerController") == 1;
         }
     }
 }

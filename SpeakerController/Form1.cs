@@ -149,7 +149,7 @@ namespace SpeakerController
         {
             LibTrace.Trace.ExtraListeners.Add(new DataGridTraceListener(this, dGridTrace));
             Log = Trace.GetInstance("SpeakerController");
-            Util.CreateItems();
+            Config.CreateItems();
             Config.LoadTrustedKeys();
         }
 

@@ -6,13 +6,14 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Xml;
 using System.IO;
+using LibUtil;
 
 namespace LibConfig
 {
     public static class TrustedKeys
     {
         private static List<string> KeyList = new List<string>();
-        private static string Path = System.IO.Path.Combine(Config.GetPath(Config.CRYPTO_PATH), "trustedKeys");
+        private static string Path = Util.ResolvePath(Config.Get(Config.CRYPTO_PATH), "trustedKeys");
 
         public static void Load(XmlNodeList data)
         {

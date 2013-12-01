@@ -60,7 +60,7 @@ namespace SpeakerReceiver
         private static void Setup()
         {
             Config.LoadConfig(); //Manually load config.
-            Util.CreateItems();
+            Config.CreateItems();
             Log = Trace.GetInstance("SpeakerReceiver"); //Do this after we create the log dir.
             Config.LoadTrustedKeys();
         }

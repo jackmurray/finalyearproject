@@ -75,7 +75,7 @@ namespace LibSecurity
         /// <returns></returns>
         public static KeyManager GetKey()
         {
-            string privateKeyFile = System.IO.Path.Combine(Config.Get(Config.CRYPTO_PATH), "private.key");
+            string privateKeyFile = LibUtil.Util.ResolvePath(Config.Get(Config.CRYPTO_PATH), "private.key");
             KeyManager key = null;
 
             if (System.IO.File.Exists(privateKeyFile))

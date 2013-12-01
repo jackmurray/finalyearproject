@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using LibUtil;
 
 namespace LibConfig
 {
@@ -63,7 +66,7 @@ namespace LibConfig
 
                 n.InnerText = value;
 
-                xml.Save(CONFIG_FILENAME);
+                xml.Save(Util.ResolvePath(CONFIG_FILENAME));
             }
         }
 
@@ -85,12 +88,12 @@ namespace LibConfig
 
         public static bool GetFlag(string key)
         {
-            return bool.Parse(Get(key));
+            return Boolean.Parse(Get(key));
         }
 
         public static int GetInt(string key)
         {
-            return int.Parse(Get(key));
+            return Int32.Parse(Get(key));
         }
 
         /// <summary>
@@ -101,7 +104,7 @@ namespace LibConfig
         public static string GetPath(string key)
         {
             string p = Get(key);
-            return System.IO.Path.GetFullPath(p);
+            return Util.ResolvePath(p);
         }
 
         public static XmlNode GetRawNode(string key)
@@ -122,7 +125,7 @@ namespace LibConfig
             xml = new XmlDocument();
             try
             {
-                xml.Load(CONFIG_FILENAME);
+                xml.Load(Util.ResolvePath(CONFIG_FILENAME));
             }
             catch (Exception ex)
             {
@@ -130,13 +133,13 @@ namespace LibConfig
             }
             IsLoaded = true;
 
-            Config.SanityCheck();
+            SanityCheck();
         }
 
-        public static System.Diagnostics.SourceLevels GetTraceLevel()
+        public static SourceLevels GetTraceLevel()
         {
             string raw = Get(TRACE_LEVEL);
-            System.Diagnostics.SourceLevels result;
+            SourceLevels result;
             if (Enum.TryParse(raw, out result))
                 return result;
             else
@@ -149,7 +152,7 @@ namespace LibConfig
         public static void LoadTrustedKeys()
         {
             XmlDocument keysxml = new XmlDocument();
-            keysxml.Load(System.IO.Path.Combine(GetPath(CRYPTO_PATH), TRUSTED_KEYS_FILENAME));
+            keysxml.Load(Util.ResolvePath(GetPath(CRYPTO_PATH), TRUSTED_KEYS_FILENAME));
 
             XmlNode root = keysxml.SelectSingleNode("/keys");
             TrustedKeys.Load(root.ChildNodes);
@@ -166,13 +169,21 @@ namespace LibConfig
                 root.AppendChild(n);
             }
             keysxml.AppendChild(root);
-            keysxml.Save(System.IO.Path.Combine(GetPath(CRYPTO_PATH), TRUSTED_KEYS_FILENAME));
+            keysxml.Save(Util.ResolvePath(GetPath(CRYPTO_PATH), TRUSTED_KEYS_FILENAME));
         }
 
         private static void SanityCheck()
         {
-            if (Config.GetFlag(ENABLE_AUTHENTICATION) && !Config.GetFlag(ENABLE_ENCRYPTION))
+            if (GetFlag(ENABLE_AUTHENTICATION) && !GetFlag(ENABLE_ENCRYPTION))
                 throw new ConfigException("Authentication requires encryption to be enabled.");
+        }
+
+        public static void CreateItems()
+        {
+            Util.MkDir(GetPath(LOG_PATH));
+            Util.MkDir(Util.ResolvePath(Get(Config.CRYPTO_PATH), "trustedKeys")); //can't use getpath here because we need to join with the dir name
+            if (!File.Exists(Util.ResolvePath(Get(Config.CRYPTO_PATH), TRUSTED_KEYS_FILENAME)))
+                SaveTrustedKeys(); //If the file didn't exist then we can call this and it'll make it for us.
         }
     }
 

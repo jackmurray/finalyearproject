@@ -65,8 +65,8 @@ namespace LibSecurity
 
         public static CertManager GetCert(KeyManager key)
         {
-            string certFile = System.IO.Path.Combine(Config.Get(Config.CRYPTO_PATH), "cert.crt");
-            string pfxFile = System.IO.Path.Combine(Config.Get(Config.CRYPTO_PATH), "cert.pfx");
+            string certFile = LibUtil.Util.ResolvePath(Config.Get(Config.CRYPTO_PATH), "cert.crt");
+            string pfxFile = LibUtil.Util.ResolvePath(Config.Get(Config.CRYPTO_PATH), "cert.pfx");
             CertManager cert = null;
 
             if (System.IO.File.Exists(certFile))
@@ -131,9 +131,6 @@ namespace LibSecurity
 
         public System.Security.Cryptography.X509Certificates.X509Certificate2 ToDotNetCert(KeyManager key)
         {
-            /*string path = System.IO.Path.Combine(Config.GetPath(Config.CRYPTO_PATH), "cert.pfx");
-            var dotnetcert = new System.Security.Cryptography.X509Certificates.X509Certificate2(path, "password", System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.UserKeySet | System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.PersistKeySet);
-            return dotnetcert;*/
             var cert = new System.Security.Cryptography.X509Certificates.X509Certificate2(ToDotNetPublicCert());
             cert.PrivateKey = key.ToDotNetKey();
             return cert;
