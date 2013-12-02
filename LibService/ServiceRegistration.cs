@@ -28,7 +28,7 @@ namespace LibService
 
         public static void Start(X509Certificate2 cert, int port)
         {
-            new SslServer(cert).Listen(10451);
+            new SslServer(cert).Listen(port);
         }
     }
 }
