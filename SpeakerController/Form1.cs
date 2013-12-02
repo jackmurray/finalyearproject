@@ -156,6 +156,9 @@ namespace SpeakerController
             key = KeyManager.GetKey();
             cert = CertManager.GetCert(key);
 
+            ServiceRegistration.Register(new KeyService(this.pekm));
+            ServiceRegistration.Start(cert.ToDotNetCert(key), 10452);
+
 
             string name = "Unnamed Device";
             if (!Config.Exists(Config.DEVICE_FRIENDLY_NAME))
