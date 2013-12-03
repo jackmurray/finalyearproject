@@ -26,11 +26,13 @@ namespace SpeakerController
     {
         private KeyManager key;
         private CertManager cert;
-        private List<IPEndPoint> Receivers = new List<IPEndPoint>();
+        private List<IPEndPoint> Receivers = new List<IPEndPoint>(); //list of all receivers discovered by SSDP
+        private List<IPEndPoint> ActiveReceivers = new List<IPEndPoint>(); //list of all receivers we're currently streaming to. TODO: some way to clear this/remove devices
         private Trace Log;
         private SSDPClient ssdpc;
         private IAudioFormat audio;
         private RTPOutputStream stream;
+        private bool firstRun = true;
 
         private PacketEncrypterKeyManager pekm = new PacketEncrypterKeyManager();
 
@@ -274,10 +276,30 @@ namespace SpeakerController
 
            if (Config.GetFlag(Config.ENABLE_ENCRYPTION))
                tclient.SetEncryptionKey(this.pekm.Key, this.pekm.Nonce);
+
+            ActiveReceivers.Add(ep);
         }
 
         private void btnStream_Click(object sender, EventArgs e)
         {
+            if (!firstRun)
+            {
+                this.pekm.GenerateNewKey();
+                this.pekm.GenerateNewNonce();
+
+                if (Config.GetFlag(Config.ENABLE_ENCRYPTION))
+                {
+                    foreach (IPEndPoint ep in ActiveReceivers)
+                    {
+                        SslClient ssl = new SslClient(cert.ToDotNetCert(key));
+                        ssl.Connect(ep);
+                        TransportServiceClient tclient = ssl.GetClient<TransportServiceClient>();
+                        tclient.SetEncryptionKey(this.pekm.Key, this.pekm.Nonce);
+                        Log.Information("Delivered new key to " + ep);
+                    }
+                }
+            }
+
             this.stream = new RTPOutputStream(new IPEndPoint(IPAddress.Parse(txtGroupAddr.Text), 10452));
 
             if (Config.GetFlag(Config.ENABLE_AUTHENTICATION))
@@ -286,6 +308,7 @@ namespace SpeakerController
                 this.stream.EnableEncryption(pekm);
             
             stream.Stream(audio);
+            firstRun = false;
         }
 
         private void btnStreamTestSound_Click(object sender, EventArgs e)
