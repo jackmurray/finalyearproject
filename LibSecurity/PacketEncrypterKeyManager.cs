@@ -15,6 +15,7 @@ namespace LibSecurity
 
         public PacketEncrypterKeyManager()
         {
+            LibTrace.Trace.GetInstance("LibSecurity").Verbose("PEKM: Creating new instance - generation message should follow.");
             GenerateNewKey();
             GenerateNewNonce();
         }
@@ -29,17 +30,21 @@ namespace LibSecurity
 
             this.Key = key;
             this.Nonce = nonce;
+
+            LibTrace.Trace.GetInstance("LibSecurity").Verbose("PEKM: Creating new instance with specified key/nonce.");
         }
 
         public byte[] GenerateNewKey()
         {
             Key = CryptRandom.GetBytes(KEY_LENGTH);
+            LibTrace.Trace.GetInstance("LibSecurity").Verbose("PEKM: Generated new key");
             return Key;
         }
 
         public byte[] GenerateNewNonce()
         {
             Nonce = CryptRandom.GetBytes(NONCE_LENGTH);
+            LibTrace.Trace.GetInstance("LibSecurity").Verbose("PEKM: Generated new nonce");
             return Nonce;
         }
     }
