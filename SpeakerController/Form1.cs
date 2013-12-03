@@ -270,10 +270,10 @@ namespace SpeakerController
                 Log.Verbose("[Version Check] ["+kvp.Key+"] Remote: " + remoteversions[kvp.Key] + " Local: " + kvp.Value);
             }
 
-            if (Config.GetFlag(Config.ENABLE_ENCRYPTION))
-                tclient.JoinGroupEncrypted(txtGroupAddr.Text, this.pekm.Key, this.pekm.Nonce);
-            else
-                tclient.JoinGroup(txtGroupAddr.Text);
+           tclient.JoinGroup(txtGroupAddr.Text);
+
+           if (Config.GetFlag(Config.ENABLE_ENCRYPTION))
+               tclient.SetEncryptionKey(this.pekm.Key, this.pekm.Nonce);
         }
 
         private void btnStream_Click(object sender, EventArgs e)

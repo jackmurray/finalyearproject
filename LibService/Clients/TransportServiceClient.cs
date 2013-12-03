@@ -27,16 +27,10 @@ namespace LibService
             Call(m);
         }
 
-        public void JoinGroupEncrypted(string addr, byte[] key, byte[] nonce)
+        public void SetEncryptionKey(byte[] key, byte[] nonce)
         {
-            IPAddress ip;
-            if (!IPAddress.TryParse(addr, out ip))
-                throw new ArgumentException("Failed to parse IP.");
-            if (!LibUtil.Util.IsMulticastAddress(ip))
-                throw new ArgumentException("Not a valid multicast IP.");
-
-            var t = new Tuple<string, byte[], byte[]>(addr, key, nonce);
-            ServiceMessage m = new ServiceMessage("TransportService", "JoinGroupEncrypted", JsonConvert.SerializeObject(t));
+            var t = new Tuple<byte[], byte[]>(key, nonce);
+            ServiceMessage m = new ServiceMessage("TransportService", "SetEncryptionKey", JsonConvert.SerializeObject(t));
             Call(m);
         }
     }
