@@ -17,9 +17,8 @@ namespace LibUtil
         public static Dictionary<string, Version> GetComponentVersions()
         {
             var ret = new Dictionary<string, Version>();
-            foreach (Assembly a in Util.GetLoadedAssemblies())
+            foreach (AssemblyName n in Util.GetReferencedAssemblies())
             {
-                AssemblyName n = a.GetName();
                 if (n.Name == "SpeakerController" || n.Name == "SpeakerReceiver")
                     ret.Add("Core", n.Version);
                 else
@@ -113,9 +112,12 @@ namespace LibUtil
             return (long) IPAddress.NetworkToHostOrder(BitConverter.ToInt64(val, offset));
         }
 
-        public static IEnumerable<Assembly> GetLoadedAssemblies()
+        public static IEnumerable<AssemblyName> GetReferencedAssemblies()
         {
-            return AppDomain.CurrentDomain.GetAssemblies().Where(a => a.GetName().Name.StartsWith("Lib") || a.GetName().Name.StartsWith("Speaker"));
+            var all = new List<AssemblyName>();
+            all.AddRange(Assembly.GetEntryAssembly().GetReferencedAssemblies().Where(a => a.Name.StartsWith("Lib")));
+            all.Add(Assembly.GetEntryAssembly().GetName());
+            return all;
         }
 
         public static bool IsMulticastAddress(IPAddress ip)
@@ -142,7 +144,7 @@ namespace LibUtil
 
         public static bool IsController()
         {
-            return Util.GetLoadedAssemblies().Count(a => a.GetName().Name == "SpeakerController") == 1;
+            return Assembly.GetEntryAssembly().GetName().Name == "SpeakerController";
         }
     }
 }

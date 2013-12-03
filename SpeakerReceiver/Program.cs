@@ -27,8 +27,8 @@ namespace SpeakerReceiver
             if (args.Length > 0)
                 ProcessArgs(args);
             Log.Information("Build Flavour: " + GetBuildFlavour());
-            foreach (Assembly a in Util.GetLoadedAssemblies())
-                Log.Verbose(a.GetName().Name + "-" + a.GetName().Version);
+            foreach (AssemblyName n in Util.GetReferencedAssemblies())
+                Log.Verbose(n.Name + "-" + n.Version);
             
             Log.Information("Platform: " + (Util.IsRunningOnMono ? "Mono" : "MS.NET"));
             
