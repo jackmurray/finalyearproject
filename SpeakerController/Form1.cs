@@ -293,11 +293,18 @@ namespace SpeakerController
                 {
                     foreach (IPEndPoint ep in ActiveReceivers)
                     {
-                        SslClient ssl = new SslClient(cert.ToDotNetCert(key));
-                        ssl.Connect(ep);
-                        TransportServiceClient tclient = ssl.GetClient<TransportServiceClient>();
-                        tclient.SetEncryptionKey(this.pekm.Key, this.pekm.Nonce);
-                        Log.Information("Delivered new key to " + ep);
+                        try
+                        {
+                            SslClient ssl = new SslClient(cert.ToDotNetCert(key));
+                            ssl.Connect(ep);
+                            TransportServiceClient tclient = ssl.GetClient<TransportServiceClient>();
+                            tclient.SetEncryptionKey(this.pekm.Key, this.pekm.Nonce);
+                            Log.Information("Delivered new key to " + ep);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error("Failed to deliver key to " + ep + ". Exception was: " + ex.Message);
+                        }
                     }
                 }
             }
