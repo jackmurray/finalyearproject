@@ -278,10 +278,12 @@ namespace SpeakerController
 
         private void btnStream_Click(object sender, EventArgs e)
         {
+            this.stream = new RTPOutputStream(new IPEndPoint(IPAddress.Parse(txtGroupAddr.Text), 10452));
+
             if (Config.GetFlag(Config.ENABLE_AUTHENTICATION))
-                this.stream = new RTPOutputStream(new IPEndPoint(IPAddress.Parse(txtGroupAddr.Text), 10452), Config.GetFlag(Config.ENABLE_ENCRYPTION), pekm, Signer.Create(key));
-            else
-                this.stream = new RTPOutputStream(new IPEndPoint(IPAddress.Parse(txtGroupAddr.Text), 10452), Config.GetFlag(Config.ENABLE_ENCRYPTION), pekm);
+                this.stream.EnableAuthentication(Signer.Create(key));
+            if (Config.GetFlag(Config.ENABLE_ENCRYPTION))
+                this.stream.EnableEncryption(pekm);
             
             stream.Stream(audio);
         }

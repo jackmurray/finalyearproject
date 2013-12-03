@@ -9,14 +9,9 @@ namespace LibTransport
 {
     public class RTPInputStream : RTPStreamBase
     {
-        public RTPInputStream(IPEndPoint ep, bool useEncryption) : base(ep, useEncryption)
+        public RTPInputStream(IPEndPoint ep) : base(ep)
         {
             c.Client.Bind(new IPEndPoint(IPAddress.Any, ep.Port));
-        }
-
-        public RTPInputStream(IPEndPoint ep, bool useEncryption, PacketEncrypterKeyManager pekm) : this(ep, useEncryption)
-        {
-            this.pekm = pekm;
         }
 
         public void SetReceiveTimeout(int ms)
@@ -30,7 +25,7 @@ namespace LibTransport
             byte[] data = c.Receive(ref remoteHost);
 
             RTPPacket p;
-            p = LibConfig.Config.GetFlag(LibConfig.Config.ENABLE_ENCRYPTION) ? RTPPacket.Parse(data, pekm) : RTPPacket.Parse(data);
+            p = this.useEncryption ? RTPPacket.Parse(data, pekm) : RTPPacket.Parse(data);
 
             return p;
         }

@@ -24,22 +24,18 @@ namespace LibTransport
         public event StreamingCompletedHandler StreamingCompleted;
         private bool continueStreaming = true;
 
-        public RTPOutputStream(IPEndPoint ep, bool useEncryption) : base(ep, useEncryption)
+        public RTPOutputStream(IPEndPoint ep) : base(ep)
         {
             
         }
 
-        public RTPOutputStream(IPEndPoint ep, bool useEncryption, PacketEncrypterKeyManager pekm) : this(ep, useEncryption)
+        public override void EnableEncryption(PacketEncrypterKeyManager pekm)
         {
-            if (!useEncryption)
-                throw new ArgumentException("This constructor must have useEncryption set to true.");
-
-            this.pekm = pekm;
+            base.EnableEncryption(pekm);
             this.crypto = new PacketEncrypter(pekm, encryption_ctr, true);
         }
 
-        public RTPOutputStream(IPEndPoint ep, bool useEncryption, PacketEncrypterKeyManager pekm, Signer s)
-            : this(ep, useEncryption, pekm)
+        public void EnableAuthentication(Signer s)
         {
             this.signer = s;
             this.useAuthentication = true;

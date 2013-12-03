@@ -17,7 +17,7 @@ namespace LibTransport
         protected PacketEncrypterKeyManager pekm = null;
         //CTR is the sequence value. don't need a separate value here.
 
-        protected RTPStreamBase(IPEndPoint ep, bool useEncryption)
+        protected RTPStreamBase(IPEndPoint ep)
         {
             if (ep.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork)
                 throw new ArgumentException("IP endpoint must be AF_INET. IPv6 is currently not supported.");
@@ -27,9 +27,14 @@ namespace LibTransport
             c = new UdpClient(AddressFamily.InterNetwork);
             c.JoinMulticastGroup(ep.Address);
             this.ep = ep;
+            Log.Information("Creating RTP stream endpoint for " + ep);
+        }
 
-            this.useEncryption = useEncryption;
-            Log.Information("Creating RTP stream endpoint. Encryption = " + this.useEncryption);
+        public virtual void EnableEncryption(PacketEncrypterKeyManager pekm)
+        {
+            this.useEncryption = true;
+            this.pekm = pekm;
+            Log.Information("Enabling RTP packet encryption");
         }
     }
 }

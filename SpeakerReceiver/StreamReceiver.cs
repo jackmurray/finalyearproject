@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using LibSecurity;
 using LibTransport;
 using LibTrace;
 using LibAudio;
@@ -52,6 +53,11 @@ namespace SpeakerReceiver
             this.receiveThread.Start();
 
             this.ResetPlayerThread();
+        }
+
+        public void SetEncryptionKey(PacketEncrypterKeyManager pekm)
+        {
+            this.s.EnableEncryption(pekm);
         }
 
         private void ResetPlayerThread()
