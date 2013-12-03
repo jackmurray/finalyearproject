@@ -34,7 +34,7 @@ namespace SpeakerController
         private RTPOutputStream stream;
         private bool firstRun = true;
 
-        private PacketEncrypterKeyManager pekm = new PacketEncrypterKeyManager();
+        private PacketEncrypterKeyManager pekm;
 
         public bool ShouldAdvanceLog { get { return !chkLogPause.Checked; } }
 
@@ -147,6 +147,7 @@ namespace SpeakerController
         private void Setup()
         {
             LibTrace.Trace.ExtraListeners.Add(new DataGridTraceListener(this, dGridTrace));
+            LibTrace.Trace.Initialised = true;
             Log = Trace.GetInstance("SpeakerController");
             Config.CreateItems();
             Config.LoadTrustedKeys();
@@ -155,6 +156,7 @@ namespace SpeakerController
         private void Form1_Load(object sender, EventArgs e)
         {
             Setup();
+            this.pekm = new PacketEncrypterKeyManager();
             key = KeyManager.GetKey();
             cert = CertManager.GetCert(key);
 

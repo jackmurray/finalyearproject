@@ -18,6 +18,7 @@ namespace LibTrace
         private static SourceLevels StartLevel = Config.GetTraceLevel(); //the same for all sources at the moment. TODO: per-component tracing setting.
 
         public static List<TraceListener> ExtraListeners = new List<TraceListener>();
+        public static bool Initialised = false;
 
         protected Trace(string sourceName)
         {
@@ -33,6 +34,9 @@ namespace LibTrace
 
         public static Trace GetInstance(string sourceName)
         {
+            if (!Trace.Initialised)
+                throw new InvalidOperationException("Tracing has not been initialised yet!");
+
             if (Objects.ContainsKey(sourceName))
                 return Objects[sourceName];
 
