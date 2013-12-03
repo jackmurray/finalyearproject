@@ -63,7 +63,7 @@ namespace LibSSDP
                 {
                     ParsePacket(data, remoteEP);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     Log.Verbose("Invalid packet received. Ignoring...");
                 }

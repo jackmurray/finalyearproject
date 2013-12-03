@@ -56,7 +56,13 @@ namespace LibSSDP
                     signature = val;
                     break;
                 case "Location":
-                    Location = int.Parse(val);
+                    try
+                    {
+                        Location = int.Parse(val);
+                    }
+                    catch (Exception)
+                    {
+                    } //swallow the exception. if it failed it's because it's definitely not one of our packets.
                     break;
                 case "x-device-name":
                     friendlyName = val;

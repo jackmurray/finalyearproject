@@ -109,7 +109,7 @@ namespace LibSSDP
             }
             catch (Exception ex)
             {
-                Trace.TraceWarning("SSDPacket.Parse() failed: " + ex.Message);
+                LibTrace.Trace.GetInstance("SSDPPacket").Warning("Failed to parse packet: " + ex.Message);
                 throw;
             }
         }

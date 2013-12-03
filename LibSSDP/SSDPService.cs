@@ -67,7 +67,7 @@ namespace LibSSDP
                             }
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         Log.Verbose("Invalid packet received. Ignoring...");
                     }
