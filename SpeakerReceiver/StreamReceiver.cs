@@ -107,24 +107,25 @@ namespace SpeakerReceiver
                 try
                 {
                     p = s.Receive();
-                    if (p.Marker && (p as RTPControlPacket).Action == RTPControlAction.Play)
+                    if (p.Marker)
                     {
-                        this.basetime = (p as RTPControlPacket).ComputeBaseTime();
-                        Log.Verbose("Taking " + basetime + ":" + basetime.Millisecond + " as the base time stamp.");
-                        if (playerThread.ThreadState == ThreadState.Unstarted) //the first time this object is used.
-                            playerThread.Start();
-                        if (playerThread.ThreadState == ThreadState.Stopped)
+                        var cp = p as RTPControlPacket;
+                        if (cp.Action == RTPControlAction.Play)
                         {
-                            this.ResetPlayerThread();
-                            this.playerThread.Start();
+                            this.basetime = cp.ComputeBaseTime();
+                            Log.Verbose("Taking " + basetime + ":" + basetime.Millisecond + " as the base time stamp.");
+                            if (playerThread.ThreadState == ThreadState.Unstarted) //the first time this object is used.
+                                playerThread.Start();
+                            if (playerThread.ThreadState == ThreadState.Stopped)
+                            {
+                                this.ResetPlayerThread();
+                                this.playerThread.Start();
+                            }
                         }
                     }
                     else
                     {
-                        lock (Buffer)
-                        {
-                            Buffer.Add(p);
-                        }
+                        BufferPacket(p);
                     }
                 }
                 catch (SocketException ex)
@@ -132,6 +133,14 @@ namespace SpeakerReceiver
                     if (ex.SocketErrorCode != SocketError.TimedOut)
                         throw;
                 }
+            }
+        }
+
+        private void BufferPacket(RTPPacket p)
+        {
+            lock (Buffer)
+            {
+                Buffer.Add(p);
             }
         }
 
