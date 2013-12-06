@@ -279,6 +279,9 @@ namespace SpeakerController
            if (Config.GetFlag(Config.ENABLE_ENCRYPTION))
                tclient.SetEncryptionKey(this.pekm.Key, this.pekm.Nonce);
 
+           IPAddress ourIP = Dns.GetHostAddresses(Dns.GetHostName()).First(ip => ip.AddressFamily == AddressFamily.InterNetwork);
+           tclient.SetControllerAddress(new IPEndPoint(ourIP, 10452));
+
             ActiveReceivers.Add(ep);
         }
 

@@ -20,6 +20,7 @@ namespace SpeakerReceiver
     {
         private static Trace Log;
         private static StreamReceiver r;
+        private static IPEndPoint controllerEP = null;
 
         private static void Main(string[] args)
         {
@@ -49,7 +50,7 @@ namespace SpeakerReceiver
 
             LibService.ServiceRegistration.Register(new LibService.CommonService());
             LibService.ServiceRegistration.Register(new LibService.PairingService());
-            LibService.ServiceRegistration.Register(new LibService.TransportService(Handler_TransportService_JoinGroup, Handler_TransportService_SetEncryptionKey));
+            LibService.ServiceRegistration.Register(new LibService.TransportService(Handler_TransportService_JoinGroup, Handler_TransportService_SetEncryptionKey, Handler_TransportService_SetControllerAddress));
             LibService.ServiceRegistration.Start(cert.ToDotNetCert(key), 10451);
             Console.WriteLine("SpeakerReceiver ready.");
             Console.ReadLine();
@@ -129,7 +130,13 @@ namespace SpeakerReceiver
 
         public static void Handler_OnRotateKeyPacketReceived()
         {
-            Log.Verbose("Receiver: SR asked for a new key, guess we'd better go get one...");
+            Log.Verbose("SR asked for a new key, guess we'd better go get one...");
+        }
+
+        public static void Handler_TransportService_SetControllerAddress(IPAddress ip, ushort port)
+        {
+            controllerEP = new IPEndPoint(ip, port);
+            Log.Verbose("Your controller today will be " + controllerEP + " please enjoy your stream.");
         }
     }
 }
