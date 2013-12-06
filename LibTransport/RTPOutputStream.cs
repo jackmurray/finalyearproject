@@ -69,6 +69,11 @@ namespace LibTransport
             return RTPControlPacket.BuildStopPacket(++this.seq, this.nextTimestamp(), this.syncid);
         }
 
+        protected RTPPacket BuildRotateKeyPacket()
+        {
+            return RTPControlPacket.BuildRotateKeyPacket(++this.seq, this.nextTimestamp(), this.syncid);
+        }
+
         protected uint nextTimestamp()
         {
             DateTime packetdt = basetimestamp.AddMilliseconds(seq*audio.GetFrameLength()*1000);
@@ -103,6 +108,10 @@ namespace LibTransport
         private void TimerTick()
         {
             this.Send(this.BuildPacket(audio.GetFrame()));
+            if (seq == 10) //hack in a rotate key packet for testing.
+            {
+                this.Send(this.BuildRotateKeyPacket());
+            }
             if (audio.EndOfFile())
             {
                 this.Send(this.BuildStopPacket());
