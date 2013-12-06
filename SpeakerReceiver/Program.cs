@@ -118,12 +118,18 @@ namespace SpeakerReceiver
             if (r != null)
                 r.Stop();
             r = new StreamReceiver(new RTPInputStream(new IPEndPoint(ip, 10452)));
+            r.OnKeyRotatePacketReceived += Handler_OnRotateKeyPacketReceived;
             r.Start();
         }
 
         public static void Handler_TransportService_SetEncryptionKey(byte[] key, byte[] nonce)
         {
             r.SetEncryptionKey(new PacketEncrypterKeyManager(key, nonce));
+        }
+
+        public static void Handler_OnRotateKeyPacketReceived()
+        {
+            Log.Verbose("Receiver: SR asked for a new key, guess we'd better go get one...");
         }
     }
 }
