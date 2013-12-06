@@ -16,11 +16,14 @@ namespace SpeakerReceiver
         private RTPInputStream s;
         private bool shouldRunReceiver = true, shouldRunPlayer = true;
         private Thread receiveThread, playerThread;
-        private DateTime basetime;
+        private DateTime basetime, rotateKeyTime;
+        private bool shouldRotate = false; //DateTime vars cannot be null, so we need a bool to control whether we should check rotate time or not.
         private Trace Log = Trace.GetInstance("LibTransport");
         private AudioPlayer player = null;
-
         private List<RTPPacket> Buffer = new List<RTPPacket>();
+
+        public delegate void NotifyKeyRotation();
+        public event NotifyKeyRotation OnKeyRotatePacketReceived;
 
         public StreamReceiver(RTPInputStream s)
         {
@@ -106,6 +109,12 @@ namespace SpeakerReceiver
             {
                 try
                 {
+                    if (this.shouldRotate && this.rotateKeyTime <= DateTime.UtcNow)
+                    {
+                        this.s.RotateKey();
+                        this.shouldRotate = false;
+                    }
+
                     p = s.Receive();
                     if (p.Marker)
                     {
@@ -121,6 +130,14 @@ namespace SpeakerReceiver
                                 this.ResetPlayerThread();
                                 this.playerThread.Start();
                             }
+                        }
+                        if (cp.Action == RTPControlAction.RotateKey)
+                        {
+                            this.rotateKeyTime = RTPPacket.BuildDateTime(cp.Timestamp, this.basetime);
+                            this.shouldRotate = true;
+                            Log.Verbose("Got a RotateKey packet. Action time: " + this.rotateKeyTime);
+                            if (OnKeyRotatePacketReceived != null)
+                                OnKeyRotatePacketReceived();
                         }
                     }
                     else
@@ -180,6 +197,11 @@ namespace SpeakerReceiver
                 HandlePacket(p);
             }
             player.Reset(); //this thread is terminating, so reset the audio output for the next one.
+        }
+
+        public void DeliverNewKey(byte[] key, byte[] nonce)
+        {
+            this.s.DeliverNewKey(key, nonce);
         }
     }
 }
