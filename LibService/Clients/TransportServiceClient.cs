@@ -33,5 +33,12 @@ namespace LibService
             ServiceMessage m = new ServiceMessage("TransportService", "SetEncryptionKey", JsonConvert.SerializeObject(t));
             Call(m);
         }
+
+        public void SetControllerAddress(IPEndPoint ep)
+        {
+            var t = new Tuple<string, ushort>(ep.Address.ToString(), (ushort) ep.Port);
+            ServiceMessage m = new ServiceMessage("TransportService", "SetControllerAddress", JsonConvert.SerializeObject(t));
+            Call(m);
+        }
     }
 }
