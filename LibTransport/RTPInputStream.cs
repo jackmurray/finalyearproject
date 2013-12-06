@@ -29,5 +29,23 @@ namespace LibTransport
 
             return p;
         }
+
+        /// <summary>
+        /// Sets the next key in the PEKM to the arguments. Call RotateKey() to use this new key.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="nonce"></param>
+        public void DeliverNewKey(byte[] key, byte[] nonce)
+        {
+            this.pekm.SetNextKey(key, nonce);
+        }
+
+        /// <summary>
+        /// Changes the key in the PEKM to the one set by DeliverNewKey
+        /// </summary>
+        public void RotateKey()
+        {
+            this.pekm.UseNextKey();
+        }
     }
 }
