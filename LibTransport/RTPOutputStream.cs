@@ -14,7 +14,7 @@ namespace LibTransport
     public class RTPOutputStream : RTPStreamBase
     {
         private IAudioFormat audio;
-        private ushort seq = 0;
+        private ushort seq = 0, deltaSeq = 0; //deltaSeq is used to count the number of packets which shouldn't consume a timestamp interval (e.g. rotatekey packets)
         private long encryption_ctr = 0;
         private uint syncid = (uint)new Random().Next();
         private DateTime basetimestamp;
@@ -71,12 +71,13 @@ namespace LibTransport
 
         protected RTPPacket BuildRotateKeyPacket()
         {
+            this.deltaSeq++;
             return RTPControlPacket.BuildRotateKeyPacket(++this.seq, this.nextTimestamp(), this.syncid);
         }
 
         protected uint nextTimestamp()
         {
-            DateTime packetdt = basetimestamp.AddMilliseconds(seq*audio.GetFrameLength()*1000);
+            DateTime packetdt = basetimestamp.AddMilliseconds((seq - deltaSeq)*audio.GetFrameLength()*1000);
             //Log.Verbose("Packet timestamp: " + packetdt + ":"+packetdt.Millisecond);
             return RTPPacket.BuildTimestamp(packetdt);
         }
