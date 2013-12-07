@@ -26,7 +26,7 @@ namespace LibService
             _stream = new SslStream(sock.GetStream(), false, ValidateServerCert, SelectLocalCert);
             X509CertificateCollection cc = new X509CertificateCollection();
             cc.Add(_cert);
-            _stream.AuthenticateAsClient("", cc, System.Security.Authentication.SslProtocols.Tls, false);
+            _stream.AuthenticateAsClient("_", cc, System.Security.Authentication.SslProtocols.Tls, false);
         }
 
         public X509Certificate GetRemoteCert()
