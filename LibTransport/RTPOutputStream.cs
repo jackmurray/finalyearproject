@@ -72,12 +72,24 @@ namespace LibTransport
         protected RTPPacket BuildRotateKeyPacket()
         {
             this.deltaSeq++;
-            return RTPControlPacket.BuildRotateKeyPacket(++this.seq, this.nextTimestamp(), this.syncid);
+            DateTime calculatedTime = this.nextTimestampAsDT();
+            int configbuftime = LibConfig.Config.GetInt(LibConfig.Config.STREAM_BUFFER_TIME);
+            int rotateKeyTime = LibConfig.Config.GetInt(LibConfig.Config.ROTATE_KEY_TIME);
+
+            int delta = (configbuftime < rotateKeyTime) ? rotateKeyTime - configbuftime : 0;
+            DateTime actualTime = calculatedTime.AddSeconds(delta);
+            Log.Verbose("Built RotateKey packet for time " + actualTime + ":" + actualTime.Millisecond);
+            return RTPControlPacket.BuildRotateKeyPacket(++this.seq, RTPPacket.BuildTimestamp(actualTime), this.syncid);
+        }
+
+        protected DateTime nextTimestampAsDT()
+        {
+            return basetimestamp.AddMilliseconds((seq - deltaSeq) * audio.GetFrameLength() * 1000); ;
         }
 
         protected uint nextTimestamp()
         {
-            DateTime packetdt = basetimestamp.AddMilliseconds((seq - deltaSeq)*audio.GetFrameLength()*1000);
+            DateTime packetdt = nextTimestampAsDT();
             //Log.Verbose("Packet timestamp: " + packetdt + ":"+packetdt.Millisecond);
             return RTPPacket.BuildTimestamp(packetdt);
         }

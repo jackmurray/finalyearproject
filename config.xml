@@ -13,4 +13,5 @@
 	<playerArgs>-</playerArgs>
 	<enableEncryption>true</enableEncryption>
 	<enableAuthentication>true</enableAuthentication>
+	<rotateKeyTime>10</rotateKeyTime>
 </config>
