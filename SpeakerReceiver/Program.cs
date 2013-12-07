@@ -6,8 +6,10 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using LibSecurity;
+using LibService;
 using LibTrace;
 using LibConfig;
 using LibTransport;
@@ -21,6 +23,8 @@ namespace SpeakerReceiver
         private static Trace Log;
         private static StreamReceiver r;
         private static IPEndPoint controllerEP = null;
+        private static KeyManager key;
+        private static CertManager cert;
 
         private static void Main(string[] args)
         {
@@ -32,9 +36,6 @@ namespace SpeakerReceiver
                 Log.Verbose(n.Name + "-" + n.Version);
             
             Log.Information("Platform: " + (Util.IsRunningOnMono ? "Mono" : "MS.NET"));
-            
-            KeyManager key = null;
-            CertManager cert = null;
             try
             {
                 key = KeyManager.GetKey();
@@ -131,6 +132,17 @@ namespace SpeakerReceiver
         public static void Handler_OnRotateKeyPacketReceived()
         {
             Log.Verbose("SR asked for a new key, guess we'd better go get one...");
+            new Thread(RotateKeyFetchThreadProc).Start();
+        }
+
+        private static void RotateKeyFetchThreadProc()
+        {
+            SslClient ssl = new SslClient(cert.ToDotNetCert(key));
+            ssl.Connect(controllerEP);
+            KeyServiceClient kc = ssl.GetClient<KeyServiceClient>();
+            var newkey = kc.GetCurrentKey();
+            r.DeliverNewKey(newkey.Item1, newkey.Item2);
+            Log.Verbose("New key delivered.");
         }
 
         public static void Handler_TransportService_SetControllerAddress(IPAddress ip, ushort port)
