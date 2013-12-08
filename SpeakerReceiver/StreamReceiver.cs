@@ -121,14 +121,24 @@ namespace SpeakerReceiver
                         var cp = p as RTPControlPacket;
                         if (cp.Action == RTPControlAction.Play)
                         {
-                            this.basetime = cp.ComputeBaseTime();
-                            Log.Verbose("Taking " + basetime + ":" + basetime.Millisecond + " as the base time stamp.");
-                            if (playerThread.ThreadState == ThreadState.Unstarted) //the first time this object is used.
-                                playerThread.Start();
-                            if (playerThread.ThreadState == ThreadState.Stopped)
+                            if (playerThread.ThreadState == ThreadState.Running ||
+                                playerThread.ThreadState == ThreadState.WaitSleepJoin)
                             {
-                                this.ResetPlayerThread();
-                                this.playerThread.Start();
+                                Log.Information("Got a Play packet while already playing. Ignoring it.");
+                            }
+                            else
+                            {
+                                this.basetime = cp.ComputeBaseTime();
+                                Log.Verbose("Taking " + basetime + ":" + basetime.Millisecond +
+                                            " as the base time stamp.");
+                                if (playerThread.ThreadState == ThreadState.Unstarted)
+                                    //the first time this object is used.
+                                    playerThread.Start();
+                                if (playerThread.ThreadState == ThreadState.Stopped)
+                                {
+                                    this.ResetPlayerThread();
+                                    this.playerThread.Start();
+                                }
                             }
                         }
                         if (cp.Action == RTPControlAction.RotateKey)
