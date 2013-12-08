@@ -85,11 +85,11 @@ namespace SpeakerReceiver
                 RTPControlPacket p = _p as RTPControlPacket;
                 switch (p.Action)
                 {
-                    case RTPControlAction.Play:
-                        Log.Warning("Received a play packet at an invalid time.");
-                        break;
                     case RTPControlAction.Stop:
                         this.EndPlayerThread();
+                        break;
+                    default:
+                        Log.Warning("Control packet received but unable to handle.");
                         break;
                 }
             }
