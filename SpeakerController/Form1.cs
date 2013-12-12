@@ -289,8 +289,8 @@ namespace SpeakerController
         {
             if (!firstRun)
             {
-                this.pekm.GenerateNewKey();
-                this.pekm.GenerateNewNonce();
+                this.pekm.SetNextKey(this.pekm.GenerateNewKey(), this.pekm.GenerateNewNonce());
+                this.pekm.UseNextKey();
 
                 if (Config.GetFlag(Config.ENABLE_ENCRYPTION))
                 {
