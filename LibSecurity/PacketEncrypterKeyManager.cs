@@ -38,6 +38,10 @@ namespace LibSecurity
             Log.Verbose("PEKM: Creating new instance with specified key/nonce.");
         }
 
+        /// <summary>
+        /// Generate, set and return a new key.
+        /// </summary>
+        /// <returns></returns>
         public byte[] GenerateNewKey()
         {
             Key = CryptRandom.GetBytes(KEY_LENGTH);
@@ -45,6 +49,10 @@ namespace LibSecurity
             return Key;
         }
 
+        /// <summary>
+        /// Generate, set and return a new nonce. 
+        /// </summary>
+        /// <returns></returns>
         public byte[] GenerateNewNonce()
         {
             Nonce = CryptRandom.GetBytes(NONCE_LENGTH);
@@ -52,6 +60,11 @@ namespace LibSecurity
             return Nonce;
         }
 
+        /// <summary>
+        /// Set the next key/nonce to be used. Call UseNextKey() to perform the swap.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="nonce"></param>
         public void SetNextKey(byte[] key, byte[] nonce)
         {
             this.nextKey = key;
@@ -59,6 +72,9 @@ namespace LibSecurity
             Log.Verbose("PEKM: setting next key");
         }
 
+        /// <summary>
+        /// Swap the current key for the one set by SetNextKey(byte[], byte[]).
+        /// </summary>
         public void UseNextKey()
         {
             if (nextKey == null || nextNonce == null)
