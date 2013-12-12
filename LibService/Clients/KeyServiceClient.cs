@@ -13,9 +13,9 @@ namespace LibService
         {
         }
 
-        public Tuple<byte[], byte[]> GetCurrentKey()
+        public Tuple<byte[], byte[]> GetNextKey()
         {
-            ServiceMessage m = new ServiceMessage("KeyService", "GetCurrentKey", null);
+            ServiceMessage m = new ServiceMessage("KeyService", "GetNextKey", null);
             ServiceMessageResponse response = Call(m);
             return JsonConvert.DeserializeObject<Tuple<byte[], byte[]>>(response.Data);
         }

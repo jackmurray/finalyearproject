@@ -140,7 +140,7 @@ namespace SpeakerReceiver
             SslClient ssl = new SslClient(cert.ToDotNetCert(key));
             ssl.Connect(controllerEP);
             KeyServiceClient kc = ssl.GetClient<KeyServiceClient>();
-            var newkey = kc.GetCurrentKey();
+            var newkey = kc.GetNextKey();
             r.DeliverNewKey(newkey.Item1, newkey.Item2);
             Log.Verbose("New key delivered.");
         }

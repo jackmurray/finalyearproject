@@ -15,7 +15,7 @@ namespace LibService
         public KeyService(PacketEncrypterKeyManager pekm)
         {
             Name = "KeyService";
-            Operations = new List<string>() {"GetCurrentKey"};
+            Operations = new List<string>() { "GetNextKey" };
             this.pekm = pekm;
         }
 
@@ -23,9 +23,11 @@ namespace LibService
         {
             switch (m.operationID)
             {
-                case "GetCurrentKey":
+                case "GetNextKey":
                     //TODO: Check if calling client is still authorized for the stream.
-                    return Success(JsonConvert.SerializeObject(new Tuple<byte[], byte[]>(pekm.Key, pekm.Nonce)));
+                    if (pekm.NextKey == null || pekm.NextNonce == null)
+                        return Error("Unable to provide new key/nonce - they have not been set yet.");
+                    return Success(JsonConvert.SerializeObject(new Tuple<byte[], byte[]>(pekm.NextKey, pekm.NextNonce)));
                     break;
                 default:
                     throw new ArgumentException("Invalid message received.");
