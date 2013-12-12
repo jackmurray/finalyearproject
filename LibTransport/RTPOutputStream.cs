@@ -24,6 +24,10 @@ namespace LibTransport
         public event StreamingCompletedHandler StreamingCompleted;
         private bool continueStreaming = true;
 
+        private bool rotateKeyRequested = false; //Has a rotation been requested?
+        private bool rotateKeyWaiting = false; //Are we now waiting until the correct time to perform the rotation?
+        private DateTime rotateKeyTime;
+
         public RTPOutputStream(IPEndPoint ep) : base(ep)
         {
             
@@ -39,6 +43,14 @@ namespace LibTransport
         {
             this.signer = s;
             this.useAuthentication = true;
+        }
+
+        /// <summary>
+        /// Request a key rotation as soon as possible. To avoid locks, the time this occurs is not guaranteed, but will not take more than 2 packets.
+        /// </summary>
+        public void RotateKey()
+        {
+            rotateKeyRequested = true;
         }
 
         public void Send(RTPPacket p)
@@ -69,7 +81,11 @@ namespace LibTransport
             return RTPControlPacket.BuildStopPacket(++this.seq, this.nextTimestamp(), this.syncid);
         }
 
-        protected RTPPacket BuildRotateKeyPacket()
+        /// <summary>
+        /// Returns a new RotateKey packet, and the time at which it is to be actioned.
+        /// </summary>
+        /// <returns></returns>
+        protected Tuple<DateTime, RTPPacket> BuildRotateKeyPacket()
         {
             this.deltaSeq++;
             DateTime calculatedTime = this.nextTimestampAsDT();
@@ -79,7 +95,7 @@ namespace LibTransport
             int delta = (configbuftime < rotateKeyTime) ? rotateKeyTime - configbuftime : 0;
             DateTime actualTime = calculatedTime.AddSeconds(delta);
             Log.Verbose("Built RotateKey packet for time " + actualTime + ":" + actualTime.Millisecond);
-            return RTPControlPacket.BuildRotateKeyPacket(++this.seq, RTPPacket.BuildTimestamp(actualTime), this.syncid);
+            return new Tuple<DateTime,RTPPacket>(actualTime, RTPControlPacket.BuildRotateKeyPacket(++this.seq, RTPPacket.BuildTimestamp(actualTime), this.syncid));
         }
 
         protected DateTime nextTimestampAsDT()
@@ -120,11 +136,9 @@ namespace LibTransport
 
         private void TimerTick()
         {
+            this.processPendingEvents();
+
             this.Send(this.BuildPacket(audio.GetFrame()));
-            if (seq == 10) //hack in a rotate key packet for testing.
-            {
-                this.Send(this.BuildRotateKeyPacket());
-            }
             if (audio.EndOfFile())
             {
                 this.Send(this.BuildStopPacket());
@@ -137,6 +151,29 @@ namespace LibTransport
         public void Stop()
         {
             this.continueStreaming = false;
+        }
+
+        private void processPendingEvents()
+        {
+            if (this.rotateKeyRequested)
+            {
+                Log.Verbose("RTPOutputStream: RotateKey requested.");
+                rotateKeyRequested = false;
+                rotateKeyWaiting = true;
+                var r = BuildRotateKeyPacket();
+                this.rotateKeyTime = r.Item1;
+                this.pekm.SetNextKey(this.pekm.GenerateNewKey(), this.pekm.GenerateNewNonce());
+                this.Send(r.Item2);
+            }
+            if (this.rotateKeyWaiting)
+            {
+                if (this.rotateKeyTime <= DateTime.UtcNow)
+                {
+                    Log.Verbose("RTPOutputStream: Rotating key...");
+                    this.pekm.UseNextKey();
+                    this.rotateKeyWaiting = false;
+                }
+            }
         }
     }
 }
