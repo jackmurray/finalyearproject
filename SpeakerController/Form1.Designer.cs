@@ -50,6 +50,7 @@
             this.cmbLogLevel = new System.Windows.Forms.ComboBox();
             this.chkEnableEncrypt = new System.Windows.Forms.CheckBox();
             this.chkEnableAuth = new System.Windows.Forms.CheckBox();
+            this.btnRotateKey = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dGridTrace)).BeginInit();
             this.SuspendLayout();
             // 
@@ -278,11 +279,22 @@
             this.chkEnableAuth.UseVisualStyleBackColor = true;
             this.chkEnableAuth.CheckedChanged += new System.EventHandler(this.chkEnableAuth_CheckedChanged);
             // 
+            // btnRotateKey
+            // 
+            this.btnRotateKey.Location = new System.Drawing.Point(584, 224);
+            this.btnRotateKey.Name = "btnRotateKey";
+            this.btnRotateKey.Size = new System.Drawing.Size(75, 23);
+            this.btnRotateKey.TabIndex = 21;
+            this.btnRotateKey.Text = "Rotate Key";
+            this.btnRotateKey.UseVisualStyleBackColor = true;
+            this.btnRotateKey.Click += new System.EventHandler(this.btnRotateKey_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(832, 464);
+            this.Controls.Add(this.btnRotateKey);
             this.Controls.Add(this.chkEnableAuth);
             this.Controls.Add(this.chkEnableEncrypt);
             this.Controls.Add(this.cmbLogLevel);
@@ -335,6 +347,7 @@
         private System.Windows.Forms.ComboBox cmbLogLevel;
         private System.Windows.Forms.CheckBox chkEnableEncrypt;
         private System.Windows.Forms.CheckBox chkEnableAuth;
+        private System.Windows.Forms.Button btnRotateKey;
     }
 }
 

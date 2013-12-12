@@ -347,6 +347,11 @@ namespace SpeakerController
         {
             Config.Set(Config.ENABLE_AUTHENTICATION, (chkEnableAuth.Checked ? bool.TrueString : bool.FalseString));
         }
+
+        private void btnRotateKey_Click(object sender, EventArgs e)
+        {
+            this.stream.RotateKey();
+        }
     }
 
     public class DataGridTraceListener : TraceListener
