@@ -10,7 +10,8 @@ namespace LibSecurity
         public byte[] Key { get; protected set; }
         public byte[] Nonce { get; protected set; }
 
-        private byte[] nextKey, nextNonce;
+        public byte[] NextKey { get; protected set; }
+        public byte[] NextNonce { get; protected set; }
 
         public const int KEY_LENGTH = 16;
         public const int NONCE_LENGTH = 8; //hardcoded to AES128 values.
@@ -63,8 +64,8 @@ namespace LibSecurity
         /// <param name="nonce"></param>
         public void SetNextKey(byte[] key, byte[] nonce)
         {
-            this.nextKey = key;
-            this.nextNonce = nonce;
+            this.NextKey = key;
+            this.NextNonce = nonce;
             Log.Verbose("PEKM: setting next key");
         }
 
@@ -73,16 +74,16 @@ namespace LibSecurity
         /// </summary>
         public void UseNextKey()
         {
-            if (nextKey == null || nextNonce == null)
+            if (NextKey == null || NextNonce == null)
             {
                 Log.Error("PEKM: Was asked to switch to next key but one has not been set!");
                 return;
             }
-            this.Key = nextKey;
-            this.Nonce = nextNonce;
+            this.Key = NextKey;
+            this.Nonce = NextNonce;
             Log.Verbose("PEKM: switching to next key");
-            nextKey = null;
-            nextNonce = null;
+            NextKey = null;
+            NextNonce = null;
         }
     }
 }
