@@ -26,8 +26,8 @@ namespace SpeakerController
     {
         private KeyManager key;
         private CertManager cert;
-        private List<IPEndPoint> Receivers = new List<IPEndPoint>(); //list of all receivers discovered by SSDP
-        private List<IPEndPoint> ActiveReceivers = new List<IPEndPoint>(); //list of all receivers we're currently streaming to. TODO: some way to clear this/remove devices
+        private List<Receiver> Receivers = new List<Receiver>(); //list of all receivers discovered by SSDP
+        private List<Receiver> ActiveReceivers = new List<Receiver>(); //list of all receivers we're currently streaming to. TODO: some way to clear this/remove devices
         private Trace Log;
         private SSDPClient ssdpc;
         private IAudioFormat audio;
@@ -113,15 +113,18 @@ namespace SpeakerController
              {
                  ListViewItem item = new ListViewItem(val) {ForeColor = c};
                  lstDevices.Items.Add(item);
-                 Receivers.Add(new IPEndPoint(args.Source, args.Packet.Location));
+                 var ep = new IPEndPoint(args.Source, args.Packet.Location);
+                 string f = args.Packet.fingerprint;
+                 var r = TrustedKeys.Contains(f) ? new Receiver(ep, TrustedKeys.Get(f)) : new Receiver(ep, f);
+                 Receivers.Add(r);
             }));
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            IPEndPoint ep = Receivers[lstDevices.SelectedIndices[0]];
+            Receiver r = Receivers[lstDevices.SelectedIndices[0]];
             SslClient ssl = new SslClient(cert.ToDotNetCert(key));
-            ssl.Connect(ep);
+            ssl.Connect(r.Address);
 
             CommonServiceClient client = ssl.GetClient<CommonServiceClient>();
 
@@ -191,9 +194,9 @@ namespace SpeakerController
 
         private void btnGetCert_Click(object sender, EventArgs e)
         {
-            IPEndPoint ep = Receivers[lstDevices.SelectedIndices[0]];
+            Receiver r = Receivers[lstDevices.SelectedIndices[0]];
             SslClient ssl = new SslClient(cert.ToDotNetCert(key));
-            ssl.Connect(ep);
+            ssl.Connect(r.Address);
 
             PairingServiceClient c = ssl.GetClient<PairingServiceClient>();
             byte[] challenge = c.GetChallengeBytes();
@@ -254,9 +257,9 @@ namespace SpeakerController
 
         private void btnJoinGroup_Click(object sender, EventArgs e)
         {
-            IPEndPoint ep = Receivers[lstDevices.SelectedIndices[0]];
+            Receiver r = Receivers[lstDevices.SelectedIndices[0]];
             SslClient ssl = new SslClient(cert.ToDotNetCert(key));
-            ssl.Connect(ep);
+            ssl.Connect(r.Address);
 
             TransportServiceClient tclient = ssl.GetClient<TransportServiceClient>();
             CommonServiceClient commonclient = ssl.GetClient<CommonServiceClient>();
@@ -282,7 +285,8 @@ namespace SpeakerController
            IPAddress ourIP = Dns.GetHostAddresses(Dns.GetHostName()).First(ip => ip.AddressFamily == AddressFamily.InterNetwork);
            tclient.SetControllerAddress(new IPEndPoint(ourIP, 10452));
 
-            ActiveReceivers.Add(ep);
+           ActiveReceivers.Add(r);
+           Log.Verbose("Added " + r);
         }
 
         private void btnStream_Click(object sender, EventArgs e)
@@ -294,19 +298,19 @@ namespace SpeakerController
 
                 if (Config.GetFlag(Config.ENABLE_ENCRYPTION))
                 {
-                    foreach (IPEndPoint ep in ActiveReceivers)
+                    foreach (Receiver r in ActiveReceivers)
                     {
                         try
                         {
                             SslClient ssl = new SslClient(cert.ToDotNetCert(key));
-                            ssl.Connect(ep);
+                            ssl.Connect(r.Address);
                             TransportServiceClient tclient = ssl.GetClient<TransportServiceClient>();
                             tclient.SetEncryptionKey(this.pekm.Key, this.pekm.Nonce);
-                            Log.Information("Delivered new key to " + ep);
+                            Log.Information("Delivered new key to " + r);
                         }
                         catch (Exception ex)
                         {
-                            Log.Error("Failed to deliver key to " + ep + ". Exception was: " + ex.Message);
+                            Log.Error("Failed to deliver key to " + r + ". Exception was: " + ex.Message);
                         }
                     }
                 }
