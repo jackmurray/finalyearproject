@@ -32,6 +32,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Devices\Controller.cs" />
+    <Compile Include="Devices\Device.cs" />
+    <Compile Include="Devices\Receiver.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
