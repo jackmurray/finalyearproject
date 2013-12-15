@@ -141,13 +141,17 @@ namespace SpeakerReceiver
                                 }
                             }
                         }
-                        if (cp.Action == RTPControlAction.RotateKey)
+                        else if (cp.Action == RTPControlAction.RotateKey)
                         {
                             this.rotateKeyTime = RTPPacket.BuildDateTime(cp.Timestamp, this.basetime);
                             this.shouldRotate = true;
                             Log.Verbose("Got a RotateKey packet. Action time: " + this.rotateKeyTime);
                             if (OnKeyRotatePacketReceived != null)
                                 OnKeyRotatePacketReceived();
+                        }
+                        else
+                        {
+                            BufferPacket(p);
                         }
                     }
                     else
