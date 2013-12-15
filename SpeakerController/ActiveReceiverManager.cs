@@ -29,9 +29,20 @@ namespace SpeakerController
             return GetEnumerator();
         }
 
+        public Receiver this[int index]
+        {
+            get { return this.list[index]; }
+        }
+
         public void Add(Receiver r)
         {
             this.list.Add(r);
+            this.Refresh();
+        }
+
+        public void RemoveAt(int index)
+        {
+            this.list.RemoveAt(index);
             this.Refresh();
         }
 
