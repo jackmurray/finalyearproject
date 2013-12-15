@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using LibCommon;
 using LibSecurity;
 using LibService;
 using LibTrace;
@@ -25,6 +26,7 @@ namespace SpeakerReceiver
         private static IPEndPoint controllerEP = null;
         private static KeyManager key;
         private static CertManager cert;
+        private static Controller controller;
 
         private static void Main(string[] args)
         {
