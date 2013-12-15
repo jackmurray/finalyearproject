@@ -44,5 +44,10 @@ namespace LibService
             //not sure if this is the best method. maybe something better should be done in future.
             return Activator.CreateInstance(typeof (T), _stream) as T;
         }
+
+        public bool ValidateRemoteFingerprint(string expected)
+        {
+            return expected == GetRemoteCert().GetCertHashString();
+        }
     }
 }
