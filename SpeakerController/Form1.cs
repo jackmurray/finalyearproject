@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -163,7 +164,7 @@ namespace SpeakerController
             key = KeyManager.GetKey();
             cert = CertManager.GetCert(key);
 
-            ServiceRegistration.Register(new KeyService(this.pekm));
+            ServiceRegistration.Register(new KeyService(this.pekm, this.IsClientValid));
             ServiceRegistration.Start(cert.ToDotNetCert(key), 10452);
 
 
@@ -367,6 +368,20 @@ namespace SpeakerController
         private void btnRotateKey_Click(object sender, EventArgs e)
         {
             this.stream.RotateKey();
+        }
+
+        private void btnEjectDevice_Click(object sender, EventArgs e)
+        {
+            Receiver r = activeReceiverManager[lstDevicesActive.SelectedIndices[0]];
+            Log.Information("Removing " + r + " from active stream.");
+            activeReceiverManager.RemoveAt(lstDevicesActive.SelectedIndices[0]);
+            if (this.stream != null)
+                this.stream.RotateKey();
+        }
+
+        public bool IsClientValid(X509Certificate client)
+        {
+            return activeReceiverManager.SingleOrDefault(r => r.Fingerprint == client.GetCertHashString()) != null;
         }
     }
 

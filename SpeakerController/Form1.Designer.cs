@@ -52,6 +52,7 @@
             this.chkEnableAuth = new System.Windows.Forms.CheckBox();
             this.btnRotateKey = new System.Windows.Forms.Button();
             this.lstDevicesActive = new System.Windows.Forms.ListView();
+            this.btnEjectDevice = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dGridTrace)).BeginInit();
             this.SuspendLayout();
             // 
@@ -300,11 +301,22 @@
             this.lstDevicesActive.UseCompatibleStateImageBehavior = false;
             this.lstDevicesActive.View = System.Windows.Forms.View.List;
             // 
+            // btnEjectDevice
+            // 
+            this.btnEjectDevice.Location = new System.Drawing.Point(223, 196);
+            this.btnEjectDevice.Name = "btnEjectDevice";
+            this.btnEjectDevice.Size = new System.Drawing.Size(83, 23);
+            this.btnEjectDevice.TabIndex = 23;
+            this.btnEjectDevice.Text = "Eject Device";
+            this.btnEjectDevice.UseVisualStyleBackColor = true;
+            this.btnEjectDevice.Click += new System.EventHandler(this.btnEjectDevice_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1068, 528);
+            this.Controls.Add(this.btnEjectDevice);
             this.Controls.Add(this.lstDevicesActive);
             this.Controls.Add(this.btnRotateKey);
             this.Controls.Add(this.chkEnableAuth);
@@ -361,6 +373,7 @@
         private System.Windows.Forms.CheckBox chkEnableAuth;
         private System.Windows.Forms.Button btnRotateKey;
         private System.Windows.Forms.ListView lstDevicesActive;
+        private System.Windows.Forms.Button btnEjectDevice;
     }
 }
 
