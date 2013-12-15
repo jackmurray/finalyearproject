@@ -145,7 +145,7 @@ namespace SpeakerReceiver
                         {
                             this.rotateKeyTime = RTPPacket.BuildDateTime(cp.Timestamp, this.basetime);
                             this.shouldRotate = true;
-                            Log.Verbose("Got a RotateKey packet. Action time: " + this.rotateKeyTime);
+                            Log.Verbose("Got a RotateKey packet. Action time: " + this.rotateKeyTime + ":" + this.rotateKeyTime.Millisecond);
                             if (OnKeyRotatePacketReceived != null)
                                 OnKeyRotatePacketReceived();
                         }
