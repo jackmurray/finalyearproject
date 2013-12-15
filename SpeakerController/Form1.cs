@@ -124,8 +124,7 @@ namespace SpeakerController
         private void button1_Click(object sender, EventArgs e)
         {
             Receiver r = Receivers[lstDevices.SelectedIndices[0]];
-            SslClient ssl = new SslClient(cert.ToDotNetCert(key));
-            ssl.Connect(r.Address);
+            SslClient ssl = r.GetSsl(cert, key);
 
             CommonServiceClient client = ssl.GetClient<CommonServiceClient>();
 
@@ -196,8 +195,7 @@ namespace SpeakerController
         private void btnGetCert_Click(object sender, EventArgs e)
         {
             Receiver r = Receivers[lstDevices.SelectedIndices[0]];
-            SslClient ssl = new SslClient(cert.ToDotNetCert(key));
-            ssl.Connect(r.Address);
+            SslClient ssl = r.GetSsl(cert, key);
 
             PairingServiceClient c = ssl.GetClient<PairingServiceClient>();
             byte[] challenge = c.GetChallengeBytes();
@@ -259,8 +257,7 @@ namespace SpeakerController
         private void btnJoinGroup_Click(object sender, EventArgs e)
         {
             Receiver r = Receivers[lstDevices.SelectedIndices[0]];
-            SslClient ssl = new SslClient(cert.ToDotNetCert(key));
-            ssl.Connect(r.Address);
+            SslClient ssl = r.GetSsl(cert, key);
 
             TransportServiceClient tclient = ssl.GetClient<TransportServiceClient>();
             CommonServiceClient commonclient = ssl.GetClient<CommonServiceClient>();
@@ -314,8 +311,7 @@ namespace SpeakerController
                     {
                         try
                         {
-                            SslClient ssl = new SslClient(cert.ToDotNetCert(key));
-                            ssl.Connect(r.Address);
+                            SslClient ssl = r.GetSsl(cert, key);
                             TransportServiceClient tclient = ssl.GetClient<TransportServiceClient>();
                             tclient.SetEncryptionKey(this.pekm.Key, this.pekm.Nonce);
                             Log.Information("Delivered new key to " + r);
