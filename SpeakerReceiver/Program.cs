@@ -142,9 +142,17 @@ namespace SpeakerReceiver
             SslClient ssl = new SslClient(cert.ToDotNetCert(key));
             ssl.Connect(controllerEP);
             KeyServiceClient kc = ssl.GetClient<KeyServiceClient>();
-            var newkey = kc.GetNextKey();
-            r.DeliverNewKey(newkey.Item1, newkey.Item2);
-            Log.Verbose("New key delivered.");
+            try
+            {
+                var newkey = kc.GetNextKey();
+                r.DeliverNewKey(newkey.Item1, newkey.Item2);
+                Log.Verbose("New key delivered.");
+            }
+            catch (Exception)
+            {
+                Log.Critical("Key was rotated and we were unable to get the new one! Quitting.");
+                Environment.Exit(1);
+            }
         }
 
         public static void Handler_TransportService_SetControllerAddress(IPAddress ip, ushort port)
