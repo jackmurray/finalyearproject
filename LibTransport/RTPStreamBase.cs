@@ -11,6 +11,7 @@ namespace LibTransport
         protected UdpClient c;
         protected IPEndPoint ep;
         protected static Trace Log = Trace.GetInstance("LibTransport");
+        protected ushort seq = 0;
 
         protected PacketEncrypter crypto = null;
         protected bool useEncryption, useAuthentication;

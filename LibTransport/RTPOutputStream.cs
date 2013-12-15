@@ -14,7 +14,7 @@ namespace LibTransport
     public class RTPOutputStream : RTPStreamBase
     {
         private IAudioFormat audio;
-        private ushort seq = 0, deltaSeq = 0; //deltaSeq is used to count the number of packets which shouldn't consume a timestamp interval (e.g. rotatekey packets)
+        private ushort deltaSeq = 0; //deltaSeq is used to count the number of packets which shouldn't consume a timestamp interval (e.g. rotatekey packets)
         private long encryption_ctr = 0;
         private uint syncid = (uint)new Random().Next();
         private DateTime basetimestamp;
@@ -169,7 +169,7 @@ namespace LibTransport
             {
                 if (this.rotateKeyTime <= DateTime.UtcNow)
                 {
-                    Log.Verbose("RTPOutputStream: Rotating key...");
+                    Log.Verbose("RTPOutputStream: Rotating key. The first seq to use the new key is " + (this.seq + 1));
                     this.pekm.UseNextKey();
                     this.rotateKeyWaiting = false;
                 }

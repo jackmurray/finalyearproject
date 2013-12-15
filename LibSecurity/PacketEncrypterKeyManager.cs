@@ -81,7 +81,7 @@ namespace LibSecurity
             }
             this.Key = NextKey;
             this.Nonce = NextNonce;
-            Log.Verbose("PEKM: switching to next key");
+            Log.Verbose("PEKM: switching to next key at " + DateTime.UtcNow + ":" + DateTime.UtcNow.Millisecond);
             NextKey = null;
             NextNonce = null;
         }

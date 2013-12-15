@@ -26,6 +26,7 @@ namespace LibTransport
 
             RTPPacket p;
             p = this.useEncryption ? RTPPacket.Parse(data, pekm) : RTPPacket.Parse(data);
+            this.seq = p.SequenceNumber;
 
             return p;
         }
@@ -46,6 +47,7 @@ namespace LibTransport
         public void RotateKey()
         {
             this.pekm.UseNextKey();
+            Log.Verbose("RTPInputStream: last seq we saw was " + this.seq);
         }
     }
 }
