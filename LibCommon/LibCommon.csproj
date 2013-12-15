@@ -35,6 +35,16 @@
     <Compile Include="Devices\Receiver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LibSecurity\LibSecurity.csproj">
+      <Project>{9ea6083b-8cae-4921-b916-b9d62168b80b}</Project>
+      <Name>LibSecurity</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LibService\LibService.csproj">
+      <Project>{a8d27f1f-33af-4280-aeea-8396a1fb0018}</Project>
+      <Name>LibService</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

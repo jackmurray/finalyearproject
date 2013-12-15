@@ -4,6 +4,8 @@ using System.Linq;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using LibSecurity;
+using LibService;
 
 namespace LibCommon
 {
@@ -30,6 +32,16 @@ namespace LibCommon
         public override string ToString()
         {
             return "Device " + Address + " " + Fingerprint;
+        }
+
+        public SslClient GetSsl(CertManager cert, KeyManager key)
+        {
+            SslClient c = new SslClient(cert.ToDotNetCert(key));
+            c.Connect(Address);
+            if (!c.ValidateRemoteFingerprint(Fingerprint))
+                throw new Exception("Remote certificate failed validation!");
+
+            return c;
         }
     }
 }
