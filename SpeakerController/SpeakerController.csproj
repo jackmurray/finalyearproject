@@ -86,6 +86,10 @@
       <Project>{f4041fc6-caeb-4476-a06d-ce301258e500}</Project>
       <Name>LibAudio</Name>
     </ProjectReference>
+    <ProjectReference Include="..\LibCommon\LibCommon.csproj">
+      <Project>{060f4698-3535-4ac7-80fc-3a0fe8e357cb}</Project>
+      <Name>LibCommon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LibConfig\LibConfig.csproj">
       <Project>{37be8328-6872-494f-9458-d3540d7dc44f}</Project>
       <Name>LibConfig</Name>
