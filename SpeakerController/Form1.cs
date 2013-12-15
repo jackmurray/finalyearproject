@@ -265,20 +265,31 @@ namespace SpeakerController
             TransportServiceClient tclient = ssl.GetClient<TransportServiceClient>();
             CommonServiceClient commonclient = ssl.GetClient<CommonServiceClient>();
 
-            //check remote party has same or higher versions for all components.
-            var remoteversions = commonclient.GetVersions();
-            foreach (var kvp in Util.GetComponentVersions())
+            try
             {
-                if (!remoteversions.Keys.Contains(kvp.Key))
-                    throw new Exception("Remote party did not specify a version for " + kvp.Key);
+                //check remote party has same or higher versions for all components.
+                var remoteversions = commonclient.GetVersions();
+                foreach (var kvp in Util.GetComponentVersions())
+                {
+                    if (!remoteversions.Keys.Contains(kvp.Key))
+                        throw new Exception("Remote party did not specify a version for " + kvp.Key);
 
-                if (remoteversions[kvp.Key] < kvp.Value)
-                    throw new Exception("Remote party specified version " + remoteversions[kvp.Key] + " for component " + kvp.Key + ". Need version " + kvp.Value + " or higher.");
+                    if (remoteversions[kvp.Key] < kvp.Value)
+                        throw new Exception("Remote party specified version " + remoteversions[kvp.Key] +
+                                            " for component " + kvp.Key + ". Need version " + kvp.Value + " or higher.");
 
-                Log.Verbose("[Version Check] ["+kvp.Key+"] Remote: " + remoteversions[kvp.Key] + " Local: " + kvp.Value);
+                    Log.Verbose("[Version Check] [" + kvp.Key + "] Remote: " + remoteversions[kvp.Key] + " Local: " +
+                                kvp.Value);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to add receiver to group: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Log.Error("Unable to add receiver to group: " + ex.Message);
+                return;
             }
 
-           tclient.JoinGroup(txtGroupAddr.Text);
+            tclient.JoinGroup(txtGroupAddr.Text);
 
            if (Config.GetFlag(Config.ENABLE_ENCRYPTION))
                tclient.SetEncryptionKey(this.pekm.Key, this.pekm.Nonce);
