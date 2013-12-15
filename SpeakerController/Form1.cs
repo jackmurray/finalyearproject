@@ -28,12 +28,12 @@ namespace SpeakerController
         private KeyManager key;
         private CertManager cert;
         private List<Receiver> Receivers = new List<Receiver>(); //list of all receivers discovered by SSDP
-        private List<Receiver> ActiveReceivers = new List<Receiver>(); //list of all receivers we're currently streaming to. TODO: some way to clear this/remove devices
         private Trace Log;
         private SSDPClient ssdpc;
         private IAudioFormat audio;
         private RTPOutputStream stream;
         private bool firstRun = true;
+        private ActiveReceiverManager activeReceiverManager;
 
         private PacketEncrypterKeyManager pekm;
 
@@ -68,7 +68,7 @@ namespace SpeakerController
 
         private void DoDiscovery()
         {
-            lstDevices.Items.Clear();
+            lstDevicesAvail.Items.Clear();
             Receivers.Clear();
             ssdpc = new SSDPClient();
             ssdpc.OnResponsePacketReceived += c_OnResponsePacketReceived;
@@ -113,7 +113,7 @@ namespace SpeakerController
             BeginInvoke((Action)(() =>
              {
                  ListViewItem item = new ListViewItem(val) {ForeColor = c};
-                 lstDevices.Items.Add(item);
+                 lstDevicesAvail.Items.Add(item);
                  var ep = new IPEndPoint(args.Source, args.Packet.Location);
                  string f = args.Packet.fingerprint;
                  var r = TrustedKeys.Contains(f) ? new Receiver(ep, TrustedKeys.Get(f)) : new Receiver(ep, f);
@@ -123,7 +123,7 @@ namespace SpeakerController
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Receiver r = Receivers[lstDevices.SelectedIndices[0]];
+            Receiver r = Receivers[lstDevicesAvail.SelectedIndices[0]];
             SslClient ssl = r.GetSsl(cert, key);
 
             CommonServiceClient client = ssl.GetClient<CommonServiceClient>();
@@ -180,6 +180,7 @@ namespace SpeakerController
             cmbLogLevel.SelectedItem = Config.Get(Config.TRACE_LEVEL).ToString();
             chkEnableEncrypt.Checked = Config.GetFlag(Config.ENABLE_ENCRYPTION);
             chkEnableAuth.Checked = Config.GetFlag(Config.ENABLE_AUTHENTICATION);
+            this.activeReceiverManager = new ActiveReceiverManager(lstDevicesActive);
         }
 
         private void SetFriendlyName(string name)
@@ -194,7 +195,7 @@ namespace SpeakerController
 
         private void btnGetCert_Click(object sender, EventArgs e)
         {
-            Receiver r = Receivers[lstDevices.SelectedIndices[0]];
+            Receiver r = Receivers[lstDevicesAvail.SelectedIndices[0]];
             SslClient ssl = r.GetSsl(cert, key);
 
             PairingServiceClient c = ssl.GetClient<PairingServiceClient>();
@@ -256,7 +257,7 @@ namespace SpeakerController
 
         private void btnJoinGroup_Click(object sender, EventArgs e)
         {
-            Receiver r = Receivers[lstDevices.SelectedIndices[0]];
+            Receiver r = Receivers[lstDevicesAvail.SelectedIndices[0]];
             SslClient ssl = r.GetSsl(cert, key);
 
             TransportServiceClient tclient = ssl.GetClient<TransportServiceClient>();
@@ -288,18 +289,21 @@ namespace SpeakerController
 
             tclient.JoinGroup(txtGroupAddr.Text);
 
-           if (Config.GetFlag(Config.ENABLE_ENCRYPTION))
-               tclient.SetEncryptionKey(this.pekm.Key, this.pekm.Nonce);
+            if (Config.GetFlag(Config.ENABLE_ENCRYPTION))
+                tclient.SetEncryptionKey(this.pekm.Key, this.pekm.Nonce);
 
-           IPAddress ourIP = Dns.GetHostAddresses(Dns.GetHostName()).First(ip => ip.AddressFamily == AddressFamily.InterNetwork);
-           tclient.SetControllerAddress(new IPEndPoint(ourIP, 10452));
+            IPAddress ourIP = Dns.GetHostAddresses(Dns.GetHostName()).First(ip => ip.AddressFamily == AddressFamily.InterNetwork);
+            tclient.SetControllerAddress(new IPEndPoint(ourIP, 10452));
 
-           ActiveReceivers.Add(r);
-           Log.Verbose("Added " + r);
+            activeReceiverManager.Add(r);
+
+            Log.Verbose("Added " + r);
         }
 
         private void btnStream_Click(object sender, EventArgs e)
         {
+            //For the first run, each receiver will have had the key delivered already.
+            //For each run after that, we generate a new key and push it to all the active receivers.
             if (!firstRun)
             {
                 this.pekm.SetNextKey(this.pekm.GenerateNewKey(), this.pekm.GenerateNewNonce());
@@ -307,7 +311,7 @@ namespace SpeakerController
 
                 if (Config.GetFlag(Config.ENABLE_ENCRYPTION))
                 {
-                    foreach (Receiver r in ActiveReceivers)
+                    foreach (Receiver r in activeReceiverManager)
                     {
                         try
                         {

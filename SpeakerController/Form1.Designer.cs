@@ -33,7 +33,7 @@
             this.txtFriendlyName = new System.Windows.Forms.TextBox();
             this.btnSaveFriendlyName = new System.Windows.Forms.Button();
             this.btnTrustDevice = new System.Windows.Forms.Button();
-            this.lstDevices = new System.Windows.Forms.ListView();
+            this.lstDevicesAvail = new System.Windows.Forms.ListView();
             this.dGridTrace = new System.Windows.Forms.DataGridView();
             this.Severity = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Source = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -51,6 +51,7 @@
             this.chkEnableEncrypt = new System.Windows.Forms.CheckBox();
             this.chkEnableAuth = new System.Windows.Forms.CheckBox();
             this.btnRotateKey = new System.Windows.Forms.Button();
+            this.lstDevicesActive = new System.Windows.Forms.ListView();
             ((System.ComponentModel.ISupportInitialize)(this.dGridTrace)).BeginInit();
             this.SuspendLayout();
             // 
@@ -76,14 +77,14 @@
             // 
             // txtFriendlyName
             // 
-            this.txtFriendlyName.Location = new System.Drawing.Point(720, 12);
+            this.txtFriendlyName.Location = new System.Drawing.Point(956, 15);
             this.txtFriendlyName.Name = "txtFriendlyName";
             this.txtFriendlyName.Size = new System.Drawing.Size(100, 20);
             this.txtFriendlyName.TabIndex = 3;
             // 
             // btnSaveFriendlyName
             // 
-            this.btnSaveFriendlyName.Location = new System.Drawing.Point(730, 39);
+            this.btnSaveFriendlyName.Location = new System.Drawing.Point(966, 42);
             this.btnSaveFriendlyName.Name = "btnSaveFriendlyName";
             this.btnSaveFriendlyName.Size = new System.Drawing.Size(75, 23);
             this.btnSaveFriendlyName.TabIndex = 4;
@@ -93,7 +94,7 @@
             // 
             // btnTrustDevice
             // 
-            this.btnTrustDevice.Location = new System.Drawing.Point(223, 12);
+            this.btnTrustDevice.Location = new System.Drawing.Point(93, 196);
             this.btnTrustDevice.Name = "btnTrustDevice";
             this.btnTrustDevice.Size = new System.Drawing.Size(75, 23);
             this.btnTrustDevice.TabIndex = 6;
@@ -101,15 +102,15 @@
             this.btnTrustDevice.UseVisualStyleBackColor = true;
             this.btnTrustDevice.Click += new System.EventHandler(this.btnGetCert_Click);
             // 
-            // lstDevices
+            // lstDevicesAvail
             // 
-            this.lstDevices.Location = new System.Drawing.Point(12, 12);
-            this.lstDevices.MultiSelect = false;
-            this.lstDevices.Name = "lstDevices";
-            this.lstDevices.Size = new System.Drawing.Size(205, 173);
-            this.lstDevices.TabIndex = 7;
-            this.lstDevices.UseCompatibleStateImageBehavior = false;
-            this.lstDevices.View = System.Windows.Forms.View.List;
+            this.lstDevicesAvail.Location = new System.Drawing.Point(12, 12);
+            this.lstDevicesAvail.MultiSelect = false;
+            this.lstDevicesAvail.Name = "lstDevicesAvail";
+            this.lstDevicesAvail.Size = new System.Drawing.Size(205, 173);
+            this.lstDevicesAvail.TabIndex = 7;
+            this.lstDevicesAvail.UseCompatibleStateImageBehavior = false;
+            this.lstDevicesAvail.View = System.Windows.Forms.View.List;
             // 
             // dGridTrace
             // 
@@ -124,13 +125,13 @@
             this.ID,
             this.Message});
             this.dGridTrace.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.dGridTrace.Location = new System.Drawing.Point(0, 274);
+            this.dGridTrace.Location = new System.Drawing.Point(0, 338);
             this.dGridTrace.Name = "dGridTrace";
             this.dGridTrace.ReadOnly = true;
             this.dGridTrace.RowHeadersVisible = false;
             this.dGridTrace.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToDisplayedHeaders;
             this.dGridTrace.ShowEditingIcon = false;
-            this.dGridTrace.Size = new System.Drawing.Size(832, 190);
+            this.dGridTrace.Size = new System.Drawing.Size(1068, 190);
             this.dGridTrace.TabIndex = 8;
             // 
             // Severity
@@ -165,15 +166,15 @@
             // 
             this.splitter1.Cursor = System.Windows.Forms.Cursors.HSplit;
             this.splitter1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.splitter1.Location = new System.Drawing.Point(0, 271);
+            this.splitter1.Location = new System.Drawing.Point(0, 335);
             this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(832, 3);
+            this.splitter1.Size = new System.Drawing.Size(1068, 3);
             this.splitter1.TabIndex = 9;
             this.splitter1.TabStop = false;
             // 
             // btnListPairedDevices
             // 
-            this.btnListPairedDevices.Location = new System.Drawing.Point(223, 38);
+            this.btnListPairedDevices.Location = new System.Drawing.Point(93, 225);
             this.btnListPairedDevices.Name = "btnListPairedDevices";
             this.btnListPairedDevices.Size = new System.Drawing.Size(109, 23);
             this.btnListPairedDevices.TabIndex = 10;
@@ -183,7 +184,7 @@
             // 
             // btnOpenFile
             // 
-            this.btnOpenFile.Location = new System.Drawing.Point(405, 150);
+            this.btnOpenFile.Location = new System.Drawing.Point(573, 54);
             this.btnOpenFile.Name = "btnOpenFile";
             this.btnOpenFile.Size = new System.Drawing.Size(75, 23);
             this.btnOpenFile.TabIndex = 11;
@@ -193,7 +194,7 @@
             // 
             // txtGroupAddr
             // 
-            this.txtGroupAddr.Location = new System.Drawing.Point(705, 118);
+            this.txtGroupAddr.Location = new System.Drawing.Point(941, 121);
             this.txtGroupAddr.Name = "txtGroupAddr";
             this.txtGroupAddr.Size = new System.Drawing.Size(100, 20);
             this.txtGroupAddr.TabIndex = 12;
@@ -201,7 +202,7 @@
             // 
             // btnJoinGroup
             // 
-            this.btnJoinGroup.Location = new System.Drawing.Point(705, 144);
+            this.btnJoinGroup.Location = new System.Drawing.Point(941, 147);
             this.btnJoinGroup.Name = "btnJoinGroup";
             this.btnJoinGroup.Size = new System.Drawing.Size(75, 23);
             this.btnJoinGroup.TabIndex = 13;
@@ -211,7 +212,7 @@
             // 
             // btnStream
             // 
-            this.btnStream.Location = new System.Drawing.Point(405, 195);
+            this.btnStream.Location = new System.Drawing.Point(573, 99);
             this.btnStream.Name = "btnStream";
             this.btnStream.Size = new System.Drawing.Size(75, 23);
             this.btnStream.TabIndex = 14;
@@ -223,7 +224,7 @@
             // 
             this.chkLogPause.Appearance = System.Windows.Forms.Appearance.Button;
             this.chkLogPause.AutoSize = true;
-            this.chkLogPause.Location = new System.Drawing.Point(797, 242);
+            this.chkLogPause.Location = new System.Drawing.Point(1033, 306);
             this.chkLogPause.Name = "chkLogPause";
             this.chkLogPause.Size = new System.Drawing.Size(23, 23);
             this.chkLogPause.TabIndex = 16;
@@ -233,7 +234,7 @@
             // 
             // btnStreamTestSound
             // 
-            this.btnStreamTestSound.Location = new System.Drawing.Point(389, 224);
+            this.btnStreamTestSound.Location = new System.Drawing.Point(557, 128);
             this.btnStreamTestSound.Name = "btnStreamTestSound";
             this.btnStreamTestSound.Size = new System.Drawing.Size(109, 23);
             this.btnStreamTestSound.TabIndex = 17;
@@ -251,7 +252,7 @@
             "Warning",
             "Information",
             "Verbose"});
-            this.cmbLogLevel.Location = new System.Drawing.Point(536, 13);
+            this.cmbLogLevel.Location = new System.Drawing.Point(812, 15);
             this.cmbLogLevel.Name = "cmbLogLevel";
             this.cmbLogLevel.Size = new System.Drawing.Size(121, 21);
             this.cmbLogLevel.TabIndex = 18;
@@ -260,7 +261,7 @@
             // chkEnableEncrypt
             // 
             this.chkEnableEncrypt.AutoSize = true;
-            this.chkEnableEncrypt.Location = new System.Drawing.Point(536, 41);
+            this.chkEnableEncrypt.Location = new System.Drawing.Point(812, 43);
             this.chkEnableEncrypt.Name = "chkEnableEncrypt";
             this.chkEnableEncrypt.Size = new System.Drawing.Size(112, 17);
             this.chkEnableEncrypt.TabIndex = 19;
@@ -271,7 +272,7 @@
             // chkEnableAuth
             // 
             this.chkEnableAuth.AutoSize = true;
-            this.chkEnableAuth.Location = new System.Drawing.Point(536, 65);
+            this.chkEnableAuth.Location = new System.Drawing.Point(812, 67);
             this.chkEnableAuth.Name = "chkEnableAuth";
             this.chkEnableAuth.Size = new System.Drawing.Size(130, 17);
             this.chkEnableAuth.TabIndex = 20;
@@ -281,7 +282,7 @@
             // 
             // btnRotateKey
             // 
-            this.btnRotateKey.Location = new System.Drawing.Point(584, 224);
+            this.btnRotateKey.Location = new System.Drawing.Point(792, 306);
             this.btnRotateKey.Name = "btnRotateKey";
             this.btnRotateKey.Size = new System.Drawing.Size(75, 23);
             this.btnRotateKey.TabIndex = 21;
@@ -289,11 +290,22 @@
             this.btnRotateKey.UseVisualStyleBackColor = true;
             this.btnRotateKey.Click += new System.EventHandler(this.btnRotateKey_Click);
             // 
+            // lstDevicesActive
+            // 
+            this.lstDevicesActive.Location = new System.Drawing.Point(223, 12);
+            this.lstDevicesActive.MultiSelect = false;
+            this.lstDevicesActive.Name = "lstDevicesActive";
+            this.lstDevicesActive.Size = new System.Drawing.Size(205, 173);
+            this.lstDevicesActive.TabIndex = 22;
+            this.lstDevicesActive.UseCompatibleStateImageBehavior = false;
+            this.lstDevicesActive.View = System.Windows.Forms.View.List;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(832, 464);
+            this.ClientSize = new System.Drawing.Size(1068, 528);
+            this.Controls.Add(this.lstDevicesActive);
             this.Controls.Add(this.btnRotateKey);
             this.Controls.Add(this.chkEnableAuth);
             this.Controls.Add(this.chkEnableEncrypt);
@@ -307,7 +319,7 @@
             this.Controls.Add(this.btnListPairedDevices);
             this.Controls.Add(this.splitter1);
             this.Controls.Add(this.dGridTrace);
-            this.Controls.Add(this.lstDevices);
+            this.Controls.Add(this.lstDevicesAvail);
             this.Controls.Add(this.btnTrustDevice);
             this.Controls.Add(this.btnSaveFriendlyName);
             this.Controls.Add(this.txtFriendlyName);
@@ -330,7 +342,7 @@
         private System.Windows.Forms.TextBox txtFriendlyName;
         private System.Windows.Forms.Button btnSaveFriendlyName;
         private System.Windows.Forms.Button btnTrustDevice;
-        private System.Windows.Forms.ListView lstDevices;
+        private System.Windows.Forms.ListView lstDevicesAvail;
         private System.Windows.Forms.DataGridView dGridTrace;
         private System.Windows.Forms.DataGridViewTextBoxColumn Severity;
         private System.Windows.Forms.DataGridViewTextBoxColumn Source;
@@ -348,6 +360,7 @@
         private System.Windows.Forms.CheckBox chkEnableEncrypt;
         private System.Windows.Forms.CheckBox chkEnableAuth;
         private System.Windows.Forms.Button btnRotateKey;
+        private System.Windows.Forms.ListView lstDevicesActive;
     }
 }
 
