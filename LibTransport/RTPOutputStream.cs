@@ -58,7 +58,7 @@ namespace LibTransport
             byte[] data = useEncryption == false ? p.Serialise() : p.SerialiseEncrypted(crypto, encryption_ctr, signer);
             c.Send(data, data.Length, ep);
             encryption_ctr += p.GetCounterIncrement(crypto);
-            this.crypto.Init(pekm, encryption_ctr, true);
+            InitKey();
         }
 
         protected RTPPacket BuildPacket(byte[] data)
@@ -79,6 +79,11 @@ namespace LibTransport
         protected RTPPacket BuildStopPacket()
         {
             return RTPControlPacket.BuildStopPacket(++this.seq, this.nextTimestamp(), this.syncid);
+        }
+
+        protected void InitKey()
+        {
+            this.crypto.Init(pekm, encryption_ctr, true);
         }
 
         /// <summary>
@@ -171,6 +176,7 @@ namespace LibTransport
                 {
                     Log.Verbose("RTPOutputStream: Rotating key. The first seq to use the new key is " + (this.seq + 1));
                     this.pekm.UseNextKey();
+                    InitKey();
                     this.rotateKeyWaiting = false;
                 }
             }
