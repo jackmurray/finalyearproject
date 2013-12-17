@@ -176,6 +176,11 @@ namespace LibTransport
                 {
                     Log.Verbose("RTPOutputStream: Rotating key. The first seq to use the new key is " + (this.seq + 1));
                     this.pekm.UseNextKey();
+                    /*
+                     * We have to call InitKey() here because although we changed the key in the PEKM via UseNextKey(),
+                     * the PacketEncrypter and its underlying crypto engine must be re-initialised with the new key before we try and send anything else
+                     * because after this point the receivers will switch to the new key.
+                     * */
                     InitKey();
                     this.rotateKeyWaiting = false;
                 }
