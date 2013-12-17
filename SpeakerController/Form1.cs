@@ -298,6 +298,9 @@ namespace SpeakerController
 
             activeReceiverManager.Add(r);
 
+            if (stream != null && stream.Started)
+                stream.SendSync();
+
             Log.Verbose("Added " + r);
         }
 

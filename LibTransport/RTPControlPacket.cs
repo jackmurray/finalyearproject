@@ -23,23 +23,23 @@ namespace LibTransport
             if (this.Action != RTPControlAction.Play)
                 throw new InvalidOperationException("Can only call ComputeBaseTime on a Play packet.");
 
-            DateTime sendingTimestamp = new DateTime(LibUtil.Util.DecodeLong(ExtraData, 0));
+            /*DateTime sendingTimestamp = new DateTime(LibUtil.Util.DecodeLong(ExtraData, 0));
             //Latency code disabled for now. Might need it in future if sync is an issue.
             //TimeSpan latency = DateTime.UtcNow - sendingTimestamp; //time it took for the packet to get here.
 
             //LibTrace.Trace.GetInstance("LibTransport").Verbose("Calculated play packet latency as " + latency.TotalMilliseconds + "ms");
 
-            DateTime basetime = RTPPacket.BuildDateTime(this.Timestamp, sendingTimestamp)/* - latency*/;
-            return basetime;
+            DateTime basetime = RTPPacket.BuildDateTime(this.Timestamp, sendingTimestamp)/* - latency;*/
+            return new DateTime(LibUtil.Util.DecodeLong(ExtraData, 0));
         }
 
         /// <summary>
         /// Build a play packet based at the current UTC time.
         /// </summary>
         /// <returns></returns>
-        public static RTPControlPacket BuildPlayPacket(ushort SequenceNumber, uint Timestamp, uint SyncSource)
+        public static RTPControlPacket BuildPlayPacket(ushort SequenceNumber, uint Timestamp, uint SyncSource, long baseTime)
         {
-            byte[] extra = LibUtil.Util.Encode(DateTime.UtcNow.Ticks);
+            byte[] extra = LibUtil.Util.Encode(baseTime);
             //extension stuff set to false/null as it'll be set later.
             return new RTPControlPacket(RTPControlAction.Play, extra, false, SequenceNumber, Timestamp, SyncSource, null);
         }

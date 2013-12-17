@@ -28,6 +28,9 @@ namespace LibTransport
         private bool rotateKeyWaiting = false; //Are we now waiting until the correct time to perform the rotation?
         private DateTime rotateKeyTime;
 
+        private bool _started = false;
+        public bool Started { get { return _started; } }
+
         public RTPOutputStream(IPEndPoint ep) : base(ep)
         {
             
@@ -68,12 +71,15 @@ namespace LibTransport
             //Log.Verbose("Building RTP packet seq:" + sequence);
             return new RTPDataPacket(false, false, sequence, ts, this.syncid, data, null);
         }
+        
+        protected void setupBaseTime()
+        {
+            this.basetimestamp = DateTime.UtcNow.AddSeconds(LibConfig.Config.GetInt(LibConfig.Config.STREAM_BUFFER_TIME));
+        }
 
         protected RTPPacket BuildPlayPacket()
         {
-            DateTime now = DateTime.UtcNow;
-            this.basetimestamp = now.AddSeconds(LibConfig.Config.GetInt(LibConfig.Config.STREAM_BUFFER_TIME));
-            return RTPControlPacket.BuildPlayPacket(++this.seq, RTPPacket.BuildTimestamp(this.basetimestamp), syncid);
+            return RTPControlPacket.BuildPlayPacket(++this.seq, 0, syncid, this.basetimestamp.Ticks);
         }
 
         protected RTPPacket BuildStopPacket()
@@ -124,9 +130,17 @@ namespace LibTransport
         public void Stream(IAudioFormat audio)
         {
             this.audio = audio;
+            this.setupBaseTime();
             this.Send(this.BuildPlayPacket());
             Log.Verbose("Base timestamp: " + basetimestamp + ":" + basetimestamp.Millisecond);
             new Thread(StreamThreadProc).Start();
+            _started = true;
+        }
+
+        public void SendSync()
+        {
+            this.deltaSeq++;
+            this.Send(this.BuildPlayPacket());
         }
 
         private void StreamThreadProc()
