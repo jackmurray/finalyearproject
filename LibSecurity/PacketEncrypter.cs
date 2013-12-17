@@ -87,7 +87,7 @@ namespace LibSecurity
 
         public byte[] Encrypt(byte[] data)
         {
-            if (mode != true) throw new InvalidOperationException("This instance was initialised for encryption only!");
+            if (mode != true) throw new InvalidOperationException("This instance was initialised for decryption only!");
             return Transform(data);
         }
 
