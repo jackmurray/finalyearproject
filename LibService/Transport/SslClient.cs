@@ -21,12 +21,31 @@ namespace LibService
 
         public void Connect(IPEndPoint ep)
         {
-            var sock = new TcpClient();
-            sock.Connect(ep);
-            _stream = new SslStream(sock.GetStream(), false, ValidateServerCert, SelectLocalCert);
-            X509CertificateCollection cc = new X509CertificateCollection();
-            cc.Add(_cert);
-            _stream.AuthenticateAsClient("_", cc, System.Security.Authentication.SslProtocols.Tls, false);
+            /*
+             * This retry loop is to fix an issue with (I think) .NET SSL. If you connect to a receiver running on the local machine
+             * and then try to connect to an RPi, the first attempt sometimes fails with some unhelpful SSPI exception. Opening a new socket
+             * and new SSL connection seems to make it work.
+             * */
+            for (int i = 0; i < 5; i++)
+            {
+                try
+                {
+                    var sock = new TcpClient();
+                    sock.Connect(ep);
+                    _stream = new SslStream(sock.GetStream(), false, ValidateServerCert, SelectLocalCert);
+                    X509CertificateCollection cc = new X509CertificateCollection();
+                    cc.Add(_cert);
+                    _stream.AuthenticateAsClient("_", cc, System.Security.Authentication.SslProtocols.Tls, false);
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    LibTrace.Trace.GetInstance("LibService.Transport")
+                            .Warning("Failed to open SSL connection: " + ex.Message + ". Retrying...");
+                    if (i == 4) //if this is the last retry then pass the exception up since things are not going well...
+                        throw;
+                }
+            }
         }
 
         public X509Certificate GetRemoteCert()
