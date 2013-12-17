@@ -87,10 +87,10 @@ namespace LibTransport
         }
 
         /// <summary>
-        /// Returns a new RotateKey packet, and the time at which it is to be actioned.
+        /// Returns a new FetchKey packet, and the time at which it is to be actioned.
         /// </summary>
         /// <returns></returns>
-        protected Tuple<DateTime, RTPPacket> BuildRotateKeyPacket()
+        protected Tuple<DateTime, RTPPacket> BuildFetchKeyPacket()
         {
             this.deltaSeq++;
             DateTime calculatedTime = this.nextTimestampAsDT();
@@ -99,8 +99,14 @@ namespace LibTransport
 
             int delta = (configbuftime < rotateKeyTime) ? rotateKeyTime - configbuftime : 0;
             DateTime actualTime = calculatedTime.AddSeconds(delta);
-            Log.Verbose("Built RotateKey packet for time " + actualTime + ":" + actualTime.Millisecond);
-            return new Tuple<DateTime,RTPPacket>(actualTime, RTPControlPacket.BuildRotateKeyPacket(++this.seq, RTPPacket.BuildTimestamp(actualTime), this.syncid));
+            Log.Verbose("Built FetchKey packet for time " + actualTime + ":" + actualTime.Millisecond);
+            return new Tuple<DateTime,RTPPacket>(actualTime, RTPControlPacket.BuildFetchKeyPacket(++this.seq, RTPPacket.BuildTimestamp(actualTime), this.syncid));
+        }
+
+        protected RTPPacket BuildSwitchKeyPacket()
+        {
+            this.deltaSeq++;
+            return RTPControlPacket.BuildSwitchKeyPacket(++this.seq, this.nextTimestamp(), this.syncid);
         }
 
         protected DateTime nextTimestampAsDT()
@@ -165,7 +171,7 @@ namespace LibTransport
                 Log.Verbose("RTPOutputStream: RotateKey requested.");
                 rotateKeyRequested = false;
                 rotateKeyWaiting = true;
-                var r = BuildRotateKeyPacket();
+                var r = BuildFetchKeyPacket();
                 this.rotateKeyTime = r.Item1;
                 this.pekm.SetNextKey(this.pekm.GenerateNewKey(), this.pekm.GenerateNewNonce());
                 this.Send(r.Item2);
@@ -174,6 +180,7 @@ namespace LibTransport
             {
                 if (this.rotateKeyTime <= DateTime.UtcNow)
                 {
+                    this.Send(this.BuildSwitchKeyPacket());
                     Log.Verbose("RTPOutputStream: Rotating key. The first seq to use the new key is " + (this.seq + 1));
                     this.pekm.UseNextKey();
                     /*

@@ -16,8 +16,7 @@ namespace SpeakerReceiver
         private RTPInputStream s;
         private bool shouldRunReceiver = true, shouldRunPlayer = true;
         private Thread receiveThread, playerThread;
-        private DateTime basetime, rotateKeyTime;
-        private bool shouldRotate = false; //DateTime vars cannot be null, so we need a bool to control whether we should check rotate time or not.
+        private DateTime basetime;
         private Trace Log = Trace.GetInstance("LibTransport");
         private AudioPlayer player = null;
         private List<RTPPacket> Buffer = new List<RTPPacket>();
@@ -109,12 +108,6 @@ namespace SpeakerReceiver
             {
                 try
                 {
-                    if (this.shouldRotate && this.rotateKeyTime <= DateTime.UtcNow)
-                    {
-                        this.s.RotateKey();
-                        this.shouldRotate = false;
-                    }
-
                     p = s.Receive();
                     if (p.Marker)
                     {
@@ -141,13 +134,15 @@ namespace SpeakerReceiver
                                 }
                             }
                         }
-                        else if (cp.Action == RTPControlAction.RotateKey)
+                        else if (cp.Action == RTPControlAction.FetchKey)
                         {
-                            this.rotateKeyTime = RTPPacket.BuildDateTime(cp.Timestamp, this.basetime);
-                            this.shouldRotate = true;
-                            Log.Verbose("Got a RotateKey packet. Action time: " + this.rotateKeyTime + ":" + this.rotateKeyTime.Millisecond);
+                            Log.Verbose("Got a FetchKey packet, firing fetch event...");
                             if (OnKeyRotatePacketReceived != null)
                                 OnKeyRotatePacketReceived();
+                        }
+                        else if (cp.Action == RTPControlAction.SwitchKey)
+                        {
+                            this.s.RotateKey();
                         }
                         else
                         {

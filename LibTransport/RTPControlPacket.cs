@@ -49,11 +49,16 @@ namespace LibTransport
             return new RTPControlPacket(RTPControlAction.Stop, null, false, SequenceNumber, Timestamp, SyncSource, null);
         }
 
-        public static RTPControlPacket BuildRotateKeyPacket(ushort SequenceNumber, uint Timestamp, uint SyncSource)
+        public static RTPControlPacket BuildFetchKeyPacket(ushort SequenceNumber, uint Timestamp, uint SyncSource)
         {
-            return new RTPControlPacket(RTPControlAction.RotateKey, null, false, SequenceNumber, Timestamp, SyncSource, null);
+            return new RTPControlPacket(RTPControlAction.FetchKey, null, false, SequenceNumber, Timestamp, SyncSource, null);
+        }
+
+        public static RTPControlPacket BuildSwitchKeyPacket(ushort SequenceNumber, uint Timestamp, uint SyncSource)
+        {
+            return new RTPControlPacket(RTPControlAction.SwitchKey, null, false, SequenceNumber, Timestamp, SyncSource, null);
         }
     }
 
-    public enum RTPControlAction {Play, Pause, Stop, RotateKey}
+    public enum RTPControlAction {Play, Pause, Stop, FetchKey, SwitchKey}
 }
