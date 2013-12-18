@@ -53,7 +53,7 @@ namespace SpeakerReceiver
 
             LibService.ServiceRegistration.Register(new LibService.CommonService());
             LibService.ServiceRegistration.Register(new LibService.PairingService());
-            LibService.ServiceRegistration.Register(new LibService.TransportService(Handler_TransportService_JoinGroup, Handler_TransportService_SetEncryptionKey, Handler_TransportService_SetControllerAddress));
+            LibService.ServiceRegistration.Register(new LibService.TransportService(Handler_TransportService_JoinGroup, Handler_TransportService_SetEncryptionKey, Handler_TransportService_SetControllerAddress, Handler_SetSigningKey));
             LibService.ServiceRegistration.Start(cert.ToDotNetCert(key), 10451);
             Console.WriteLine("SpeakerReceiver ready.");
             Console.ReadLine();
@@ -159,6 +159,11 @@ namespace SpeakerReceiver
         {
             controllerEP = new IPEndPoint(ip, port);
             Log.Verbose("Your controller today will be " + controllerEP + " please enjoy your stream.");
+        }
+
+        public static void Handler_SetSigningKey(Verifier v)
+        {
+            r.SetVerifier(v);
         }
     }
 }
