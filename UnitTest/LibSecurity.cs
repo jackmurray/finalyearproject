@@ -16,13 +16,13 @@ namespace UnitTest
         [TestMethod]
         public void TestGenerateKey()
         {
-            KeyManager.Create();
+            KeyManager.CreatePermenantKey();
         }
 
         [TestMethod]
         public void TestGenerateCert()
         {
-            CertManager.Create(KeyManager.Create());
+            CertManager.Create(KeyManager.CreatePermenantKey());
         }
 
         [TestMethod]

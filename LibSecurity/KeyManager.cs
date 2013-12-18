@@ -18,8 +18,10 @@ namespace LibSecurity
 {
     public class KeyManager
     {
-        private const int KEY_LENGTH = 2048;
-        private const int PUBLIC_EXPONENT = 65537; //standard value for e.
+        private const int KEY_LENGTH_TEMP = 512; //for RTP signing
+        private const int KEY_LENGTH_PERM = 2048; //for the device's service certificate and SSDP
+        private const int PUBLIC_EXPONENT_PERM = 65537; //standard value for e (F4).
+        private const int PUBLIC_EXPONENT_TEMP = 3; //Use 3 (F1) as e because it's ~8 times faster than F4. **STILL SECURE**
         private static Trace Log = Trace.GetInstance("LibSecurity");
         private AsymmetricCipherKeyPair rsa;
         public AsymmetricKeyParameter Public { get { return rsa.Public; } }
@@ -30,12 +32,16 @@ namespace LibSecurity
             this.rsa = rsa;
         }
 
-        public static KeyManager Create()
+        public static KeyManager CreatePermenantKey()
         {
-            Log.Verbose("Creating new RSA key...");
-            AsymmetricCipherKeyPair key = RsaGenerator.Generate(KEY_LENGTH, PUBLIC_EXPONENT);
-            Log.Verbose("Generated new RSA key.");
-            return new KeyManager(key);
+            Log.Verbose("Creating permenant RSA key...");
+            return new KeyManager(RsaGenerator.Generate(KEY_LENGTH_PERM, PUBLIC_EXPONENT_PERM));
+        }
+
+        public static KeyManager CreateTemporaryKey()
+        {
+            Log.Verbose("Creating temp RSA key.");
+            return new KeyManager(RsaGenerator.Generate(KEY_LENGTH_TEMP, PUBLIC_EXPONENT_TEMP));
         }
 
         public AsymmetricAlgorithm ToDotNetKey()
@@ -94,7 +100,7 @@ namespace LibSecurity
                 try
                 {
                     Log.Information("Generating key. This takes several minutes on the RPi.");
-                    key = KeyManager.Create();
+                    key = KeyManager.CreatePermenantKey();
                     key.WriteKeyToFile(privateKeyFile, true);
                     Log.Information("Key generated.");
                 }
