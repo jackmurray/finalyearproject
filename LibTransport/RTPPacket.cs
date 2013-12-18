@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using LibSecurity;
 using LibUtil;
@@ -129,7 +130,7 @@ namespace LibTransport
             return ret.AddSeconds(secsbits).AddSeconds(msec);
         }
 
-        public static RTPPacket Parse(byte[] data, PacketEncrypterKeyManager pekm = null)
+        public static RTPPacket Parse(byte[] data, PacketEncrypterKeyManager pekm = null, Verifier v = null)
         {
             if ((data[0] & 0xC0) != 0x80)
                 throw new FormatException("RTP version must be 2.");
@@ -138,12 +139,14 @@ namespace LibTransport
 
             bool extension = false;
             byte[] extensionData = new byte[0]; //initialiser is to shut the compiler up. it complains about a possible uninitialised access in the data.Skip() ternary but it's actually ok because it'll never be accessed if it wasn't set.
-            if ((data[0] & 0x10) != 0x00) //packet has extension header and is encrypted
+            RTPExtensionHeader decodedExtensionData = null;
+            if ((data[0] & 0x10) != 0x00) //packet has extension header and therefore is encrypted (and maybe signed)
             {
                 extension = true;
                 //ignoring the extension type ID for now. it would be at index 12.
                 int extensionLen = Util.DecodeUshort(data, 14) * 4;
                 extensionData = data.Skip(16).Take(extensionLen).ToArray();
+                decodedExtensionData = new RTPExtensionHeader(extensionData);
             }
 
             if ((data[0] & 0x0F) != 0x00)
@@ -159,10 +162,17 @@ namespace LibTransport
             uint ssrc = Util.DecodeUint(data, 8);
             byte[] payload = data.Skip(12 + (extension == true ? extensionData.Length+4 : 0)).ToArray(); //if the extension flag is set, the payload is at 12 (length of base header) + extensionDataLength + 4 (for the extension header info fields)
 
-            if (pekm != null)
+            if (pekm != null && decodedExtensionData != null)
             {
-                var crypto = new PacketEncrypter(pekm, Util.DecodeLong(extensionData, 0), false);
+                var crypto = new PacketEncrypter(pekm, decodedExtensionData.ctr, false);
                 payload = crypto.Decrypt(payload);
+            }
+
+            if (v != null)
+            {
+                bool sigcheck = v.Verify(payload, decodedExtensionData.sig);
+                if (!sigcheck)
+                    throw new CryptographicException("Packet seq=" + seq + " failed signature check.");
             }
 
             if (!isControl)
@@ -180,6 +190,21 @@ namespace LibTransport
 
                 return new RTPControlPacket(a, extradata, extension, seq, timestamp, ssrc, extensionData);
             }
+        }
+    }
+
+    class RTPExtensionHeader
+    {
+        public long ctr { get; protected set; }
+        public byte[] sig { get; protected set; }
+
+        public RTPExtensionHeader(byte[] data)
+        {
+            int ptr = 0;
+            ctr = Util.DecodeLong(data, 0);
+            ptr += sizeof (long);
+            sig = new byte[data.Length - ptr];
+            Array.Copy(data, ptr, sig, 0, sig.Length);
         }
     }
 }
