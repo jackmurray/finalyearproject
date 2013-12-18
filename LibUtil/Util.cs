@@ -144,6 +144,9 @@ namespace LibUtil
 
         public static bool IsController()
         {
+#if TEST
+            return true; //UnitTest framework doesn't define an entry assembly so just override it to use the controller path
+#endif
             return Assembly.GetEntryAssembly().GetName().Name == "SpeakerController";
         }
     }

@@ -34,9 +34,10 @@ namespace LibTrace
 
         public static Trace GetInstance(string sourceName)
         {
+#if !TEST
             if (!Trace.Initialised)
                 throw new InvalidOperationException("Tracing has not been initialised yet!");
-
+#endif
             if (Objects.ContainsKey(sourceName))
                 return Objects[sourceName];
 
