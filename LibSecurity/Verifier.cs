@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Digests;
+using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Crypto.Signers;
 using Org.BouncyCastle.X509;
 using X509Certificate = System.Security.Cryptography.X509Certificates.X509Certificate;
@@ -12,14 +13,21 @@ namespace LibSecurity
 {
     public class Verifier
     {
-        protected X509Certificate _cert;
         protected ISigner _signer;
 
-        public Verifier(X509Certificate cert)
+        protected Verifier()
         {
-            _cert = cert;
             _signer = new RsaDigestSigner(new Sha256Digest());
-            _signer.Init(false, new X509CertificateParser().ReadCertificate(_cert.GetRawCertData()).GetPublicKey());
+        }
+
+        public Verifier(X509Certificate cert) : this()
+        {
+            _signer.Init(false, new X509CertificateParser().ReadCertificate(cert.GetRawCertData()).GetPublicKey());
+        }
+
+        public Verifier(AsymmetricKeyParameter kp) : this()
+        {
+            _signer.Init(false, kp);
         }
 
         public bool Verify(byte[] data, byte[] signature)
