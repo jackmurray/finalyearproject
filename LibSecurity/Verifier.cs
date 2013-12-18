@@ -24,7 +24,7 @@ namespace LibSecurity
 
         public bool Verify(byte[] data, byte[] signature)
         {
-            LibTrace.Trace.GetInstance("LibSecurity").Verbose("Verifying data: " + LibUtil.Util.BytesToHexString(data));
+            //LibTrace.Trace.GetInstance("LibSecurity").Verbose("Verifying data: " + LibUtil.Util.BytesToHexString(data));
             _signer.Reset();
             _signer.BlockUpdate(data, 0, data.Length);
             return _signer.VerifySignature(signature);
