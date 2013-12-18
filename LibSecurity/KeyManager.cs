@@ -19,6 +19,7 @@ namespace LibSecurity
     public class KeyManager
     {
         private const int KEY_LENGTH = 2048;
+        private const int PUBLIC_EXPONENT = 65537; //standard value for e.
         private static Trace Log = Trace.GetInstance("LibSecurity");
         private AsymmetricCipherKeyPair rsa;
         public AsymmetricKeyParameter Public { get { return rsa.Public; } }
@@ -32,9 +33,7 @@ namespace LibSecurity
         public static KeyManager Create()
         {
             Log.Verbose("Creating new RSA key...");
-            RsaKeyPairGenerator g = new RsaKeyPairGenerator();
-            g.Init(new KeyGenerationParameters(new SecureRandom(), KEY_LENGTH));
-            AsymmetricCipherKeyPair key = g.GenerateKeyPair();
+            AsymmetricCipherKeyPair key = RsaGenerator.Generate(KEY_LENGTH, PUBLIC_EXPONENT);
             Log.Verbose("Generated new RSA key.");
             return new KeyManager(key);
         }
