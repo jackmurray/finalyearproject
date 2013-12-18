@@ -42,7 +42,7 @@ namespace LibTransport
             this.crypto = new PacketEncrypter(pekm, encryption_ctr, true);
         }
 
-        public void EnableAuthentication(Signer s)
+        public void EnableSigning(Signer s)
         {
             this.signer = s;
             this.useAuthentication = true;

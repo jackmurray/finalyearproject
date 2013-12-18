@@ -335,7 +335,7 @@ namespace SpeakerController
             this.stream = new RTPOutputStream(new IPEndPoint(IPAddress.Parse(txtGroupAddr.Text), 10452));
 
             if (Config.GetFlag(Config.ENABLE_AUTHENTICATION))
-                this.stream.EnableAuthentication(Signer.Create(key));
+                this.stream.EnableSigning(Signer.Create(key));
             if (Config.GetFlag(Config.ENABLE_ENCRYPTION))
                 this.stream.EnableEncryption(pekm);
             
