@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using LibSecurity;
 
@@ -9,6 +10,8 @@ namespace LibTransport
 {
     public class RTPInputStream : RTPStreamBase
     {
+        protected Verifier verifier;
+
         public RTPInputStream(IPEndPoint ep) : base(ep)
         {
             c.Client.Bind(new IPEndPoint(IPAddress.Any, ep.Port));
@@ -24,11 +27,24 @@ namespace LibTransport
             IPEndPoint remoteHost = null;
             byte[] data = c.Receive(ref remoteHost);
 
-            RTPPacket p;
-            p = this.useEncryption ? RTPPacket.Parse(data, pekm) : RTPPacket.Parse(data);
-            this.seq = p.SequenceNumber;
+            try
+            {
+                RTPPacket p;
+                if (useAuthentication)
+                    p = RTPPacket.Parse(data, pekm, verifier);
+                else if (useEncryption)
+                    p = RTPPacket.Parse(data, pekm);
+                else
+                    p = RTPPacket.Parse(data);
 
-            return p;
+                this.seq = p.SequenceNumber;
+                return p;
+            }
+            catch (CryptographicException ex)
+            {
+                Log.Warning("CryptographicException in RTPPacket.Receive(): " + ex.Message);
+                return null;
+            }
         }
 
         /// <summary>
@@ -48,6 +64,13 @@ namespace LibTransport
         {
             this.pekm.UseNextKey();
             Log.Verbose("RTPInputStream: last seq we saw was " + this.seq);
+        }
+
+        public void EnableVerification(Verifier v)
+        {
+            this.useAuthentication = true;
+            this.verifier = v;
+            Log.Information("Enabling RTP signature verification");
         }
     }
 }

@@ -62,6 +62,11 @@ namespace SpeakerReceiver
             this.s.EnableEncryption(pekm);
         }
 
+        public void SetVerifier(Verifier v)
+        {
+            this.s.EnableVerification(v);
+        }
+
         private void ResetPlayerThread()
         {
             shouldRunPlayer = true;
@@ -109,6 +114,8 @@ namespace SpeakerReceiver
                 try
                 {
                     p = s.Receive();
+                    if (p == null) //if it was null the RTPInputStream had to drop the packet and will have logged an error.
+                        continue;
                     if (p.Marker)
                     {
                         var cp = p as RTPControlPacket;
