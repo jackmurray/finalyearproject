@@ -37,6 +37,7 @@ namespace SpeakerController
         private ActiveReceiverManager activeReceiverManager;
 
         private PacketEncrypterKeyManager pekm;
+        private KeyManager rtpsignkey;
 
         public bool ShouldAdvanceLog { get { return !chkLogPause.Checked; } }
 
@@ -182,6 +183,11 @@ namespace SpeakerController
             chkEnableEncrypt.Checked = Config.GetFlag(Config.ENABLE_ENCRYPTION);
             chkEnableAuth.Checked = Config.GetFlag(Config.ENABLE_AUTHENTICATION);
             this.activeReceiverManager = new ActiveReceiverManager(lstDevicesActive);
+
+            if (Config.GetFlag(Config.ENABLE_AUTHENTICATION))
+            {
+                rtpsignkey = KeyManager.CreateTemporaryKey();
+            }
         }
 
         private void SetFriendlyName(string name)
@@ -293,6 +299,9 @@ namespace SpeakerController
             if (Config.GetFlag(Config.ENABLE_ENCRYPTION))
                 tclient.SetEncryptionKey(this.pekm.Key, this.pekm.Nonce);
 
+            if (Config.GetFlag(Config.ENABLE_AUTHENTICATION))
+                tclient.SetSigningKey(this.rtpsignkey);
+
             IPAddress ourIP = Dns.GetHostAddresses(Dns.GetHostName()).First(ip => ip.AddressFamily == AddressFamily.InterNetwork);
             tclient.SetControllerAddress(new IPEndPoint(ourIP, 10452));
 
@@ -335,7 +344,7 @@ namespace SpeakerController
             this.stream = new RTPOutputStream(new IPEndPoint(IPAddress.Parse(txtGroupAddr.Text), 10452));
 
             if (Config.GetFlag(Config.ENABLE_AUTHENTICATION))
-                this.stream.EnableSigning(Signer.Create(key));
+                this.stream.EnableSigning(Signer.Create(rtpsignkey));
             if (Config.GetFlag(Config.ENABLE_ENCRYPTION))
                 this.stream.EnableEncryption(pekm);
             
