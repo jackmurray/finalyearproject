@@ -24,6 +24,16 @@ namespace LibConfig
 
             return new ConfigState(st);
         }
+
+        public bool Equals(ConfigState s)
+        {
+            return this.Flags == s.Flags;
+        }
+
+        public override string ToString()
+        {
+            return "ConfigState {Flags=" + Flags + "}";
+        }
     }
 
     [Flags]
