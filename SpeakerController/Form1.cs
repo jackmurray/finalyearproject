@@ -370,6 +370,17 @@ namespace SpeakerController
         private void chkEnableEncrypt_CheckedChanged(object sender, EventArgs e)
         {
             Config.Set(Config.ENABLE_ENCRYPTION, (chkEnableEncrypt.Checked ? bool.TrueString : bool.FalseString));
+            if (!chkEnableEncrypt.Checked)
+            {
+                chkEnableAuth.Checked = false; //auth requires encryption
+                btnRotateKey.Enabled = false; //can't rotate without enc.
+                btnEjectDevice.Enabled = false; //can't eject devices without enc/rotation
+            }
+            else
+            {
+                btnRotateKey.Enabled = true;
+                btnEjectDevice.Enabled = true;
+            }
         }
 
         private void chkEnableAuth_CheckedChanged(object sender, EventArgs e)
