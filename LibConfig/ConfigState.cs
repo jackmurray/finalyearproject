@@ -7,9 +7,9 @@ namespace LibConfig
 {
     public class ConfigState
     {
-        public ConfigStateFlags Flags { get; protected set; }
+        public ConfigStateFlags Flags { get; set; }
 
-        protected ConfigState(ConfigStateFlags f)
+        public ConfigState(ConfigStateFlags f) //needs to be public so the JSON lib can create an instance
         {
             this.Flags = f;
         }
