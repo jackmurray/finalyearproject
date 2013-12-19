@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,7 +24,6 @@ namespace SpeakerReceiver
     {
         private static Trace Log;
         private static StreamReceiver r;
-        private static IPEndPoint controllerEP = null;
         private static KeyManager key;
         private static CertManager cert;
         private static Controller controller;
@@ -139,8 +139,7 @@ namespace SpeakerReceiver
 
         private static void RotateKeyFetchThreadProc()
         {
-            SslClient ssl = new SslClient(cert.ToDotNetCert(key));
-            ssl.Connect(controllerEP);
+            SslClient ssl = controller.GetSsl(cert, key);
             KeyServiceClient kc = ssl.GetClient<KeyServiceClient>();
             try
             {
@@ -155,10 +154,10 @@ namespace SpeakerReceiver
             }
         }
 
-        public static void Handler_TransportService_SetControllerAddress(IPAddress ip, ushort port)
+        public static void Handler_TransportService_SetControllerAddress(IPAddress ip, ushort port, X509Certificate cert)
         {
-            controllerEP = new IPEndPoint(ip, port);
-            Log.Verbose("Your controller today will be " + controllerEP + " please enjoy your stream.");
+            controller = new Controller(new IPEndPoint(ip, port), cert);
+            Log.Verbose("Your controller today will be " + controller.Address + " please enjoy your stream.");
         }
 
         public static void Handler_SetSigningKey(Verifier v)

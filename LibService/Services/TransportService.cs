@@ -16,7 +16,7 @@ namespace LibService
     {
         public delegate void SetEncryptionKeyHandler(byte[] key, byte[] nonce);
         public delegate void JoinGroupHandler(IPAddress ip);
-        public delegate void SetControllerAddress(IPAddress ip, ushort port);
+        public delegate void SetControllerAddress(IPAddress ip, ushort port, X509Certificate cert);
         public delegate void SetSigningKey(Verifier v);
 
         private SetEncryptionKeyHandler Handler_SetEncryptionKey;
@@ -81,7 +81,7 @@ namespace LibService
 
                     try
                     {
-                        this.Handler_SetControllerAddress(ip, data_sca.Item2);
+                        this.Handler_SetControllerAddress(ip, data_sca.Item2, remoteParty);
                         return Success();
                     }
                     catch (Exception ex)
