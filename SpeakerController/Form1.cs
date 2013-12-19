@@ -286,6 +286,16 @@ namespace SpeakerController
                     Log.Verbose("[Version Check] [" + kvp.Key + "] Remote: " + remoteversions[kvp.Key] + " Local: " +
                                 kvp.Value);
                 }
+
+                var remoteconfig = commonclient.GetConfigState();
+                if (!remoteconfig.Equals(ConfigState.GetConfigState()))
+                {
+                    Log.Error("Local config state: " + ConfigState.GetConfigState());
+                    Log.Error("Remote config state: " + remoteconfig);
+                    throw new Exception("Remote config state didn't match ours!");
+                }
+                else
+                    Log.Verbose("Config state check passed.");
             }
             catch (Exception ex)
             {
