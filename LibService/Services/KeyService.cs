@@ -32,8 +32,7 @@ namespace LibService
                         return Error("Unable to provide new key/nonce - they have not been set yet.");
                     if (!isClientValid(remoteParty))
                         return new ServiceMessageResponse("No longer authorized.", HttpResponseCode.ACCESS_DENIED);
-                    return Success(JsonConvert.SerializeObject(new Tuple<byte[], byte[]>(pekm.NextKey, pekm.NextNonce)));
-                    break;
+                    else return Success(JsonConvert.SerializeObject(new Tuple<byte[], byte[]>(pekm.NextKey, pekm.NextNonce)));
                 default:
                     throw new ArgumentException("Invalid message received.");
             }

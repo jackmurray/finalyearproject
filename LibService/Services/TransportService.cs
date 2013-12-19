@@ -58,7 +58,6 @@ namespace LibService
                     {
                         return Error(ex.Message);
                     }
-                    break;
 
                 case "SetEncryptionKey":
                     var data = JsonConvert.DeserializeObject<Tuple<byte[], byte[]>>(m.Data);
@@ -72,7 +71,6 @@ namespace LibService
                     {
                         return Error(ex.Message);
                     }
-                    break;
 
                     //Used to tell the receiver what the service address of the controller is, so it can call in for key rotation etc.
                 case "SetControllerAddress":
@@ -90,7 +88,6 @@ namespace LibService
                     {
                         return Error(ex.Message);
                     }
-                    break;
 
                 case "SetSigningKey":
                     try
@@ -105,7 +102,6 @@ namespace LibService
                     {
                         return Error(ex.Message);
                     }
-                    break;
 
                 default:
                     throw new ArgumentException("Invalid message received.");
