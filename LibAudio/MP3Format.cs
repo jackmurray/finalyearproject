@@ -129,5 +129,12 @@ namespace LibAudio
             //assume that the sample frequency never changes in the file. should always be the case.
             return 1152 / (float)this.Frequency;
         }
+
+        public void SeekToStart()
+        {
+            this._s.Position = 0;
+            this.EatGarbageData();
+            this.Parse();
+        }
     }
 }

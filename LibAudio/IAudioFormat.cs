@@ -19,6 +19,11 @@ namespace LibAudio
         float GetFrameLength();
         bool EndOfFile();
 
+        /// <summary>
+        /// Seek forwards to the start of the stream.
+        /// </summary>
+        void SeekToStart();
+
         int BitRate {get;}
         int Frequency {get;}
     }
