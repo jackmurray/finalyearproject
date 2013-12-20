@@ -183,11 +183,6 @@ namespace SpeakerController
             chkEnableEncrypt.Checked = Config.GetFlag(Config.ENABLE_ENCRYPTION);
             chkEnableAuth.Checked = Config.GetFlag(Config.ENABLE_AUTHENTICATION);
             this.activeReceiverManager = new ActiveReceiverManager(lstDevicesActive);
-
-            if (Config.GetFlag(Config.ENABLE_AUTHENTICATION))
-            {
-                rtpsignkey = KeyManager.CreateTemporaryKey();
-            }
         }
 
         private void SetFriendlyName(string name)
@@ -310,7 +305,11 @@ namespace SpeakerController
                 tclient.SetEncryptionKey(this.pekm.Key, this.pekm.Nonce);
 
             if (Config.GetFlag(Config.ENABLE_AUTHENTICATION))
+            {
+                if (rtpsignkey == null)
+                    rtpsignkey = KeyManager.CreateTemporaryKey();
                 tclient.SetSigningKey(this.rtpsignkey);
+            }
 
             IPAddress ourIP = Dns.GetHostAddresses(Dns.GetHostName()).First(ip => ip.AddressFamily == AddressFamily.InterNetwork);
             tclient.SetControllerAddress(new IPEndPoint(ourIP, 10452));
