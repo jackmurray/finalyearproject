@@ -157,7 +157,7 @@ namespace SpeakerReceiver
         public static void Handler_TransportService_SetControllerAddress(IPAddress ip, ushort port, X509Certificate cert)
         {
             controller = new Controller(new IPEndPoint(ip, port), cert);
-            Log.Verbose("Your controller today will be " + controller.Address + " please enjoy your stream.");
+            Log.Verbose("Your controller today will be " + controller + " please enjoy your stream.");
         }
 
         public static void Handler_SetSigningKey(Verifier v)
