@@ -157,6 +157,8 @@ namespace LibTransport
                 remainingTicks = timerinterval - elapsedTicks;
                 if (remainingTicks > 0) Thread.Sleep(remainingTicks);
             }
+
+            audio.SeekToStart();
         }
 
         private void TimerTick()
