@@ -68,6 +68,7 @@
             // 
             // button1
             // 
+            this.button1.Enabled = false;
             this.button1.Location = new System.Drawing.Point(12, 225);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
@@ -95,6 +96,7 @@
             // 
             // btnTrustDevice
             // 
+            this.btnTrustDevice.Enabled = false;
             this.btnTrustDevice.Location = new System.Drawing.Point(93, 196);
             this.btnTrustDevice.Name = "btnTrustDevice";
             this.btnTrustDevice.Size = new System.Drawing.Size(75, 23);
@@ -112,6 +114,7 @@
             this.lstDevicesAvail.TabIndex = 7;
             this.lstDevicesAvail.UseCompatibleStateImageBehavior = false;
             this.lstDevicesAvail.View = System.Windows.Forms.View.List;
+            this.lstDevicesAvail.SelectedIndexChanged += new System.EventHandler(this.lstDevicesAvail_SelectedIndexChanged);
             // 
             // dGridTrace
             // 
@@ -203,6 +206,7 @@
             // 
             // btnJoinGroup
             // 
+            this.btnJoinGroup.Enabled = false;
             this.btnJoinGroup.Location = new System.Drawing.Point(941, 147);
             this.btnJoinGroup.Name = "btnJoinGroup";
             this.btnJoinGroup.Size = new System.Drawing.Size(75, 23);
@@ -213,6 +217,7 @@
             // 
             // btnStream
             // 
+            this.btnStream.Enabled = false;
             this.btnStream.Location = new System.Drawing.Point(573, 99);
             this.btnStream.Name = "btnStream";
             this.btnStream.Size = new System.Drawing.Size(75, 23);
@@ -235,6 +240,7 @@
             // 
             // btnStreamTestSound
             // 
+            this.btnStreamTestSound.Enabled = false;
             this.btnStreamTestSound.Location = new System.Drawing.Point(557, 128);
             this.btnStreamTestSound.Name = "btnStreamTestSound";
             this.btnStreamTestSound.Size = new System.Drawing.Size(109, 23);

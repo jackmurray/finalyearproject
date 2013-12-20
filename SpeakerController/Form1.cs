@@ -320,6 +320,9 @@ namespace SpeakerController
             if (stream != null && stream.Started)
                 stream.SendSync();
 
+            btnStream.Enabled = true;
+            btnStreamTestSound.Enabled = true;
+
             Log.Verbose("Added " + r);
         }
 
@@ -415,6 +418,13 @@ namespace SpeakerController
         public bool IsClientValid(X509Certificate client)
         {
             return activeReceiverManager.SingleOrDefault(r => r.Fingerprint == client.GetCertHashString()) != null;
+        }
+
+        private void lstDevicesAvail_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            btnJoinGroup.Enabled = true;
+            btnTrustDevice.Enabled = true;
+            button1.Enabled = true;
         }
     }
 
