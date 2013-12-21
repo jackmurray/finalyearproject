@@ -10,7 +10,7 @@
 	<maxTimeDifference>30</maxTimeDifference>
 	<streamBufferTime>2</streamBufferTime>
 	<playerExecutable>vlc</playerExecutable>
-	<playerArgs>-</playerArgs>
+	<playerArgs>--play-and-exit --file-caching=0 -</playerArgs>
 	<enableEncryption>true</enableEncryption>
 	<enableAuthentication>true</enableAuthentication>
 	<rotateKeyTime>10</rotateKeyTime>
