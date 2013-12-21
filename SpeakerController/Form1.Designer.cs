@@ -53,6 +53,7 @@
             this.btnRotateKey = new System.Windows.Forms.Button();
             this.lstDevicesActive = new System.Windows.Forms.ListView();
             this.btnEjectDevice = new System.Windows.Forms.Button();
+            this.btnStop = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dGridTrace)).BeginInit();
             this.SuspendLayout();
             // 
@@ -317,11 +318,22 @@
             this.btnEjectDevice.UseVisualStyleBackColor = true;
             this.btnEjectDevice.Click += new System.EventHandler(this.btnEjectDevice_Click);
             // 
+            // btnStop
+            // 
+            this.btnStop.Location = new System.Drawing.Point(536, 161);
+            this.btnStop.Name = "btnStop";
+            this.btnStop.Size = new System.Drawing.Size(24, 24);
+            this.btnStop.TabIndex = 24;
+            this.btnStop.Text = "■";
+            this.btnStop.UseVisualStyleBackColor = true;
+            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1068, 528);
+            this.Controls.Add(this.btnStop);
             this.Controls.Add(this.btnEjectDevice);
             this.Controls.Add(this.lstDevicesActive);
             this.Controls.Add(this.btnRotateKey);
@@ -380,6 +392,7 @@
         private System.Windows.Forms.Button btnRotateKey;
         private System.Windows.Forms.ListView lstDevicesActive;
         private System.Windows.Forms.Button btnEjectDevice;
+        private System.Windows.Forms.Button btnStop;
     }
 }
 

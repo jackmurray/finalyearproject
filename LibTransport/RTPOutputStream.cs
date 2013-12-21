@@ -168,16 +168,20 @@ namespace LibTransport
             this.Send(this.BuildPacket(audio.GetFrame()));
             if (audio.EndOfFile())
             {
-                this.Send(this.BuildStopPacket());
-                continueStreaming = false;
+                this.Stop();
                 if (this.StreamingCompleted != null)
                     StreamingCompleted(this, null);
             }
         }
 
+        /// <summary>
+        /// Stop the streaming thread and send a Stop packet.
+        /// </summary>
         public void Stop()
         {
+            Log.Information("Stopping stream.");
             this.continueStreaming = false;
+            this.Send(this.BuildStopPacket());
         }
 
         private void processPendingEvents()

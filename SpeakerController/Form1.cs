@@ -426,6 +426,12 @@ namespace SpeakerController
             btnTrustDevice.Enabled = true;
             button1.Enabled = true;
         }
+
+        private void btnStop_Click(object sender, EventArgs e)
+        {
+            if (this.stream != null)
+                this.stream.Stop();
+        }
     }
 
     public class DataGridTraceListener : TraceListener

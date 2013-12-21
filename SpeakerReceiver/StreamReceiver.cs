@@ -90,6 +90,7 @@ namespace SpeakerReceiver
                 switch (p.Action)
                 {
                     case RTPControlAction.Stop:
+                        Log.Information("Stop packet received - end of stream.");
                         this.EndPlayerThread();
                         break;
                     default:
