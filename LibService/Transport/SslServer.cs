@@ -8,11 +8,16 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using LibTrace;
 
 namespace LibService
 {
     public class SslServer : SslEndpointBase
     {
+        private CancellationTokenSource cts = new CancellationTokenSource();
+        private TcpListener listener;
+        private Trace Log = LibTrace.Trace.GetInstance("LibService.Transport");
+
         /// <summary>
         /// 
         /// </summary>
@@ -28,23 +33,45 @@ namespace LibService
         /// <param name="port"></param>
         public void Listen(int port)
         {
-            var l = new TcpListener(IPAddress.Any, port);
-            var t = new Thread(() => ConnectionListener(l)) {Name = "SslServerMainListener"};
-            t.Start();
+            lock (cts)
+            {
+                listener = new TcpListener(IPAddress.Any, port);
+                var t = new Thread(() => ConnectionListener(listener, cts.Token)) {Name = "SslServerMainListener"};
+                t.Start();
+            }
+        }
+
+        public void Stop()
+        {
+            lock (cts)
+            {
+                cts.Cancel();
+                listener.Stop();
+            }
         }
 
         /// <summary>
         /// Wait for incoming connections, and fire off a new thread to deal with each one that's received.
         /// </summary>
         /// <param name="l"></param>
-        private void ConnectionListener(TcpListener l)
+        private void ConnectionListener(TcpListener l, CancellationToken token)
         {
             l.Start();
-            while (true)
+            try
             {
-                TcpClient c = l.AcceptTcpClient();
-                var t = new Thread(() => ConnectionHandler(c)) {Name = "SslServerConnectionHandler"};
-                t.Start();
+                while (!token.IsCancellationRequested)
+                {
+                    TcpClient c = l.AcceptTcpClient();
+                    var t = new Thread(() => ConnectionHandler(c)) {Name = "SslServerConnectionHandler"};
+                    t.Start();
+                }
+            }
+            catch (SocketException ex)
+            {
+                //We can't log that the code *was* Interrupted and we're shutting down because at this point the controller GUI
+                //will have been destroyed causing the log call to fail (because it can't call BeginInvoke() on the log box).
+                if (ex.SocketErrorCode != SocketError.Interrupted)
+                    Log.Critical(ex.Message);
             }
         }
 
@@ -58,7 +85,7 @@ namespace LibService
             {
                 SslStream ssl = new SslStream(c.GetStream(), false, ValidateClientCert);
                 ssl.AuthenticateAsServer(_cert, true, System.Security.Authentication.SslProtocols.Tls, false);
-                LibTrace.Trace.GetInstance("LibService.Transport").Information("Accepted SSL connection.");
+                Log.Information("Accepted SSL connection.");
                 ServiceHandler handler = new ServiceHandler(ssl);
                 int numHandled = 0;
                 while (true)
@@ -66,8 +93,7 @@ namespace LibService
                     int ret = handler.HandleMessage();
                     if (ret == -1) //socket was closed. we're done here.
                     {
-                        LibTrace.Trace.GetInstance("LibService.Transport")
-                                .Information("SslServer shutting down. Handled " + numHandled + " messages.");
+                        Log.Information("SslServer shutting down. Handled " + numHandled + " messages.");
                         return;
                     }
                     numHandled++;
@@ -75,7 +101,7 @@ namespace LibService
             }
             catch (Exception ex)
             {
-                LibTrace.Trace.GetInstance("LibService.Transport").Error("Exception in SslServer: " + ex.Message);
+                Log.Error("Exception in SslServer: " + ex.Message);
                 c.Close();
                 return;
             }

@@ -9,6 +9,7 @@ namespace LibService
     public static class ServiceRegistration
     {
         private static List<ServiceBase> Services = new List<ServiceBase>();
+        private static SslServer server = null;
 
         public static void Register(ServiceBase s)
         {
@@ -28,7 +29,19 @@ namespace LibService
 
         public static void Start(X509Certificate2 cert, int port)
         {
-            new SslServer(cert).Listen(port);
+            if (server != null)
+                throw new InvalidOperationException("Service listener has already been started!");
+
+            server = new SslServer(cert);
+            server.Listen(port);
+        }
+
+        public static void Stop()
+        {
+            if (server == null)
+                throw new InvalidOperationException("Service listener has not been started!");
+
+            server.Stop();
         }
     }
 }

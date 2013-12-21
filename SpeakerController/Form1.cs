@@ -224,6 +224,7 @@ namespace SpeakerController
         {
             if (ssdpc != null) ssdpc.Stop();
             if (stream != null) stream.Stop();
+            ServiceRegistration.Stop();
         }
 
         private void btnListPairedDevices_Click(object sender, EventArgs e)
