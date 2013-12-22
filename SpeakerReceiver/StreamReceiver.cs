@@ -94,7 +94,7 @@ namespace SpeakerReceiver
                         this.EndPlayerThread();
                         break;
                     default:
-                        Log.Warning("Control packet received but unable to handle.");
+                        Log.Warning(String.Format("Control packet received but unable to handle. Type={0} seq={1}", p.Action, p.SequenceNumber));
                         break;
                 }
             }
