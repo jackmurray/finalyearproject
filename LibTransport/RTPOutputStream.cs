@@ -28,8 +28,7 @@ namespace LibTransport
         private bool rotateKeyWaiting = false; //Are we now waiting until the correct time to perform the rotation?
         private DateTime rotateKeyTime;
 
-        private bool _started = false;
-        public bool Started { get { return _started; } }
+        public OutputStreamState State { get; protected set; }
 
         public RTPOutputStream(IPEndPoint ep) : base(ep)
         {
@@ -136,11 +135,17 @@ namespace LibTransport
         public void Stream(IAudioFormat audio)
         {
             this.audio = audio;
+            StartStream();
+        }
+
+        private void StartStream()
+        {
+            this.continueStreaming = true;
             this.setupBaseTime();
             this.Send(this.BuildPlayPacket());
             Log.Verbose("Base timestamp: " + basetimestamp + ":" + basetimestamp.Millisecond);
             new Thread(StreamThreadProc).Start();
-            _started = true;
+            State = OutputStreamState.Started;
         }
 
         public void SendSync()
@@ -163,8 +168,6 @@ namespace LibTransport
                 remainingTicks = timerinterval - elapsedTicks;
                 if (remainingTicks > 0) Thread.Sleep(remainingTicks);
             }
-
-            audio.SeekToStart();
         }
 
         private void TimerTick()
@@ -188,6 +191,22 @@ namespace LibTransport
             Log.Information("Stopping stream.");
             this.continueStreaming = false;
             this.Send(this.BuildStopPacket());
+            audio.SeekToStart();
+        }
+
+        public void Pause()
+        {
+            Log.Information("Pausing stream.");
+            this.continueStreaming = false;
+            this.Send(this.BuildPausePacket());
+            State = OutputStreamState.Paused;
+        }
+
+        public void Resume()
+        {
+            Log.Information("Resuming stream.");
+            deltaSeq = seq;
+            StartStream();
         }
 
         private void processPendingEvents()
@@ -220,4 +239,6 @@ namespace LibTransport
             }
         }
     }
+
+    public enum OutputStreamState {Stopped, Started, Paused}
 }

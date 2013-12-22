@@ -317,7 +317,7 @@ namespace SpeakerController
 
             activeReceiverManager.Add(r);
 
-            if (stream != null && stream.Started)
+            if (stream != null && stream.State == OutputStreamState.Started)
                 stream.SendSync();
 
             btnStream.Enabled = true;
@@ -431,6 +431,17 @@ namespace SpeakerController
         {
             if (this.stream != null)
                 this.stream.Stop();
+        }
+
+        private void btnPause_Click(object sender, EventArgs e)
+        {
+            if (this.stream != null)
+            {
+                if (stream.State == OutputStreamState.Started)
+                    this.stream.Pause();
+                else if (stream.State == OutputStreamState.Paused)
+                    this.stream.Resume();
+            }
         }
     }
 

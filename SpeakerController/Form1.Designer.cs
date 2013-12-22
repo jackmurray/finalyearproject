@@ -54,6 +54,7 @@
             this.lstDevicesActive = new System.Windows.Forms.ListView();
             this.btnEjectDevice = new System.Windows.Forms.Button();
             this.btnStop = new System.Windows.Forms.Button();
+            this.btnPause = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dGridTrace)).BeginInit();
             this.SuspendLayout();
             // 
@@ -328,11 +329,22 @@
             this.btnStop.UseVisualStyleBackColor = true;
             this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
             // 
+            // btnPause
+            // 
+            this.btnPause.Location = new System.Drawing.Point(567, 161);
+            this.btnPause.Name = "btnPause";
+            this.btnPause.Size = new System.Drawing.Size(24, 24);
+            this.btnPause.TabIndex = 25;
+            this.btnPause.Text = "| |";
+            this.btnPause.UseVisualStyleBackColor = true;
+            this.btnPause.Click += new System.EventHandler(this.btnPause_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1068, 528);
+            this.Controls.Add(this.btnPause);
             this.Controls.Add(this.btnStop);
             this.Controls.Add(this.btnEjectDevice);
             this.Controls.Add(this.lstDevicesActive);
@@ -393,6 +405,7 @@
         private System.Windows.Forms.ListView lstDevicesActive;
         private System.Windows.Forms.Button btnEjectDevice;
         private System.Windows.Forms.Button btnStop;
+        private System.Windows.Forms.Button btnPause;
     }
 }
 
