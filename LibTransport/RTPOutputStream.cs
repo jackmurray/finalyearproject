@@ -115,9 +115,15 @@ namespace LibTransport
             return RTPControlPacket.BuildSwitchKeyPacket(++this.seq, this.nextTimestamp(), this.syncid);
         }
 
+        protected RTPPacket BuildPausePacket()
+        {
+            //no need to use deltaSeq here because we're going to reset everything anyway
+            return RTPControlPacket.BuildPausePacket(++this.seq, this.nextTimestamp(), this.syncid);
+        }
+
         protected DateTime nextTimestampAsDT()
         {
-            return basetimestamp.AddMilliseconds((seq - deltaSeq) * audio.GetFrameLength() * 1000); ;
+            return basetimestamp.AddMilliseconds((seq - deltaSeq) * audio.GetFrameLength() * 1000);
         }
 
         protected uint nextTimestamp()
