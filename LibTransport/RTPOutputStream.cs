@@ -13,6 +13,7 @@ namespace LibTransport
 {
     public class RTPOutputStream : RTPStreamBase
     {
+        private object synclock = new object(); //used so calls from the GUI thread won't mess things up.
         private IAudioFormat audio;
         private ushort deltaSeq = 0; //deltaSeq is used to count the number of packets which shouldn't consume a timestamp interval (e.g. rotatekey packets)
         private long encryption_ctr = 0;
@@ -172,14 +173,21 @@ namespace LibTransport
 
         private void TimerTick()
         {
-            this.processPendingEvents();
-
-            this.Send(this.BuildPacket(audio.GetFrame()));
-            if (audio.EndOfFile())
+            /*
+             * Acquire the lock here rather than in StreamThreadProc. Doing it here means that if we have to wait a few hundred usecs
+             * to get the lock, it will be accounted for by the timing code with the result being that we Sleep() for less time.
+             */
+            lock (synclock)
             {
-                this.Stop();
-                if (this.StreamingCompleted != null)
-                    StreamingCompleted(this, null);
+                this.processPendingEvents();
+
+                this.Send(this.BuildPacket(audio.GetFrame()));
+                if (audio.EndOfFile())
+                {
+                    this.Stop();
+                    if (this.StreamingCompleted != null)
+                        StreamingCompleted(this, null);
+                }
             }
         }
 
@@ -188,25 +196,34 @@ namespace LibTransport
         /// </summary>
         public void Stop()
         {
-            Log.Information("Stopping stream.");
-            this.continueStreaming = false;
-            this.Send(this.BuildStopPacket());
-            audio.SeekToStart();
+            lock (synclock)
+            {
+                Log.Information("Stopping stream.");
+                this.continueStreaming = false;
+                this.Send(this.BuildStopPacket());
+                audio.SeekToStart();
+            }
         }
 
         public void Pause()
         {
-            Log.Information("Pausing stream.");
-            this.continueStreaming = false;
-            this.Send(this.BuildPausePacket());
-            State = OutputStreamState.Paused;
+            lock (synclock)
+            {
+                Log.Information("Pausing stream.");
+                this.continueStreaming = false;
+                this.Send(this.BuildPausePacket());
+                State = OutputStreamState.Paused;
+            }
         }
 
         public void Resume()
         {
-            Log.Information("Resuming stream.");
-            deltaSeq = seq;
-            StartStream();
+            lock (synclock)
+            {
+                Log.Information("Resuming stream.");
+                deltaSeq = seq;
+                StartStream();
+            }
         }
 
         private void processPendingEvents()
