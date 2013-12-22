@@ -58,6 +58,11 @@ namespace LibTransport
         {
             return new RTPControlPacket(RTPControlAction.SwitchKey, null, false, SequenceNumber, Timestamp, SyncSource, null);
         }
+
+        public static RTPControlPacket BuildPausePacket(ushort SequenceNumber, uint Timestamp, uint SyncSource)
+        {
+            return new RTPControlPacket(RTPControlAction.Pause, null, false, SequenceNumber, Timestamp, SyncSource, null);
+        }
     }
 
     public enum RTPControlAction {Play, Pause, Stop, FetchKey, SwitchKey}
