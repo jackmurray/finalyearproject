@@ -93,6 +93,10 @@ namespace SpeakerReceiver
                         Log.Information("Stop packet received - end of stream.");
                         this.EndPlayerThread();
                         break;
+                    case RTPControlAction.Pause:
+                        Log.Information("Pausing stream.");
+                        this.EndPlayerThread();
+                        break;
                     default:
                         Log.Warning(String.Format("Control packet received but unable to handle. Type={0} seq={1}", p.Action, p.SequenceNumber));
                         break;
