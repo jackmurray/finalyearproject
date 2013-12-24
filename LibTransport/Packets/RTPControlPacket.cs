@@ -11,8 +11,8 @@ namespace LibTransport
         public byte[] ExtraData { get; protected set; }
 
         //Call the base constructor with a Payload built from the Action and the ExtraData converted to a new byte[]
-        public RTPControlPacket(RTPControlAction Action, byte[] ExtraData, bool Extension, ushort SequenceNumber, uint Timestamp, uint SyncSource, byte[] ExtensionData) : 
-            base(false, Extension, true, SequenceNumber, Timestamp, SyncSource, new byte[]{(byte)Action}.Concat(ExtraData ?? new byte[0]).ToArray(), ExtensionData)
+        public RTPControlPacket(RTPControlAction Action, byte[] ExtraData, ushort SequenceNumber, uint Timestamp, uint SyncSource) : 
+            base(false, true, SequenceNumber, Timestamp, SyncSource, new byte[]{(byte)Action}.Concat(ExtraData ?? new byte[0]).ToArray())
         {
             this.Action = Action;
             this.ExtraData = ExtraData;
@@ -41,27 +41,27 @@ namespace LibTransport
         {
             byte[] extra = LibUtil.Util.Encode(baseTime);
             //extension stuff set to false/null as it'll be set later.
-            return new RTPControlPacket(RTPControlAction.Play, extra, false, SequenceNumber, Timestamp, SyncSource, null);
+            return new RTPControlPacket(RTPControlAction.Play, extra, SequenceNumber, Timestamp, SyncSource);
         }
 
         public static RTPControlPacket BuildStopPacket(ushort SequenceNumber, uint Timestamp, uint SyncSource)
         {
-            return new RTPControlPacket(RTPControlAction.Stop, null, false, SequenceNumber, Timestamp, SyncSource, null);
+            return new RTPControlPacket(RTPControlAction.Stop, null, SequenceNumber, Timestamp, SyncSource);
         }
 
         public static RTPControlPacket BuildFetchKeyPacket(ushort SequenceNumber, uint Timestamp, uint SyncSource)
         {
-            return new RTPControlPacket(RTPControlAction.FetchKey, null, false, SequenceNumber, Timestamp, SyncSource, null);
+            return new RTPControlPacket(RTPControlAction.FetchKey, null, SequenceNumber, Timestamp, SyncSource);
         }
 
         public static RTPControlPacket BuildSwitchKeyPacket(ushort SequenceNumber, uint Timestamp, uint SyncSource)
         {
-            return new RTPControlPacket(RTPControlAction.SwitchKey, null, false, SequenceNumber, Timestamp, SyncSource, null);
+            return new RTPControlPacket(RTPControlAction.SwitchKey, null, SequenceNumber, Timestamp, SyncSource);
         }
 
         public static RTPControlPacket BuildPausePacket(ushort SequenceNumber, uint Timestamp, uint SyncSource)
         {
-            return new RTPControlPacket(RTPControlAction.Pause, null, false, SequenceNumber, Timestamp, SyncSource, null);
+            return new RTPControlPacket(RTPControlAction.Pause, null, SequenceNumber, Timestamp, SyncSource);
         }
     }
 

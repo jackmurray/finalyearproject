@@ -16,28 +16,24 @@ namespace LibTransport
     {
         public const short Version = 2;
         public bool Padding {get; protected set;}
-        public bool HasExtension { get; protected set; }
         public bool Marker { get; protected set; }
         public const ushort PayloadType = 35;
         public ushort SequenceNumber { get; protected set; }
         public uint Timestamp {get; protected set;}
         public uint SyncSource { get; protected set; }
         public byte[] Payload { get; protected set;}
-        public byte[] ExtensionData { get; protected set; }
 
         protected byte[] extensionHeaderID = {0x00, 0x00};
 
-        protected RTPPacket(bool Padding, bool Extension, bool Marker, ushort SequenceNumber, uint Timestamp,
-                         uint SyncSource, byte[] Payload, byte[] ExtensionData)
+        protected RTPPacket(bool Padding, bool Marker, ushort SequenceNumber, uint Timestamp,
+                         uint SyncSource, byte[] Payload)
         {
             this.Padding = Padding;
-            this.HasExtension = Extension;
             this.Marker = Marker;
             this.SequenceNumber = SequenceNumber;
             this.Timestamp = Timestamp;
             this.SyncSource = SyncSource;
             this.Payload = Payload;
-            this.ExtensionData = ExtensionData;
         }
 
         private MemoryStream SerialiseHeader(bool includeExtension = false)
@@ -176,7 +172,7 @@ namespace LibTransport
             }
 
             if (!isControl)
-                return new RTPDataPacket(Padding, extension, seq, timestamp, ssrc, payload, extensionData);
+                return new RTPDataPacket(Padding, seq, timestamp, ssrc, payload);
             else
             {
                 if (payload.Length < 1)
@@ -188,7 +184,7 @@ namespace LibTransport
                 if (payload.Length > 1)
                     extradata = payload.Skip(1).ToArray(); //take the payload minus the first byte as the extra data.
 
-                return new RTPControlPacket(a, extradata, extension, seq, timestamp, ssrc, extensionData);
+                return new RTPControlPacket(a, extradata, seq, timestamp, ssrc);
             }
         }
     }

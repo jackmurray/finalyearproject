@@ -78,7 +78,7 @@ namespace LibTransport
             uint ts = this.nextTimestamp(); //get the timestamp before incrementing seq, so that the first timestamp will be basetime+0.
             ushort sequence = ++this.seq;
             //Log.Verbose("Building RTP packet seq:" + sequence);
-            return new RTPDataPacket(false, false, sequence, ts, this.syncid, data, null);
+            return new RTPDataPacket(false, sequence, ts, this.syncid, data);
         }
         
         protected void setupBaseTime()
