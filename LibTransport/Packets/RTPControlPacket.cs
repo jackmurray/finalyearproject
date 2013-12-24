@@ -43,37 +43,6 @@ namespace LibTransport
             DateTime basetime = RTPPacket.BuildDateTime(this.Timestamp, sendingTimestamp)/* - latency;*/
             return new DateTime(LibUtil.Util.DecodeLong(ExtraData, 0));
         }
-
-        /// <summary>
-        /// Build a play packet based at the current UTC time.
-        /// </summary>
-        /// <returns></returns>
-        public static RTPControlPacket BuildPlayPacket(ushort SequenceNumber, uint Timestamp, uint SyncSource, long baseTime)
-        {
-            byte[] extra = LibUtil.Util.Encode(baseTime);
-            //extension stuff set to false/null as it'll be set later.
-            return new RTPControlPacket(RTPControlAction.Play, extra, SequenceNumber, Timestamp, SyncSource);
-        }
-
-        public static RTPControlPacket BuildStopPacket(ushort SequenceNumber, uint Timestamp, uint SyncSource)
-        {
-            return new RTPControlPacket(RTPControlAction.Stop, null, SequenceNumber, Timestamp, SyncSource);
-        }
-
-        public static RTPControlPacket BuildFetchKeyPacket(ushort SequenceNumber, uint Timestamp, uint SyncSource)
-        {
-            return new RTPControlPacket(RTPControlAction.FetchKey, null, SequenceNumber, Timestamp, SyncSource);
-        }
-
-        public static RTPControlPacket BuildSwitchKeyPacket(ushort SequenceNumber, uint Timestamp, uint SyncSource)
-        {
-            return new RTPControlPacket(RTPControlAction.SwitchKey, null, SequenceNumber, Timestamp, SyncSource);
-        }
-
-        public static RTPControlPacket BuildPausePacket(ushort SequenceNumber, uint Timestamp, uint SyncSource)
-        {
-            return new RTPControlPacket(RTPControlAction.Pause, null, SequenceNumber, Timestamp, SyncSource);
-        }
     }
 
     public enum RTPControlAction {Play, Pause, Stop, FetchKey, SwitchKey}

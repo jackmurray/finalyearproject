@@ -88,12 +88,12 @@ namespace LibTransport
 
         protected RTPPacket BuildPlayPacket()
         {
-            return RTPControlPacket.BuildPlayPacket(++this.seq, 0, syncid, this.basetimestamp.Ticks);
+            return new RTPPlayPacket(++this.seq, 0, syncid, this.basetimestamp);
         }
 
         protected RTPPacket BuildStopPacket()
         {
-            return RTPControlPacket.BuildStopPacket(++this.seq, this.nextTimestamp(), this.syncid);
+            return new RTPStopPacket(++this.seq, this.nextTimestamp(), this.syncid);
         }
 
         protected void InitKey()
@@ -115,19 +115,19 @@ namespace LibTransport
             int delta = (configbuftime < rotateKeyTime) ? rotateKeyTime - configbuftime : 0;
             DateTime actualTime = calculatedTime.AddSeconds(delta);
             Log.Verbose("Built FetchKey packet for time " + actualTime + ":" + actualTime.Millisecond);
-            return new Tuple<DateTime,RTPPacket>(actualTime, RTPControlPacket.BuildFetchKeyPacket(++this.seq, RTPPacket.BuildTimestamp(actualTime), this.syncid));
+            return new Tuple<DateTime,RTPPacket>(actualTime, new RTPFetchKeyPacket(++this.seq, RTPPacket.BuildTimestamp(actualTime), this.syncid));
         }
 
         protected RTPPacket BuildSwitchKeyPacket()
         {
             this.deltaSeq++;
-            return RTPControlPacket.BuildSwitchKeyPacket(++this.seq, this.nextTimestamp(), this.syncid);
+            return new RTPSwitchKeyPacket(++this.seq, this.nextTimestamp(), this.syncid);
         }
 
         protected RTPPacket BuildPausePacket()
         {
             //no need to use deltaSeq here because we're going to reset everything anyway
-            return RTPControlPacket.BuildPausePacket(++this.seq, this.nextTimestamp(), this.syncid);
+            return new RTPPausePacket(++this.seq, this.nextTimestamp(), this.syncid);
         }
 
         protected DateTime nextTimestampAsDT()
