@@ -133,7 +133,7 @@ namespace SpeakerReceiver
                             }
                             else
                             {
-                                this.basetime = cp.ComputeBaseTime();
+                                this.basetime = (cp as RTPPlayPacket).baseTime;
                                 Log.Verbose("Taking " + basetime + ":" + basetime.Millisecond +
                                             " as the base time stamp.");
                                 if (playerThread.ThreadState == ThreadState.Unstarted)

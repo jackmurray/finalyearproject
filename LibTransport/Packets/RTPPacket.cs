@@ -184,7 +184,27 @@ namespace LibTransport
                 if (payload.Length > 1)
                     extradata = payload.Skip(1).ToArray(); //take the payload minus the first byte as the extra data.
 
-                return new RTPControlPacket(a, extradata, seq, timestamp, ssrc);
+                RTPControlPacket controlPacket;
+                switch (a)
+                {
+                    case RTPControlAction.Play:
+                        controlPacket = new RTPPlayPacket(seq, timestamp, ssrc, RTPPlayPacket.ComputeBaseTime(extradata));
+                        break;
+                    case RTPControlAction.Pause:
+                        controlPacket = new RTPPausePacket(seq, timestamp, ssrc);
+                        break;
+                    case RTPControlAction.Stop:
+                        controlPacket = new RTPStopPacket(seq, timestamp, ssrc);
+                        break;
+                    case RTPControlAction.FetchKey:
+                        controlPacket = new RTPFetchKeyPacket(seq, timestamp, ssrc);
+                        break;
+                    case RTPControlAction.SwitchKey:
+                        controlPacket = new RTPSwitchKeyPacket(seq, timestamp, ssrc);
+                    break;
+                    default: throw new FormatException("RTPPacket.Parse() does not know what class to use for Action=" + a);
+                }
+                return controlPacket;
             }
         }
     }
