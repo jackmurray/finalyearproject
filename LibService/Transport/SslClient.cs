@@ -66,7 +66,7 @@ namespace LibService
 
         public bool ValidateRemoteFingerprint(string expected)
         {
-            return expected == GetRemoteCert().GetCertHashString();
+            return string.Compare(GetRemoteCert().GetCertHashString(), expected, true) == 0;
         }
     }
 }
