@@ -58,10 +58,19 @@ namespace LibTransport
 
         public void Send(RTPPacket p)
         {
-            byte[] data = useEncryption == false ? p.Serialise() : p.SerialiseEncrypted(crypto, encryption_ctr, signer);
+            byte[] data;
+            if (useEncryption)
+            {
+                data = p.SerialiseEncrypted(crypto, encryption_ctr, signer);
+                encryption_ctr += p.GetCounterIncrement(crypto);
+                InitKey();
+            }
+            else
+            {
+                data = p.Serialise();
+            }
+
             c.Send(data, data.Length, ep);
-            encryption_ctr += p.GetCounterIncrement(crypto);
-            InitKey();
         }
 
         protected RTPPacket BuildPacket(byte[] data)
