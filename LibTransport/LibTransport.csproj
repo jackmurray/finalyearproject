@@ -36,8 +36,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Packets\RTPSwitchKeyPacket.cs" />
+    <Compile Include="Packets\RTPFetchKeyPacket.cs" />
+    <Compile Include="Packets\RTPStopPacket.cs" />
     <Compile Include="Packets\RTPControlPacket.cs" />
     <Compile Include="Packets\RTPDataPacket.cs" />
+    <Compile Include="Packets\RTPPausePacket.cs" />
+    <Compile Include="Packets\RTPPlayPacket.cs" />
     <Compile Include="RTPInputStream.cs" />
     <Compile Include="RTPOutputStream.cs" />
     <Compile Include="Packets\RTPPacket.cs" />
