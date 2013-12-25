@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,8 @@ namespace LibSSDP
         {
             UdpClient c = new UdpClient(AddressFamily.InterNetwork);
             c.JoinMulticastGroup(IPAddress.Parse("239.255.255.250"));
+            if (!LibUtil.Util.IsRunningOnMono) //TODO: Later, build the new mono and work out how to do this for linux.
+                c.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastInterface, GetNetIFIndex());
             return c;
         }
 
@@ -24,6 +27,32 @@ namespace LibSSDP
             client.Client.ExclusiveAddressUse = false;
             client.Client.Bind(SSDPPacket.LocalEndpoint);
             return client;
+        }
+
+        private static int GetNetIFIndex()
+        {
+            NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();
+            string wantedIP = LibConfig.Config.Get(LibConfig.Config.IP_ADDRESS);
+            foreach (NetworkInterface iface in nics)
+            {
+                var props = iface.GetIPProperties();
+                if (!props.MulticastAddresses.Any())
+                    continue;
+                if (!iface.SupportsMulticast)
+                    continue;
+                if (iface.OperationalStatus != OperationalStatus.Up)
+                    continue;
+                var ip4 = props.GetIPv4Properties();
+                if (ip4 == null)
+                    continue;
+
+                var addrs = props.UnicastAddresses;
+                bool found = addrs.Any(addr => addr.Address.ToString() == wantedIP);
+                if (!found) continue;
+                LibTrace.Trace.GetInstance("LibSSDP").Verbose("IFACE Index: " + ip4.Index + ", ADDR=" + wantedIP);
+                return IPAddress.HostToNetworkOrder(ip4.Index);
+            }
+            throw new Exception("No suitable network interface!");
         }
 
         public static string ToPacketString(this Method m)
