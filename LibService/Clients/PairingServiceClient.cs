@@ -27,7 +27,7 @@ namespace LibService
         {
             try
             {
-                ChallengeResponse cr = new ChallengeResponse();
+                ChallengeResponse cr = new ChallengeResponse(remoteParty.GetCertHashString()); //the signature will have the remote fingerprint in it
                 var data = new Tuple<byte[], byte[], byte[]>(challenge, sig, cr.ChallengeBytes);
                 ServiceMessage m = new ServiceMessage("PairingService", "Pair", JsonConvert.SerializeObject(data));
                 ServiceMessageResponse response = Call(m);

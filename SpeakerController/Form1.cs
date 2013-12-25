@@ -203,7 +203,7 @@ namespace SpeakerController
             PairingServiceClient c = ssl.GetClient<PairingServiceClient>();
             byte[] challenge = c.GetChallengeBytes();
             Log.Verbose("Got challenge " + Util.BytesToHexString(challenge));
-            var cr = new ChallengeResponse(challenge);
+            var cr = new ChallengeResponse(cert.Fingerprint, challenge); //sign the challenge with our fingerprint and the key
             byte[] sig = cr.Sign(Config.Get(Config.PAIRING_KEY));
             bool res;
             try

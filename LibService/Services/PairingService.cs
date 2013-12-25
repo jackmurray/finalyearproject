@@ -44,15 +44,16 @@ namespace LibService
                             return new ServiceMessageResponse("False", HttpResponseCode.ACCESS_DENIED);
                         }
 
-                        var check = new ChallengeResponse(recv.Item1);
+                        var check = new ChallengeResponse(remoteParty.GetCertHashString(), recv.Item1); //verify that the remote party we're connected to is the one that signed the challenge
                         expectedsig = check.Sign(Config.Get(Config.PAIRING_KEY));
                         valid = expectedsig.SequenceEqual(recv.Item2);
                         GeneratedChallenges.Remove(find); //valid or not, we still remove the challenge.
                     }
                     if (valid)
                     {
+                        var ourcert = CertManager.GetCert(KeyManager.GetKey());
                         TrustedKeys.Add(remoteParty); //we now trust the other end of the connection since they answered our challenge correctly.
-                        byte[] response2 = new ChallengeResponse(recv.Item3).Sign(Config.Get(Config.PAIRING_KEY)); //compute r2 to send back
+                        byte[] response2 = new ChallengeResponse(ourcert.Fingerprint, recv.Item3).Sign(Config.Get(Config.PAIRING_KEY)); //compute r2 to send back
                         return new ServiceMessageResponse(JsonConvert.SerializeObject(response2), HttpResponseCode.OK);
                     }
 
@@ -68,7 +69,7 @@ namespace LibService
                 case "GetPairingChallenge":
                     lock (GeneratedChallenges)
                     {
-                        ChallengeResponse cr = new ChallengeResponse();
+                        ChallengeResponse cr = new ChallengeResponse(""); //empty fingerprint because we only want the random bytes out
                         GeneratedChallenges.Add(cr.ChallengeBytes);
                         return new ServiceMessageResponse(LibUtil.Util.BytesToHexString(cr.ChallengeBytes),
                                                           HttpResponseCode.OK);

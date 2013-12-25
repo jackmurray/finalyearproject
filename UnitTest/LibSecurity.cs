@@ -28,17 +28,28 @@ namespace UnitTest
         [TestMethod]
         public void TestChallengeResponse()
         {
-            ChallengeResponse cr = new ChallengeResponse();
+            ChallengeResponse cr = new ChallengeResponse("TEST");
             var key = System.Text.Encoding.UTF8.GetBytes("KEY");
             byte[] sig = cr.Sign(key);
             Assert.IsTrue(cr.Verify(key, sig));
 
-            var cr2 = new ChallengeResponse();
+            var cr2 = new ChallengeResponse("TEST");
             Assert.IsFalse(cr2.Verify(key, sig)); //will fail because the challenge is different now.
 
             for (int i = 0; i < sig.Length; i++)
                 sig[i] = 0x00;
             Assert.IsFalse(cr.Verify(key, sig)); //fails because the sig is invalid now
+        }
+
+        [TestMethod]
+        public void TestChallengeResponseFingerprint()
+        {
+            ChallengeResponse cr = new ChallengeResponse("TEST");
+            var key = System.Text.Encoding.UTF8.GetBytes("KEY");
+            byte[] sig = cr.Sign(key);
+
+            var cr2 = new ChallengeResponse("DIFFERENT", cr.ChallengeBytes);
+            Assert.IsFalse(cr2.Verify(key, sig));
         }
 
         private PacketEncrypter SetupEncrypter(bool forEncryption)

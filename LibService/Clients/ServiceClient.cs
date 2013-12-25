@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace LibService
@@ -24,6 +25,8 @@ namespace LibService
 
             return resp;
         }
+
+        protected X509Certificate remoteParty { get { return _s.RemoteCertificate; } }
     }
 
     public class ServiceException : Exception
