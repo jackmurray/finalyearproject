@@ -55,6 +55,8 @@
             this.btnEjectDevice = new System.Windows.Forms.Button();
             this.btnStop = new System.Windows.Forms.Button();
             this.btnPause = new System.Windows.Forms.Button();
+            this.btnLoopback = new System.Windows.Forms.Button();
+            this.btnPlaySamples = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dGridTrace)).BeginInit();
             this.SuspendLayout();
             // 
@@ -339,11 +341,33 @@
             this.btnPause.UseVisualStyleBackColor = true;
             this.btnPause.Click += new System.EventHandler(this.btnPause_Click);
             // 
+            // btnLoopback
+            // 
+            this.btnLoopback.Location = new System.Drawing.Point(485, 225);
+            this.btnLoopback.Name = "btnLoopback";
+            this.btnLoopback.Size = new System.Drawing.Size(75, 23);
+            this.btnLoopback.TabIndex = 26;
+            this.btnLoopback.Text = "Loopback";
+            this.btnLoopback.UseVisualStyleBackColor = true;
+            this.btnLoopback.Click += new System.EventHandler(this.btnLoopback_Click);
+            // 
+            // btnPlaySamples
+            // 
+            this.btnPlaySamples.Location = new System.Drawing.Point(485, 254);
+            this.btnPlaySamples.Name = "btnPlaySamples";
+            this.btnPlaySamples.Size = new System.Drawing.Size(75, 23);
+            this.btnPlaySamples.TabIndex = 27;
+            this.btnPlaySamples.Text = "PlaySamples";
+            this.btnPlaySamples.UseVisualStyleBackColor = true;
+            this.btnPlaySamples.Click += new System.EventHandler(this.btnPlaySamples_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1068, 528);
+            this.Controls.Add(this.btnPlaySamples);
+            this.Controls.Add(this.btnLoopback);
             this.Controls.Add(this.btnPause);
             this.Controls.Add(this.btnStop);
             this.Controls.Add(this.btnEjectDevice);
@@ -406,6 +430,8 @@
         private System.Windows.Forms.Button btnEjectDevice;
         private System.Windows.Forms.Button btnStop;
         private System.Windows.Forms.Button btnPause;
+        private System.Windows.Forms.Button btnLoopback;
+        private System.Windows.Forms.Button btnPlaySamples;
     }
 }
 

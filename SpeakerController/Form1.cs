@@ -35,6 +35,8 @@ namespace SpeakerController
         private RTPOutputStream stream;
         private bool firstRun = true;
         private ActiveReceiverManager activeReceiverManager;
+        private LoopbackWavCapture loopback;
+        private RawSamplePlayer rawplayer;
 
         private PacketEncrypterKeyManager pekm;
         private KeyManager rtpsignkey;
@@ -442,6 +444,20 @@ namespace SpeakerController
                 else if (stream.State == OutputStreamState.Paused)
                     this.stream.Resume();
             }
+        }
+
+        private void btnLoopback_Click(object sender, EventArgs e)
+        {
+            if (loopback != null)
+                loopback.Stop();
+            else
+                this.loopback = new LoopbackWavCapture();
+        }
+
+        private void btnPlaySamples_Click(object sender, EventArgs e)
+        {
+            this.rawplayer = new RawSamplePlayer();
+            rawplayer.Play(File.ReadAllBytes("C:\\temp\\samples.bin"));
         }
     }
 
