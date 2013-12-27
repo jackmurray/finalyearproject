@@ -145,14 +145,25 @@ namespace LibTransport
         public void Stream(IAudioFormat audio)
         {
             this.audio = audio;
-            StartStream();
+            StartStream(true);
         }
 
-        private void StartStream()
+        private void StartStream(bool sendFileHeader = false)
         {
+            byte[] header = null;
+            if (sendFileHeader)
+            {
+                header = audio.GetHeader();
+            }
+
             this.continueStreaming = true;
             this.setupBaseTime();
             this.Send(this.BuildPlayPacket());
+            if (sendFileHeader && header != null && header.Length > 0)
+            {
+                ++this.deltaSeq;
+                this.Send(new RTPDataPacket(false, ++this.seq, this.nextTimestamp(), this.syncid, header));
+            }
             Log.Verbose("Base timestamp: " + basetimestamp + ":" + basetimestamp.Millisecond);
             new Thread(StreamThreadProc).Start();
             State = OutputStreamState.Started;
