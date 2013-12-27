@@ -18,9 +18,10 @@ namespace LibAudio
         private static readonly byte[] MAGIC_RIFF = {0x52, 0x49, 0x46, 0x46}; //ASCII 'RIFF'
         private static readonly byte[] MAGIC_WAVE = {0x57, 0x41, 0x56, 0x45}; //ASCII 'WAVE'
         private static readonly byte[] MAGIC_FORMAT = {0x66, 0x6D, 0x74, 0x20}; //ASCII 'fmt ' (space)
-        private static readonly byte[] MAGIC_DATA = {0x64, 0x61, 74, 0x61}; //ASCII 'data'
+        private static readonly byte[] MAGIC_DATA = {0x64, 0x61, 0x74, 0x61}; //ASCII 'data'
 
         private WavFmtHeader FmtHeader;
+        private ushort ActualFrameLength, SamplesPerFrame;
 
         public WAVFormat(Stream s) : base(s)
         {
@@ -52,6 +53,17 @@ namespace LibAudio
                         BitsPerSample = bin.ReadUInt16()
                     };
             }
+
+            //Go directly to DATA. Do not parse go (or other structures in the header we don't care about).
+            while (!CheckBytes(MAGIC_DATA))
+            {
+                if (EndOfFile())
+                    throw new FormatException("Failure parsing WAV. Hit EOF while searching for DATA header.");
+                Skip(1);
+            }
+
+            SamplesPerFrame = (ushort) (FRAME_LENGTH_TARGET/(FmtHeader.BitsPerSample/8));
+            ActualFrameLength = (ushort)(SamplesPerFrame * (FmtHeader.BitsPerSample / 8));
         }
 
         /// <summary>
@@ -74,12 +86,12 @@ namespace LibAudio
 
         public byte[] GetFrame()
         {
-            throw new NotImplementedException();
+            return Read(ActualFrameLength);
         }
 
         public float GetFrameLength()
         {
-            throw new NotImplementedException();
+            return SamplesPerFrame/FmtHeader.SampleRate;
         }
 
         public void SeekToStart()
