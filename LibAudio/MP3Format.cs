@@ -72,11 +72,15 @@ namespace LibAudio
             else return false;
         }
 
-        public void EatGarbageData() //this will fail horribly if used on a non-mp3 stream.
+        public void EatGarbageData(uint limit = 0) //this will fail horribly if used on a non-mp3 stream.
         {
+            uint count = 0;
             while (!EndOfFile() && !CheckMagic())
             {
                 Skip(1);
+                count++;
+                if (count == limit)
+                    return;
             }
         }
 

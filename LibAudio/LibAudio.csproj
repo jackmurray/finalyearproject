@@ -48,6 +48,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RawSamplePlayer.cs" />
     <Compile Include="SupportedAudio.cs" />
+    <Compile Include="WAVFormat.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LibConfig\LibConfig.csproj">
