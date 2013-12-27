@@ -95,7 +95,7 @@ namespace LibAudio
 
         public float GetFrameLength()
         {
-            return SamplesPerFrame/FmtHeader.SampleRate;
+            return (float)SamplesPerFrame/FmtHeader.SampleRate;
         }
 
         public void SeekToStart()
