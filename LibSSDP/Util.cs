@@ -16,7 +16,11 @@ namespace LibSSDP
             UdpClient c = new UdpClient(AddressFamily.InterNetwork);
             c.JoinMulticastGroup(IPAddress.Parse("239.255.255.250"));
             if (!LibUtil.Util.IsRunningOnMono) //TODO: Later, build the new mono and work out how to do this for linux.
-                c.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastInterface, GetNetIFIndex());
+            {
+                int netIfIndex = GetNetIFIndex();
+                if (netIfIndex != -1) //-1 means we couldn't find it.
+                    c.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastInterface, netIfIndex);
+            }
             return c;
         }
 
@@ -52,7 +56,9 @@ namespace LibSSDP
                 LibTrace.Trace.GetInstance("LibSSDP").Verbose("IFACE Index: " + ip4.Index + ", ADDR=" + wantedIP);
                 return IPAddress.HostToNetworkOrder(ip4.Index);
             }
-            throw new Exception("No suitable network interface!");
+
+            LibTrace.Trace.GetInstance("LibSSDP").Error("Unable to find preferred interface. Using default.");
+            return -1;
         }
 
         public static string ToPacketString(this Method m)
