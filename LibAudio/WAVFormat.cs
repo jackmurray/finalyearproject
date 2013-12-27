@@ -22,6 +22,7 @@ namespace LibAudio
 
         private WavFmtHeader FmtHeader;
         private ushort ActualFrameLength, SamplesPerFrame;
+        private int DataStartPos = 0;
 
         public WAVFormat(Stream s) : base(s)
         {
@@ -61,6 +62,9 @@ namespace LibAudio
                     throw new FormatException("Failure parsing WAV. Hit EOF while searching for DATA header.");
                 Skip(1);
             }
+            Skip(MAGIC_DATA.Length); 
+            Skip(4); //after this the stream points at the start of the data.
+            this.DataStartPos = (int)_s.Position;
 
             SamplesPerFrame = (ushort) (FRAME_LENGTH_TARGET/(FmtHeader.BitsPerSample/8));
             ActualFrameLength = (ushort)(SamplesPerFrame * (FmtHeader.BitsPerSample / 8));
@@ -98,6 +102,13 @@ namespace LibAudio
         {
             this._s.Position = 0;
             this.Parse();
+        }
+
+        public byte[] GetHeader()
+        {
+            _s.Position = 0;
+            byte[] header = Read(DataStartPos);
+            return header;
         }
     }
 

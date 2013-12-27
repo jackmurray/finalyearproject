@@ -42,5 +42,12 @@ namespace LibAudio
         /// Seek forwards to the start of the stream.
         /// </summary>
         void SeekToStart();
+
+        /// <summary>
+        /// Return the file header. For files such as MP3 that don't have a single file header, an empty
+        /// array is acceptable.
+        /// </summary>
+        /// <returns></returns>
+        byte[] GetHeader();
     }
 }

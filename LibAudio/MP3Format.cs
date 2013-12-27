@@ -140,5 +140,10 @@ namespace LibAudio
             this.EatGarbageData();
             this.Parse();
         }
+
+        public byte[] GetHeader()
+        {
+            return new byte[0];
+        }
     }
 }
