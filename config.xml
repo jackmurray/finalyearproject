@@ -11,6 +11,7 @@
 	<streamBufferTime>2</streamBufferTime>
 	<playerExecutable>vlc</playerExecutable>
 	<playerArgs>--play-and-exit --file-caching=0 -</playerArgs>
+	<!-- If on Linux, add --aout alsa to playerArgs. -->
 	<enableEncryption>true</enableEncryption>
 	<enableAuthentication>true</enableAuthentication>
 	<rotateKeyTime>10</rotateKeyTime>
