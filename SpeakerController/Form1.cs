@@ -240,8 +240,8 @@ namespace SpeakerController
             DialogResult res = ofd.ShowDialog();
             if (res == DialogResult.OK)
             {
-                Stream s = File.OpenRead(ofd.FileName);
-                IAudioFormat r = SupportedAudio.FindReaderForFile(s);
+                FileStream s = File.OpenRead(ofd.FileName);
+                IAudioFormat r = SupportedAudio.FindReaderForFile(new AudioFileReader(s));
                 /*if (r != null)
                 {
                     MessageBox.Show(r.BitRate.ToString());
@@ -369,8 +369,8 @@ namespace SpeakerController
 
         private void btnStreamTestSound_Click(object sender, EventArgs e)
         {
-            Stream s = File.OpenRead("test.mp3");
-            IAudioFormat r = SupportedAudio.FindReaderForFile(s);
+            FileStream s = File.OpenRead("test.mp3");
+            IAudioFormat r = SupportedAudio.FindReaderForFile(new AudioFileReader(s));
             this.audio = r;
             btnStream_Click(this, null);
         }
@@ -451,7 +451,7 @@ namespace SpeakerController
             if (loopback != null)
                 loopback.Stop();
             else
-                this.loopback = new LoopbackWavCapture();
+                this.loopback = new LoopbackWavCapture(new MemoryStream()); //just dump it for now.
         }
 
         private void btnPlaySamples_Click(object sender, EventArgs e)
