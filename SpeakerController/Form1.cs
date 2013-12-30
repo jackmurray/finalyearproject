@@ -36,7 +36,7 @@ namespace SpeakerController
         private bool firstRun = true;
         private ActiveReceiverManager activeReceiverManager;
         private LoopbackWavCapture loopback;
-        private RawSamplePlayer rawplayer;
+        private CircularStream circbuf = new CircularStream();
 
         private PacketEncrypterKeyManager pekm;
         private KeyManager rtpsignkey;
@@ -451,13 +451,13 @@ namespace SpeakerController
             if (loopback != null)
                 loopback.Stop();
             else
-                this.loopback = new LoopbackWavCapture(new MemoryStream()); //just dump it for now.
+                this.loopback = new LoopbackWavCapture(circbuf); //just dump it for now.
         }
 
         private void btnPlaySamples_Click(object sender, EventArgs e)
         {
-            this.rawplayer = new RawSamplePlayer();
-            rawplayer.Play(File.ReadAllBytes("C:\\temp\\samples.bin"));
+            this.audio = SupportedAudio.FindReaderForFile(new AudioStreamReader(circbuf));
+            btnStream_Click(this, null);
         }
     }
 
