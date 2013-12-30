@@ -30,9 +30,12 @@ namespace SpeakerReceiver
 
         private static void Main(string[] args)
         {
+            if (args.Length > 0)
+                ProcessConfigOverride(args);
             Setup();
             if (args.Length > 0)
                 ProcessArgs(args);
+            
             Log.Information("Build Flavour: " + GetBuildFlavour());
             foreach (AssemblyName n in Util.GetReferencedAssemblies())
                 Log.Verbose(n.Name + "-" + n.Version);
@@ -114,6 +117,15 @@ namespace SpeakerReceiver
                 int i = int.Parse(args[1]);
                 TrustedKeys.Remove(i);
                 Environment.Exit(0);
+            }
+        }
+
+        private static void ProcessConfigOverride(string[] args)
+        {
+            if (args[0] == "--config")
+            {
+                Config.CONFIG_FILENAME = args[1];
+                Console.WriteLine("Overriding config to " + args[1]);
             }
         }
 

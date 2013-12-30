@@ -12,8 +12,8 @@ namespace LibConfig
 {
     public static class Config
     {
-        public const string CONFIG_FILENAME = "config.xml";
-        public const string TRUSTED_KEYS_FILENAME = "trustedKeys.xml";
+        public static string CONFIG_FILENAME = "config.xml";
+        public static string TRUSTED_KEYS_FILENAME = "trustedKeys.xml";
 
         private static bool IsLoaded = false;
         private static XmlDocument xml;
@@ -127,7 +127,9 @@ namespace LibConfig
             xml = new XmlDocument();
             try
             {
-                xml.Load(Util.ResolvePath(CONFIG_FILENAME));
+                var p = Util.ResolvePath(CONFIG_FILENAME);
+                xml.Load(p);
+                Console.WriteLine("Loaded config from " + p);
             }
             catch (Exception ex)
             {
