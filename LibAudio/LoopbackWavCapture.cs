@@ -11,13 +11,14 @@ namespace LibAudio
     public class LoopbackWavCapture
     {
         private WasapiLoopbackCapture loopback = new WasapiLoopbackCapture();
-        private FileStream fs = new FileStream("C:\\temp\\samples.wav", FileMode.OpenOrCreate);
         private WaveFileWriter w;
+        private Stream basestream;
         public bool Playing { get; protected set; }
 
-        public LoopbackWavCapture()
+        public LoopbackWavCapture(Stream s)
         {
-            w = new WaveFileWriter(fs, loopback.WaveFormat);
+            basestream = s;
+            w = new WaveFileWriter(s, loopback.WaveFormat);
             loopback.DataAvailable += LoopbackOnDataAvailable;
             loopback.StartRecording();
             Playing = true;
@@ -25,7 +26,13 @@ namespace LibAudio
 
         private void LoopbackOnDataAvailable(object sender, WaveInEventArgs waveInEventArgs)
         {
-            w.Write(waveInEventArgs.Buffer, 0, waveInEventArgs.BytesRecorded);
+            //This callback is executed on the Recording thread started by the WasapiLoopbackCapture object.
+            //We lock the stream (yeah it's bad practice but I don't want to introduce a holding object for the 
+            //stream yet) and write the data to it.
+            lock (basestream)
+            {
+                w.Write(waveInEventArgs.Buffer, 0, waveInEventArgs.BytesRecorded);
+            }
         }
 
         public void Stop()
