@@ -6,7 +6,7 @@ using System.Text;
 
 namespace LibAudio
 {
-    public class MP3Format : AudioFileReader, IAudioFormat
+    public class MP3Format : AudioReaderBase, IAudioFormat
     {
         public MP3Format(Stream s)
             : base(s)

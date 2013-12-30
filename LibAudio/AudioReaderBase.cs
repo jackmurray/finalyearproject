@@ -7,12 +7,12 @@ using LibTrace;
 
 namespace LibAudio
 {
-    public abstract class AudioFileReader
+    public abstract class AudioReaderBase
     {
         protected Stream _s;
         protected Trace _trace;
 
-        protected AudioFileReader(Stream s)
+        protected AudioReaderBase(Stream s)
         {
             _s = s;
             _trace = Trace.GetInstance("LibAudio");

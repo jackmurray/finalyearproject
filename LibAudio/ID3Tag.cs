@@ -6,7 +6,7 @@ using System.Text;
 
 namespace LibAudio
 {
-    public class ID3Tag : AudioFileReader
+    public class ID3Tag : AudioReaderBase
     {
         public static readonly byte[] MAGIC = new byte[] {0x49, 0x44, 0x33}; //ASCII string 'ID3'
 

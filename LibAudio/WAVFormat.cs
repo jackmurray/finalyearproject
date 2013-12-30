@@ -6,7 +6,7 @@ using System.Text;
 
 namespace LibAudio
 {
-    public class WAVFormat : AudioFileReader, IAudioFormat
+    public class WAVFormat : AudioReaderBase, IAudioFormat
     {
         /// <summary>
         /// Since WAV doesn't have frames, we aim to read up to FRAME_LENGTH_TARGET bytes worth of samples
