@@ -14,15 +14,15 @@ namespace LibAudio
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static IAudioFormat FindReaderForFile(Stream s)
+        public static IAudioFormat FindReaderForFile(AudioReaderBase s)
         {
             ID3Tag id3 = new ID3Tag(s);
             if (id3.CheckMagic())
             {
                 id3.Parse();
-                id3.Skip((int)id3.Size);
+                s.Skip((int)id3.Size);
             }
-            long pos = id3.Position; //save this position so we can jump back here if an attempt fails.
+            long pos = s.Position; //save this position so we can jump back here if an attempt fails.
             
             //Do WAV first because it has a definite format. MP3 you just have to scan for the sync bytes
             //because there can be garbage data after the ID3 header. Scan far enough in a non-MP3 file and
@@ -31,7 +31,7 @@ namespace LibAudio
             WAVFormat wav = TestSimple<WAVFormat>(s);
             if (wav != null) return wav;
 
-            s.Seek(pos, SeekOrigin.Begin);
+            s.Position = pos;
             MP3Format mp3 = TestMP3(s);
             if (mp3 != null)
             {
@@ -41,7 +41,7 @@ namespace LibAudio
             return null;
         }
 
-        private static MP3Format TestMP3(Stream s)
+        private static MP3Format TestMP3(AudioReaderBase s)
         {
             var mp3 = new MP3Format(s);
             mp3.EatGarbageData(32 * 1024); //scan the first 32K of the file. after that then give up.
@@ -50,7 +50,7 @@ namespace LibAudio
             else return null;
         }
 
-        private static T TestSimple<T>(Stream s) where T : class, IAudioFormat
+        private static T TestSimple<T>(AudioReaderBase s) where T : class, IAudioFormat
         {
             var obj = (T)Activator.CreateInstance(typeof (T), s);
             if (obj.CheckMagic())

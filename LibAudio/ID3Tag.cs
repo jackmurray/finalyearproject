@@ -6,7 +6,7 @@ using System.Text;
 
 namespace LibAudio
 {
-    public class ID3Tag : AudioReaderBase
+    public class ID3Tag
     {
         public static readonly byte[] MAGIC = new byte[] {0x49, 0x44, 0x33}; //ASCII string 'ID3'
 
@@ -15,26 +15,27 @@ namespace LibAudio
         public byte Flags { get; set; }
         public uint Size { get; set; }
 
+        private AudioReaderBase s;
 
-        public ID3Tag(Stream s) : base(s)
+        public ID3Tag(AudioReaderBase s)
         {
-
+            this.s = s;
         }
 
         public void Parse()
         {
             if (!CheckMagic())
                 throw new FormatException("Tried to parse a stream that didn't have an ID3 header!");
-            Skip(MAGIC.Length);
-            MajorVersion = Read(1)[0];
-            MinorVersion = Read(1)[0];
-            Flags = Read(1)[0];
-            Size = ID3SizeFieldToInt(Read(4));
+            s.Skip(MAGIC.Length);
+            MajorVersion = s.Read(1)[0];
+            MinorVersion = s.Read(1)[0];
+            Flags = s.Read(1)[0];
+            Size = ID3SizeFieldToInt(s.Read(4));
         }
 
         public bool CheckMagic()
         {
-            return CheckBytes(MAGIC);
+            return s.CheckBytes(MAGIC);
         }
 
         /// <summary>

@@ -44,7 +44,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AudioFileReader.cs" />
+    <Compile Include="AudioReaderBase.cs" />
     <Compile Include="AudioPlayer.cs" />
+    <Compile Include="AudioStreamReader.cs" />
     <Compile Include="IAudioFormat.cs" />
     <Compile Include="ID3Tag.cs" />
     <Compile Include="LoopbackWavCapture.cs" />

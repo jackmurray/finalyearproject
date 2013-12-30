@@ -6,12 +6,13 @@ using System.Text;
 
 namespace LibAudio
 {
-    public class MP3Format : AudioReaderBase, IAudioFormat
+    public class MP3Format : IAudioFormat
     {
-        public MP3Format(Stream s)
-            : base(s)
-        {
+        private AudioReaderBase s;
 
+        public MP3Format(AudioReaderBase s)
+        {
+            this.s = s;
         }
 
         public int BitRate { get; private set; }
@@ -49,14 +50,14 @@ namespace LibAudio
             if (!CheckMagicAndEat())
                 throw new FormatException("Expected MP3 header but didn't get one!");
 
-            byte b = Read(1)[0];
+            byte b = s.Read(1)[0];
             this.BitRate = BitRateLookup[(b & 0xF0) >> 4];
                 //Mask out the bits we want, and shift them over so we get the 'real' value (as if we'd just read that value and not masked it out).
 
             this.Frequency = FrequencyLookup[(b & 0x0C) >> 2];
             this.Padding = ((b & 0x02) >> 1) == 1;
 
-            this.SkipBack(3); //we don't read the last byte of the header, so only skip back 3 not 4.
+            s.SkipBack(3); //we don't read the last byte of the header, so only skip back 3 not 4.
         }
 
         public bool CheckMagic()
@@ -65,9 +66,9 @@ namespace LibAudio
             //The 12 '1' bits (FFF) are the MP3 sync bits, and the B means MPEG-1 Layer 3 no error protection
             byte[] MAGIC_2 = new byte[] {0xFF, 0xFA}; //A = with error protection
 
-            if (CheckBytes(MAGIC_1))
+            if (s.CheckBytes(MAGIC_1))
                 return true;
-            else if (CheckBytes(MAGIC_2))
+            else if (s.CheckBytes(MAGIC_2))
                 return true;
             else return false;
         }
@@ -77,7 +78,7 @@ namespace LibAudio
             uint count = 0;
             while (!EndOfFile() && !CheckMagic())
             {
-                Skip(1);
+                s.Skip(1);
                 count++;
                 if (count == limit)
                     return;
@@ -88,13 +89,13 @@ namespace LibAudio
         {
             bool res = CheckMagic();
             if (res)
-                Skip(2);
+                s.Skip(2);
             return res;
         }
 
         public byte[] GetFrame()
         {
-            byte[] buf = this.Read(this.BytesPerFrame);
+            byte[] buf = s.Read(this.BytesPerFrame);
 
             if (!this.EndOfFile())
             {
@@ -134,9 +135,14 @@ namespace LibAudio
             return 1152 / (float)this.Frequency;
         }
 
+        public bool EndOfFile()
+        {
+            return s.EndOfFile();
+        }
+
         public void SeekToStart()
         {
-            this._s.Position = 0;
+            this.s.Reset();
             this.EatGarbageData();
             this.Parse();
         }

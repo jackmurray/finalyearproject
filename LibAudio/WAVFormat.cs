@@ -6,7 +6,7 @@ using System.Text;
 
 namespace LibAudio
 {
-    public class WAVFormat : AudioReaderBase, IAudioFormat
+    public class WAVFormat : IAudioFormat
     {
         /// <summary>
         /// Since WAV doesn't have frames, we aim to read up to FRAME_LENGTH_TARGET bytes worth of samples
@@ -23,9 +23,11 @@ namespace LibAudio
         private WavFmtHeader FmtHeader;
         private ushort ActualFrameLength, SamplesPerFrame;
         private int DataStartPos = 0;
+        private AudioReaderBase s;
 
-        public WAVFormat(Stream s) : base(s)
+        public WAVFormat(AudioReaderBase s)
         {
+            this.s = s;
         }
 
         public void Parse()
@@ -33,14 +35,14 @@ namespace LibAudio
             //we start out with the stream position ready to read the first byte after the RIFF header.
             //hopefully that's the FMT header, but if not just read until we get it.
 
-            while (!CheckBytes(MAGIC_FORMAT))
+            while (!s.CheckBytes(MAGIC_FORMAT))
             {
-                if (EndOfFile())
+                if (s.EndOfFile())
                     throw new FormatException("Failure parsing WAV. Hit EOF while searching for FORMAT header.");
-                Skip(1);
+                s.Skip(1);
             }
 
-            using (BinaryReader bin = new BinaryReader(_s, Encoding.ASCII, true))
+            using (BinaryReader bin = new BinaryReader(s.InnerStream, Encoding.ASCII, true))
             {
                 this.FmtHeader = new WavFmtHeader()
                     {
@@ -56,15 +58,15 @@ namespace LibAudio
             }
 
             //Go directly to DATA. Do not parse go (or other structures in the header we don't care about).
-            while (!CheckBytes(MAGIC_DATA))
+            while (!s.CheckBytes(MAGIC_DATA))
             {
-                if (EndOfFile())
+                if (s.EndOfFile())
                     throw new FormatException("Failure parsing WAV. Hit EOF while searching for DATA header.");
-                Skip(1);
+                s.Skip(1);
             }
-            Skip(MAGIC_DATA.Length); 
-            Skip(4); //after this the stream points at the start of the data.
-            this.DataStartPos = (int)_s.Position;
+            s.Skip(MAGIC_DATA.Length);
+            s.Skip(4); //after this the stream points at the start of the data.
+            this.DataStartPos = (int)s.Position;
 
             SamplesPerFrame = (ushort) (FRAME_LENGTH_TARGET/(FmtHeader.BitsPerSample/8));
             ActualFrameLength = (ushort)(SamplesPerFrame * (FmtHeader.BitsPerSample / 8));
@@ -78,19 +80,19 @@ namespace LibAudio
         /// <returns></returns>
         public bool CheckMagic()
         {
-            if (!CheckBytes(MAGIC_RIFF))
+            if (!s.CheckBytes(MAGIC_RIFF))
                 return false;
-            Skip(8); //skip the magic we just read, and the next field (file size) that we don't care about
-            if (!CheckBytes(MAGIC_WAVE))
+            s.Skip(8); //skip the magic we just read, and the next field (file size) that we don't care about
+            if (!s.CheckBytes(MAGIC_WAVE))
                 return false;
-            Skip(4); //at this point we know it's a WAV and that Parse() will get called next, so push the
+            s.Skip(4); //at this point we know it's a WAV and that Parse() will get called next, so push the
             //position forward past the RIFF header ready to work on the others.
             return true;
         }
 
         public byte[] GetFrame()
         {
-            return Read(ActualFrameLength);
+            return s.Read(ActualFrameLength);
         }
 
         public float GetFrameLength()
@@ -98,16 +100,21 @@ namespace LibAudio
             return (float)SamplesPerFrame / FmtHeader.SampleRate / FmtHeader.NumChannels;
         }
 
+        public bool EndOfFile()
+        {
+            return s.EndOfFile();
+        }
+
         public void SeekToStart()
         {
-            this._s.Position = 0;
+            s.Reset();
             this.Parse();
         }
 
         public byte[] GetHeader()
         {
-            _s.Position = 0;
-            byte[] header = Read(DataStartPos);
+            s.Reset();
+            byte[] header = s.Read(DataStartPos);
             return header;
         }
     }

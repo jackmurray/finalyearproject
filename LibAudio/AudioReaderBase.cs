@@ -12,13 +12,18 @@ namespace LibAudio
         protected Stream _s;
         protected Trace _trace;
 
+        public Stream InnerStream
+        {
+            get { return _s; }
+        }
+
         protected AudioReaderBase(Stream s)
         {
             _s = s;
             _trace = Trace.GetInstance("LibAudio");
         }
 
-        protected byte[] Read(int numBytes)
+        public byte[] Read(int numBytes)
         {
             byte[] ret = new byte[numBytes];
             _s.Read(ret, 0, numBytes);
@@ -30,7 +35,7 @@ namespace LibAudio
             _s.Position = 0;
         }
 
-        protected bool CheckBytes(byte[] expect)
+        public bool CheckBytes(byte[] expect)
         {
             byte[] read = Read(expect.Length);
             this.SkipBack(expect.Length);
@@ -51,11 +56,9 @@ namespace LibAudio
 
         public long Position {
             get { return _s.Position; }
+            set { _s.Position = value; }
         }
 
-        public bool EndOfFile()
-        {
-            return _s.Position >= _s.Length - 1;
-        }
+        public abstract bool EndOfFile();
     }
 }
