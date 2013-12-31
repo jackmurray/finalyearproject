@@ -20,6 +20,7 @@ namespace SpeakerReceiver
         private Trace Log = Trace.GetInstance("LibTransport");
         private AudioPlayer player = null;
         private List<RTPPacket> Buffer = new List<RTPPacket>();
+        private int i = 0; //read pointer for the buffer.
 
         public delegate void NotifyKeyRotation();
         public event NotifyKeyRotation OnKeyRotatePacketReceived;
@@ -158,6 +159,10 @@ namespace SpeakerReceiver
                         }
                         else
                         {
+                            lock (Buffer)
+                            {
+                                Log.Verbose("There are " + (Buffer.Count - i) + " packets left in the buffer.");
+                            }
                             BufferPacket(p);
                         }
                     }
@@ -187,7 +192,7 @@ namespace SpeakerReceiver
         /// </summary>
         private void PlayerThreadProc()
         {
-            int i = 0;
+            i = 0;
             while (shouldRunPlayer)
             {
                 RTPPacket p = null;
@@ -206,6 +211,7 @@ namespace SpeakerReceiver
                         Monitor.Exit(Buffer);
                         Thread.Sleep(1);
                         if (!shouldRunPlayer) return;
+                        Log.Warning("Receiver buffer underrun!");
                     }
                 }
                 DateTime packetactiontime = RTPPacket.BuildDateTime(p.Timestamp, this.basetime);
