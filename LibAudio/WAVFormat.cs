@@ -70,6 +70,10 @@ namespace LibAudio
 
             SamplesPerFrame = (ushort) (FRAME_LENGTH_TARGET/(FmtHeader.BitsPerSample/8));
             ActualFrameLength = (ushort)(SamplesPerFrame * (FmtHeader.BitsPerSample / 8));
+
+            var Log = LibTrace.Trace.GetInstance("LibAudio");
+            Log.Verbose(String.Format("Audio format: {0}-bit WAV {1}kHz {2}CH.", FmtHeader.BitsPerSample, FmtHeader.SampleRate, FmtHeader.NumChannels));
+            Log.Verbose(String.Format("{0} samples/frame. Duration {1:0.0000}sec", SamplesPerFrame, GetFrameLength()));
         }
 
         /// <summary>
