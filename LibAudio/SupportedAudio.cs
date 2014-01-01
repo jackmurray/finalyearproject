@@ -16,6 +16,7 @@ namespace LibAudio
         /// <returns></returns>
         public static IAudioFormat FindReaderForFile(AudioReaderBase s)
         {
+            var Log = LibTrace.Trace.GetInstance("LibAudio");
             ID3Tag id3 = new ID3Tag(s);
             if (id3.CheckMagic())
             {
@@ -35,7 +36,11 @@ namespace LibAudio
             MP3Format mp3 = TestMP3(s);
             if (mp3 != null)
             {
-                mp3.Parse(); return mp3;
+                mp3.Parse();
+                Log.Verbose("Detected format: MP3. The following format info will only be correct for CBR files.");
+                Log.Verbose(String.Format("Audio format: MP3 {0}kbit {1}kHz.", mp3.BitRate, mp3.Frequency));
+                Log.Verbose(String.Format("{0} bytes/frame. Duration {1}sec", mp3.BytesPerFrame, mp3.GetFrameLength()));
+                return mp3;
             }
 
             return null;
