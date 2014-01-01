@@ -177,16 +177,32 @@ namespace LibTransport
 
         private void StreamThreadProc()
         {
-            int timerinterval = (int)Math.Truncate(1000 * audio.GetFrameLength()); //truncate to 3 decimal places.
+            float frameLength;
+            float totalError = 0;
+            int timerinterval;
+            int maxAllowedError = LibConfig.Config.GetInt(LibConfig.Config.MAX_STREAM_ERROR); //in millisec
 
             while (continueStreaming)
             {
                 uint startTicks;
                 int elapsedTicks, remainingTicks;
                 startTicks = (uint) Environment.TickCount;
+
+                frameLength = audio.GetFrameLength() * 1000; //convert to milliseconds.
+                timerinterval = (int)frameLength; //we have to truncate because you can't sleep for fractional milliseconds.
+                float packetError = frameLength - timerinterval;
+                totalError += packetError; //add the error that the truncation caused to the total count.
+
                 TimerTick();
+
                 elapsedTicks = (int)((uint)Environment.TickCount - startTicks);
                 remainingTicks = timerinterval - elapsedTicks;
+                if (totalError >= maxAllowedError) //if there's too much built up error
+                {
+                    Log.Verbose(totalError + "ms of drift has built up, reducing it by " + maxAllowedError);
+                    remainingTicks += maxAllowedError; //sleep for extra time to reduce it
+                    totalError -= maxAllowedError; //and subtract the compensation we're going to apply from the total.
+                }
                 if (remainingTicks > 0) Thread.Sleep(remainingTicks);
             }
         }

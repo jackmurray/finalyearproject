@@ -35,6 +35,7 @@ namespace LibConfig
         public const string ENABLE_AUTHENTICATION = "enableAuthentication";
         public const string ROTATE_KEY_TIME = "rotateKeyTime"; //The number of seconds in the future a RotateKey packet should be scheduled for, measured from the time it's generated.
         public const string IP_ADDRESS = "ipAddr";
+        public const string MAX_STREAM_ERROR = "maxStreamError"; //number of milliseconds of stream drift we allow before we apply compensation. controller only.
 
         public static string Get(string key)
         {
