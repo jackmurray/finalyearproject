@@ -73,7 +73,7 @@ namespace LibAudio
 
             var Log = LibTrace.Trace.GetInstance("LibAudio");
             Log.Verbose(String.Format("Audio format: {0}-bit WAV {1}kHz {2}CH.", FmtHeader.BitsPerSample, FmtHeader.SampleRate, FmtHeader.NumChannels));
-            Log.Verbose(String.Format("{0} samples/frame. Duration {1:0.0000}sec", SamplesPerFrame, GetFrameLength()));
+            Log.Verbose(String.Format("{0} samples/frame ({1} bytes). Duration {2}sec", SamplesPerFrame, ActualFrameLength, GetFrameLength()));
         }
 
         /// <summary>
