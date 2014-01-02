@@ -51,10 +51,10 @@ namespace SpeakerController
 
         public static string GetBuildFlavour()
         {
-#if DEBUG
+#if TEST
+            return "TEST";
+#elif DEBUG
             return "DEBUG";
-#elif NONDEBUG
-            return "NONDEBUG";
 #else
             return "RELEASE";
 #endif
@@ -185,6 +185,7 @@ namespace SpeakerController
             chkEnableEncrypt.Checked = Config.GetFlag(Config.ENABLE_ENCRYPTION);
             chkEnableAuth.Checked = Config.GetFlag(Config.ENABLE_AUTHENTICATION);
             this.activeReceiverManager = new ActiveReceiverManager(lstDevicesActive);
+            UpdateButtonState();
         }
 
         private void SetFriendlyName(string name)
