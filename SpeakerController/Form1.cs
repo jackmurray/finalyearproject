@@ -419,9 +419,12 @@ namespace SpeakerController
 
         private void lstDevicesAvail_SelectedIndexChanged(object sender, EventArgs e)
         {
-            btnJoinGroup.Enabled = true;
-            btnTrustDevice.Enabled = true;
-            button1.Enabled = true;
+            if (lstDevicesAvail.SelectedIndices.Count > 0)
+                state.AvailableDeviceSelected = true;
+            else
+                state.AvailableDeviceSelected = false;
+
+            UpdateButtonState();
         }
 
         private void btnStop_Click(object sender, EventArgs e)
@@ -470,6 +473,19 @@ namespace SpeakerController
                 chkEnableAuth.Enabled = true;
                 btnRotateKey.Enabled = true;
                 btnEjectDevice.Enabled = true;
+            }
+
+            if (state.AvailableDeviceSelected)
+            {
+                btnJoinGroup.Enabled = true;
+                btnTrustDevice.Enabled = true;
+                button1.Enabled = true;
+            }
+            else
+            {
+                btnJoinGroup.Enabled = false;
+                btnTrustDevice.Enabled = false;
+                button1.Enabled = false;
             }
         }
 

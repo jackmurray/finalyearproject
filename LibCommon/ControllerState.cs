@@ -11,6 +11,8 @@ namespace LibCommon
         public StreamMode Mode { get; set; }
         public bool EncryptionEnabled { get; set; }
         public bool AuthenticationEnabled { get; set; }
+        public bool AvailableDeviceSelected { get; set; }
+        public bool ActiveDeviceSelected { get; set; }
     }
 
     public enum StreamMode
