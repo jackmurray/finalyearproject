@@ -36,6 +36,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ControllerState.cs" />
     <Compile Include="Devices\Controller.cs" />
     <Compile Include="Devices\Device.cs" />
     <Compile Include="Devices\Receiver.cs" />
