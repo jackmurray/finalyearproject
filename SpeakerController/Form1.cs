@@ -487,6 +487,25 @@ namespace SpeakerController
                 btnTrustDevice.Enabled = false;
                 button1.Enabled = false;
             }
+
+            if (state.Mode == StreamMode.File)
+            {
+                btnOpenFile.Enabled = true;
+                btnStream.Enabled = true;
+                btnStreamTestSound.Enabled = true;
+
+                btnLoopback.Enabled = false;
+                btnPlaySamples.Enabled = false;
+            }
+            else
+            {
+                btnOpenFile.Enabled = false;
+                btnStream.Enabled = false;
+                btnStreamTestSound.Enabled = false;
+
+                btnLoopback.Enabled = true;
+                btnPlaySamples.Enabled = true;
+            }
         }
 
         private void radioFile_CheckedChanged(object sender, EventArgs e)
