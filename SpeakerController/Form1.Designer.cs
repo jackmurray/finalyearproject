@@ -57,7 +57,11 @@
             this.btnPause = new System.Windows.Forms.Button();
             this.btnLoopback = new System.Windows.Forms.Button();
             this.btnPlaySamples = new System.Windows.Forms.Button();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.radioLoopback = new System.Windows.Forms.RadioButton();
+            this.radioFile = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.dGridTrace)).BeginInit();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnDiscover
@@ -361,11 +365,46 @@
             this.btnPlaySamples.UseVisualStyleBackColor = true;
             this.btnPlaySamples.Click += new System.EventHandler(this.btnPlaySamples_Click);
             // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.radioLoopback);
+            this.groupBox1.Controls.Add(this.radioFile);
+            this.groupBox1.Location = new System.Drawing.Point(667, 177);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(200, 100);
+            this.groupBox1.TabIndex = 28;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Streaming Mode";
+            // 
+            // radioLoopback
+            // 
+            this.radioLoopback.AutoSize = true;
+            this.radioLoopback.Location = new System.Drawing.Point(7, 54);
+            this.radioLoopback.Name = "radioLoopback";
+            this.radioLoopback.Size = new System.Drawing.Size(73, 17);
+            this.radioLoopback.TabIndex = 1;
+            this.radioLoopback.Text = "Loopback";
+            this.radioLoopback.UseVisualStyleBackColor = true;
+            // 
+            // radioFile
+            // 
+            this.radioFile.AutoSize = true;
+            this.radioFile.Checked = true;
+            this.radioFile.Location = new System.Drawing.Point(7, 24);
+            this.radioFile.Name = "radioFile";
+            this.radioFile.Size = new System.Drawing.Size(41, 17);
+            this.radioFile.TabIndex = 0;
+            this.radioFile.TabStop = true;
+            this.radioFile.Text = "File";
+            this.radioFile.UseVisualStyleBackColor = true;
+            this.radioFile.CheckedChanged += new System.EventHandler(this.radioFile_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1068, 528);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnPlaySamples);
             this.Controls.Add(this.btnLoopback);
             this.Controls.Add(this.btnPause);
@@ -396,6 +435,8 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dGridTrace)).EndInit();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -432,6 +473,9 @@
         private System.Windows.Forms.Button btnPause;
         private System.Windows.Forms.Button btnLoopback;
         private System.Windows.Forms.Button btnPlaySamples;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.RadioButton radioLoopback;
+        private System.Windows.Forms.RadioButton radioFile;
     }
 }
 

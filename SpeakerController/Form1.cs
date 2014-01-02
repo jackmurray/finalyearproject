@@ -37,6 +37,7 @@ namespace SpeakerController
         private ActiveReceiverManager activeReceiverManager;
         private LoopbackWavCapture loopback;
         private CircularStream circbuf = new CircularStream();
+        private ControllerState state = new ControllerState() {Mode = StreamMode.File};
 
         private PacketEncrypterKeyManager pekm;
         private KeyManager rtpsignkey;
@@ -386,22 +387,15 @@ namespace SpeakerController
         private void chkEnableEncrypt_CheckedChanged(object sender, EventArgs e)
         {
             Config.Set(Config.ENABLE_ENCRYPTION, (chkEnableEncrypt.Checked ? bool.TrueString : bool.FalseString));
-            if (!chkEnableEncrypt.Checked)
-            {
-                chkEnableAuth.Checked = false; //auth requires encryption
-                btnRotateKey.Enabled = false; //can't rotate without enc.
-                btnEjectDevice.Enabled = false; //can't eject devices without enc/rotation
-            }
-            else
-            {
-                btnRotateKey.Enabled = true;
-                btnEjectDevice.Enabled = true;
-            }
+            state.EncryptionEnabled = chkEnableEncrypt.Checked;
+            UpdateButtonState();
         }
 
         private void chkEnableAuth_CheckedChanged(object sender, EventArgs e)
         {
             Config.Set(Config.ENABLE_AUTHENTICATION, (chkEnableAuth.Checked ? bool.TrueString : bool.FalseString));
+            state.AuthenticationEnabled = chkEnableAuth.Checked;
+            UpdateButtonState();
         }
 
         private void btnRotateKey_Click(object sender, EventArgs e)
@@ -452,13 +446,37 @@ namespace SpeakerController
             if (loopback != null)
                 loopback.Stop();
             else
-                this.loopback = new LoopbackWavCapture(circbuf); //just dump it for now.
+                this.loopback = new LoopbackWavCapture(circbuf);
         }
 
         private void btnPlaySamples_Click(object sender, EventArgs e)
         {
             this.audio = SupportedAudio.FindReaderForFile(new AudioStreamReader(circbuf));
             btnStream_Click(this, null);
+        }
+
+        private void UpdateButtonState()
+        {
+            if (!state.EncryptionEnabled)
+            {
+                state.AuthenticationEnabled = false;
+                chkEnableAuth.Enabled = false; //auth requires encryption. can't toggle the chkbox otherwise we'd call this method again infinitely.
+
+                btnRotateKey.Enabled = false; //can't rotate without enc.
+                btnEjectDevice.Enabled = false; //can't eject devices without enc/rotation
+            }
+            else
+            {
+                chkEnableAuth.Enabled = true;
+                btnRotateKey.Enabled = true;
+                btnEjectDevice.Enabled = true;
+            }
+        }
+
+        private void radioFile_CheckedChanged(object sender, EventArgs e)
+        {
+            state.Mode = radioFile.Checked ? StreamMode.File : StreamMode.Loopback;
+            UpdateButtonState();
         }
     }
 
