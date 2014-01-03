@@ -228,6 +228,7 @@ namespace SpeakerController
         {
             if (ssdpc != null) ssdpc.Stop();
             if (stream != null) stream.Stop();
+            if (loopback != null && loopback.Playing) loopback.Stop();
             ServiceRegistration.Stop();
         }
 
