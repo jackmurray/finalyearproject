@@ -57,11 +57,15 @@
             this.btnPause = new System.Windows.Forms.Button();
             this.btnLoopback = new System.Windows.Forms.Button();
             this.btnPlaySamples = new System.Windows.Forms.Button();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.grpStreamMode = new System.Windows.Forms.GroupBox();
             this.radioLoopback = new System.Windows.Forms.RadioButton();
             this.radioFile = new System.Windows.Forms.RadioButton();
+            this.grpLoopbackStream = new System.Windows.Forms.GroupBox();
+            this.grpFileStream = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.dGridTrace)).BeginInit();
-            this.groupBox1.SuspendLayout();
+            this.grpStreamMode.SuspendLayout();
+            this.grpLoopbackStream.SuspendLayout();
+            this.grpFileStream.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnDiscover
@@ -196,7 +200,7 @@
             // 
             // btnOpenFile
             // 
-            this.btnOpenFile.Location = new System.Drawing.Point(573, 54);
+            this.btnOpenFile.Location = new System.Drawing.Point(62, 25);
             this.btnOpenFile.Name = "btnOpenFile";
             this.btnOpenFile.Size = new System.Drawing.Size(75, 23);
             this.btnOpenFile.TabIndex = 11;
@@ -226,7 +230,7 @@
             // btnStream
             // 
             this.btnStream.Enabled = false;
-            this.btnStream.Location = new System.Drawing.Point(573, 99);
+            this.btnStream.Location = new System.Drawing.Point(62, 56);
             this.btnStream.Name = "btnStream";
             this.btnStream.Size = new System.Drawing.Size(75, 23);
             this.btnStream.TabIndex = 14;
@@ -249,7 +253,7 @@
             // btnStreamTestSound
             // 
             this.btnStreamTestSound.Enabled = false;
-            this.btnStreamTestSound.Location = new System.Drawing.Point(557, 128);
+            this.btnStreamTestSound.Location = new System.Drawing.Point(45, 87);
             this.btnStreamTestSound.Name = "btnStreamTestSound";
             this.btnStreamTestSound.Size = new System.Drawing.Size(109, 23);
             this.btnStreamTestSound.TabIndex = 17;
@@ -347,7 +351,7 @@
             // 
             // btnLoopback
             // 
-            this.btnLoopback.Location = new System.Drawing.Point(485, 225);
+            this.btnLoopback.Location = new System.Drawing.Point(61, 30);
             this.btnLoopback.Name = "btnLoopback";
             this.btnLoopback.Size = new System.Drawing.Size(75, 23);
             this.btnLoopback.TabIndex = 26;
@@ -357,7 +361,7 @@
             // 
             // btnPlaySamples
             // 
-            this.btnPlaySamples.Location = new System.Drawing.Point(485, 254);
+            this.btnPlaySamples.Location = new System.Drawing.Point(61, 59);
             this.btnPlaySamples.Name = "btnPlaySamples";
             this.btnPlaySamples.Size = new System.Drawing.Size(75, 23);
             this.btnPlaySamples.TabIndex = 27;
@@ -365,16 +369,16 @@
             this.btnPlaySamples.UseVisualStyleBackColor = true;
             this.btnPlaySamples.Click += new System.EventHandler(this.btnPlaySamples_Click);
             // 
-            // groupBox1
+            // grpStreamMode
             // 
-            this.groupBox1.Controls.Add(this.radioLoopback);
-            this.groupBox1.Controls.Add(this.radioFile);
-            this.groupBox1.Location = new System.Drawing.Point(667, 177);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(200, 100);
-            this.groupBox1.TabIndex = 28;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Streaming Mode";
+            this.grpStreamMode.Controls.Add(this.radioLoopback);
+            this.grpStreamMode.Controls.Add(this.radioFile);
+            this.grpStreamMode.Location = new System.Drawing.Point(667, 177);
+            this.grpStreamMode.Name = "grpStreamMode";
+            this.grpStreamMode.Size = new System.Drawing.Size(200, 100);
+            this.grpStreamMode.TabIndex = 28;
+            this.grpStreamMode.TabStop = false;
+            this.grpStreamMode.Text = "Streaming Mode";
             // 
             // radioLoopback
             // 
@@ -399,14 +403,37 @@
             this.radioFile.UseVisualStyleBackColor = true;
             this.radioFile.CheckedChanged += new System.EventHandler(this.radioFile_CheckedChanged);
             // 
+            // grpLoopbackStream
+            // 
+            this.grpLoopbackStream.Controls.Add(this.btnLoopback);
+            this.grpLoopbackStream.Controls.Add(this.btnPlaySamples);
+            this.grpLoopbackStream.Location = new System.Drawing.Point(468, 225);
+            this.grpLoopbackStream.Name = "grpLoopbackStream";
+            this.grpLoopbackStream.Size = new System.Drawing.Size(154, 100);
+            this.grpLoopbackStream.TabIndex = 29;
+            this.grpLoopbackStream.TabStop = false;
+            this.grpLoopbackStream.Text = "Loopback Streaming";
+            // 
+            // grpFileStream
+            // 
+            this.grpFileStream.Controls.Add(this.btnStreamTestSound);
+            this.grpFileStream.Controls.Add(this.btnOpenFile);
+            this.grpFileStream.Controls.Add(this.btnStream);
+            this.grpFileStream.Location = new System.Drawing.Point(523, 12);
+            this.grpFileStream.Name = "grpFileStream";
+            this.grpFileStream.Size = new System.Drawing.Size(200, 129);
+            this.grpFileStream.TabIndex = 30;
+            this.grpFileStream.TabStop = false;
+            this.grpFileStream.Text = "File Streaming";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1068, 528);
-            this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.btnPlaySamples);
-            this.Controls.Add(this.btnLoopback);
+            this.Controls.Add(this.grpFileStream);
+            this.Controls.Add(this.grpLoopbackStream);
+            this.Controls.Add(this.grpStreamMode);
             this.Controls.Add(this.btnPause);
             this.Controls.Add(this.btnStop);
             this.Controls.Add(this.btnEjectDevice);
@@ -415,12 +442,9 @@
             this.Controls.Add(this.chkEnableAuth);
             this.Controls.Add(this.chkEnableEncrypt);
             this.Controls.Add(this.cmbLogLevel);
-            this.Controls.Add(this.btnStreamTestSound);
             this.Controls.Add(this.chkLogPause);
-            this.Controls.Add(this.btnStream);
             this.Controls.Add(this.btnJoinGroup);
             this.Controls.Add(this.txtGroupAddr);
-            this.Controls.Add(this.btnOpenFile);
             this.Controls.Add(this.btnListPairedDevices);
             this.Controls.Add(this.splitter1);
             this.Controls.Add(this.dGridTrace);
@@ -435,8 +459,10 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dGridTrace)).EndInit();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.grpStreamMode.ResumeLayout(false);
+            this.grpStreamMode.PerformLayout();
+            this.grpLoopbackStream.ResumeLayout(false);
+            this.grpFileStream.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -473,9 +499,11 @@
         private System.Windows.Forms.Button btnPause;
         private System.Windows.Forms.Button btnLoopback;
         private System.Windows.Forms.Button btnPlaySamples;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox grpStreamMode;
         private System.Windows.Forms.RadioButton radioLoopback;
         private System.Windows.Forms.RadioButton radioFile;
+        private System.Windows.Forms.GroupBox grpLoopbackStream;
+        private System.Windows.Forms.GroupBox grpFileStream;
     }
 }
 
