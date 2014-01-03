@@ -94,7 +94,7 @@ namespace LibUtil
 
         public override long Length
         {
-            get { throw new NotImplementedException(); }
+            get { return capacity; } //not really meaningful, but NAudio's WaveFileWriter will try and update the RIFF/WAVE headers when it's closed, and we don't want it to crash (even though what it writes is meaningless for us).
         }
 
         public override long Position { get { return head; } set { head = value; } }
