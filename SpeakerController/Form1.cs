@@ -490,21 +490,13 @@ namespace SpeakerController
 
             if (state.Mode == StreamMode.File)
             {
-                btnOpenFile.Enabled = true;
-                btnStream.Enabled = true;
-                btnStreamTestSound.Enabled = true;
-
-                btnLoopback.Enabled = false;
-                btnPlaySamples.Enabled = false;
+                grpFileStream.Enabled = true;
+                grpLoopbackStream.Enabled = false;
             }
             else
             {
-                btnOpenFile.Enabled = false;
-                btnStream.Enabled = false;
-                btnStreamTestSound.Enabled = false;
-
-                btnLoopback.Enabled = true;
-                btnPlaySamples.Enabled = true;
+                grpFileStream.Enabled = false;
+                grpLoopbackStream.Enabled = true;
             }
         }
 
