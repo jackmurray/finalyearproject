@@ -432,6 +432,8 @@ namespace SpeakerController
         {
             if (this.stream != null)
                 this.stream.Stop(state.Mode == StreamMode.File); //seeking to the start only makes sense for File mode, not Loopback
+            if (state.Mode == StreamMode.Loopback)
+                loopback.Stop();
         }
 
         private void btnPause_Click(object sender, EventArgs e)
@@ -447,10 +449,7 @@ namespace SpeakerController
 
         private void btnLoopback_Click(object sender, EventArgs e)
         {
-            if (loopback != null)
-                loopback.Stop();
-            else
-                this.loopback = new LoopbackWavCapture(circbuf);
+            this.loopback = new LoopbackWavCapture(circbuf);
         }
 
         private void btnPlaySamples_Click(object sender, EventArgs e)
