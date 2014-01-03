@@ -56,7 +56,6 @@
             this.btnStop = new System.Windows.Forms.Button();
             this.btnPause = new System.Windows.Forms.Button();
             this.btnLoopback = new System.Windows.Forms.Button();
-            this.btnPlaySamples = new System.Windows.Forms.Button();
             this.grpStreamMode = new System.Windows.Forms.GroupBox();
             this.radioLoopback = new System.Windows.Forms.RadioButton();
             this.radioFile = new System.Windows.Forms.RadioButton();
@@ -359,16 +358,6 @@
             this.btnLoopback.UseVisualStyleBackColor = true;
             this.btnLoopback.Click += new System.EventHandler(this.btnLoopback_Click);
             // 
-            // btnPlaySamples
-            // 
-            this.btnPlaySamples.Location = new System.Drawing.Point(61, 59);
-            this.btnPlaySamples.Name = "btnPlaySamples";
-            this.btnPlaySamples.Size = new System.Drawing.Size(75, 23);
-            this.btnPlaySamples.TabIndex = 27;
-            this.btnPlaySamples.Text = "PlaySamples";
-            this.btnPlaySamples.UseVisualStyleBackColor = true;
-            this.btnPlaySamples.Click += new System.EventHandler(this.btnPlaySamples_Click);
-            // 
             // grpStreamMode
             // 
             this.grpStreamMode.Controls.Add(this.radioLoopback);
@@ -406,7 +395,6 @@
             // grpLoopbackStream
             // 
             this.grpLoopbackStream.Controls.Add(this.btnLoopback);
-            this.grpLoopbackStream.Controls.Add(this.btnPlaySamples);
             this.grpLoopbackStream.Location = new System.Drawing.Point(468, 225);
             this.grpLoopbackStream.Name = "grpLoopbackStream";
             this.grpLoopbackStream.Size = new System.Drawing.Size(154, 100);
@@ -498,7 +486,6 @@
         private System.Windows.Forms.Button btnStop;
         private System.Windows.Forms.Button btnPause;
         private System.Windows.Forms.Button btnLoopback;
-        private System.Windows.Forms.Button btnPlaySamples;
         private System.Windows.Forms.GroupBox grpStreamMode;
         private System.Windows.Forms.RadioButton radioLoopback;
         private System.Windows.Forms.RadioButton radioFile;

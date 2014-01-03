@@ -10,6 +10,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using LibAudio;
@@ -450,10 +451,7 @@ namespace SpeakerController
         private void btnLoopback_Click(object sender, EventArgs e)
         {
             this.loopback = new LoopbackWavCapture(circbuf);
-        }
-
-        private void btnPlaySamples_Click(object sender, EventArgs e)
-        {
+            Thread.Sleep(5); //wait for a little while for the first bit of data to come in
             this.audio = SupportedAudio.FindReaderForFile(new AudioStreamReader(circbuf));
             btnStream_Click(this, null);
         }
