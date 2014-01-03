@@ -430,7 +430,7 @@ namespace SpeakerController
         private void btnStop_Click(object sender, EventArgs e)
         {
             if (this.stream != null)
-                this.stream.Stop();
+                this.stream.Stop(state.Mode == StreamMode.File); //seeking to the start only makes sense for File mode, not Loopback
         }
 
         private void btnPause_Click(object sender, EventArgs e)

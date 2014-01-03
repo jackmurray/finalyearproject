@@ -230,14 +230,14 @@ namespace LibTransport
         /// <summary>
         /// Stop the streaming thread and send a Stop packet.
         /// </summary>
-        public void Stop()
+        public void Stop(bool seekToStart = true)
         {
             lock (synclock)
             {
                 Log.Information("Stopping stream.");
                 this.continueStreaming = false;
                 this.Send(this.BuildStopPacket());
-                audio.SeekToStart();
+                if (seekToStart) audio.SeekToStart();
             }
         }
 
