@@ -67,9 +67,12 @@ namespace LibConfig
                     root.AppendChild(n);
                 }
 
-                n.InnerText = value;
+                if (n.InnerText != value) //don't bother saving if nothing changed.
+                {
+                    n.InnerText = value;
 
-                xml.Save(Util.ResolvePath(CONFIG_FILENAME));
+                    xml.Save(Util.ResolvePath(CONFIG_FILENAME));
+                }
             }
         }
 
