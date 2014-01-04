@@ -61,6 +61,7 @@
             this.radioFile = new System.Windows.Forms.RadioButton();
             this.grpLoopbackStream = new System.Windows.Forms.GroupBox();
             this.grpFileStream = new System.Windows.Forms.GroupBox();
+            this.btnReloadConfig = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dGridTrace)).BeginInit();
             this.grpStreamMode.SuspendLayout();
             this.grpLoopbackStream.SuspendLayout();
@@ -414,11 +415,22 @@
             this.grpFileStream.TabStop = false;
             this.grpFileStream.Text = "File Streaming";
             // 
+            // btnReloadConfig
+            // 
+            this.btnReloadConfig.Location = new System.Drawing.Point(966, 67);
+            this.btnReloadConfig.Name = "btnReloadConfig";
+            this.btnReloadConfig.Size = new System.Drawing.Size(90, 23);
+            this.btnReloadConfig.TabIndex = 31;
+            this.btnReloadConfig.Text = "Reload Config";
+            this.btnReloadConfig.UseVisualStyleBackColor = true;
+            this.btnReloadConfig.Click += new System.EventHandler(this.btnReloadConfig_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1068, 528);
+            this.Controls.Add(this.btnReloadConfig);
             this.Controls.Add(this.grpFileStream);
             this.Controls.Add(this.grpLoopbackStream);
             this.Controls.Add(this.grpStreamMode);
@@ -491,6 +503,7 @@
         private System.Windows.Forms.RadioButton radioFile;
         private System.Windows.Forms.GroupBox grpLoopbackStream;
         private System.Windows.Forms.GroupBox grpFileStream;
+        private System.Windows.Forms.Button btnReloadConfig;
     }
 }
 

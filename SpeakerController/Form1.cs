@@ -174,6 +174,13 @@ namespace SpeakerController
             ServiceRegistration.Start(cert.ToDotNetCert(key), 10452);
 
 
+            LoadStateFromConfig();
+            this.activeReceiverManager = new ActiveReceiverManager(lstDevicesActive);
+            UpdateButtonState();
+        }
+
+        private void LoadStateFromConfig()
+        {
             string name = "Unnamed Device";
             if (!Config.Exists(Config.DEVICE_FRIENDLY_NAME))
                 SetFriendlyName(name);
@@ -187,8 +194,6 @@ namespace SpeakerController
             cmbLogLevel.SelectedItem = Config.Get(Config.TRACE_LEVEL).ToString();
             chkEnableEncrypt.Checked = Config.GetFlag(Config.ENABLE_ENCRYPTION);
             chkEnableAuth.Checked = Config.GetFlag(Config.ENABLE_AUTHENTICATION);
-            this.activeReceiverManager = new ActiveReceiverManager(lstDevicesActive);
-            UpdateButtonState();
         }
 
         private void SetFriendlyName(string name)
@@ -503,6 +508,13 @@ namespace SpeakerController
         {
             state.Mode = radioFile.Checked ? StreamMode.File : StreamMode.Loopback;
             UpdateButtonState();
+        }
+
+        private void btnReloadConfig_Click(object sender, EventArgs e)
+        {
+            Config.LoadConfig();
+            LoadStateFromConfig();
+            Log.Information("Config reloaded.");
         }
     }
 
