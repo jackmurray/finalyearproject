@@ -13,6 +13,7 @@ namespace SpeakerReceiver
 {
     public class StreamReceiver
     {
+        private object syncLock = new object();
         private RTPInputStream s;
         private bool shouldRunReceiver = true, shouldRunPlayer = true;
         private Thread receiveThread, playerThread;
@@ -20,6 +21,7 @@ namespace SpeakerReceiver
         private Trace Log = Trace.GetInstance("LibTransport");
         private AudioPlayer player = null;
         private List<RTPPacket> Buffer = new List<RTPPacket>();
+        private List<RTPPacket> WaitingBuffer = new List<RTPPacket>(); //used to hold all packets that come in out of order.
         private int i = 0; //read pointer for the buffer.
 
         public delegate void NotifyKeyRotation();
@@ -159,7 +161,7 @@ namespace SpeakerReceiver
                         }
                         else
                         {
-                            lock (Buffer)
+                            lock (syncLock)
                             {
                                 Log.Verbose("There are " + (Buffer.Count - i) + " packets left in the buffer.");
                             }
@@ -181,10 +183,64 @@ namespace SpeakerReceiver
 
         private void BufferPacket(RTPPacket p)
         {
-            lock (Buffer)
+            //no lock is required for WaitingBuffer because it's only ever accessed by the receiving thread.
+            lock (syncLock)
+            {
+                //TODO: what do we do if we never get the next packet? when do we give up?
+                if (TryBufferPacket(p))
+                {
+                    if (WaitingBuffer.Count > 0)
+                        TryFlushWaitingBuffer();
+                }
+                else
+                {
+                    WaitingBuffer.Add(p);
+                }
+            }
+        }
+
+        private bool TryBufferPacket(RTPPacket p)
+        {
+            if (Buffer.Count == 0 && p.SequenceNumber == 2) //seq 1 is the Play packet, so 2 is the first data packet. have to special-case this because Buffer.Last() fails when empty
             {
                 Buffer.Add(p);
+                return true;
             }
+
+            ushort expect = (ushort)((Buffer.Last().SequenceNumber)+1);
+            if (p.SequenceNumber == expect) //if this is the correct next packet
+            {
+                Buffer.Add(p);
+                return true;
+            }
+            else
+            {
+                Log.Verbose("Out of order packet received. Got " + p.SequenceNumber + ", expecting " + expect);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Tries to take packets out of the waiting buffer and put them into the main buffer. Ensure lock (syncLock) before calling.
+        /// </summary>
+        private void TryFlushWaitingBuffer()
+        {
+            //There's no point sorting the waiting buffer by seq, because we don't expect to have many out of order packets.
+            bool flushedAny = false;
+            do
+            {
+                List<RTPPacket> toRemove = new List<RTPPacket>(); //you can't remove from a collection while iterating it, so make a list of what to remove and do it at the end.
+                foreach (RTPPacket p in WaitingBuffer)
+                {
+                    if (TryBufferPacket(p))
+                    {
+                        flushedAny = true;
+                        toRemove.Add(p);
+                    }
+                }
+                foreach (RTPPacket p in toRemove)
+                    WaitingBuffer.Remove(p);
+            } while (flushedAny); //if we flushed any packets then go through the list again and see if we can do any more.
         }
 
         /// <summary>
@@ -199,19 +255,35 @@ namespace SpeakerReceiver
                 while (p == null)
                 {
                     //this section uses Monitor directly instead of the lock statement because we don't want to sleep holding the lock or have to acquire it twice
-                    Monitor.Enter(Buffer);
+                    Monitor.Enter(syncLock);
                     if (Buffer.Count > i)
                     {
                         p = Buffer[i];
-                        Monitor.Exit(Buffer);
+                        Monitor.Exit(syncLock);
                         i++;
                     }
                     else
                     {
-                        Monitor.Exit(Buffer);
-                        Thread.Sleep(1);
-                        if (!shouldRunPlayer) return;
+                        if (!shouldRunPlayer)
+                        {
+                            Monitor.Exit(syncLock);
+                            return;
+                        }
                         Log.Warning("Receiver buffer underrun!");
+                        if (WaitingBuffer.Count > 0)
+                        {
+                            Log.Warning("WaitingBuffer has some packets, swapping it out for the main buffer.");
+                            Buffer = WaitingBuffer;
+                            WaitingBuffer = new List<RTPPacket>();
+                            i = 0;
+                            Monitor.Exit(syncLock);
+                        }
+                        else
+                        {
+                            Log.Warning("WaitingBuffer was empty, no help from there!");
+                            Monitor.Exit(syncLock);
+                            Thread.Sleep(1); //maybe after sleeping this thread there'll be some more packets.
+                        }
                     }
                 }
                 DateTime packetactiontime = RTPPacket.BuildDateTime(p.Timestamp, this.basetime);

@@ -207,6 +207,17 @@ namespace LibTransport
                 return controlPacket;
             }
         }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is RTPPacket))
+                return false;
+
+            RTPPacket p = obj as RTPPacket;
+            if (p.SequenceNumber == this.SequenceNumber && p.Timestamp == this.Timestamp && p.SyncSource == this.SyncSource) //don't check payload because it's slow.
+                return true;
+            else return false;
+        }
     }
 
     class RTPExtensionHeader
