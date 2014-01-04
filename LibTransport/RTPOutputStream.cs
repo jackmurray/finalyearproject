@@ -83,7 +83,7 @@ namespace LibTransport
         
         protected void setupBaseTime()
         {
-            this.basetimestamp = DateTime.UtcNow.AddSeconds(LibConfig.Config.GetInt(LibConfig.Config.STREAM_BUFFER_TIME));
+            this.basetimestamp = DateTime.UtcNow.AddMilliseconds(LibConfig.Config.GetInt(LibConfig.Config.STREAM_BUFFER_TIME));
         }
 
         protected RTPPacket BuildPlayPacket()
@@ -113,7 +113,7 @@ namespace LibTransport
             int rotateKeyTime = LibConfig.Config.GetInt(LibConfig.Config.ROTATE_KEY_TIME);
 
             int delta = (configbuftime < rotateKeyTime) ? rotateKeyTime - configbuftime : 0;
-            DateTime actualTime = calculatedTime.AddSeconds(delta);
+            DateTime actualTime = calculatedTime.AddMilliseconds(delta);
             Log.Verbose("Built FetchKey packet for time " + actualTime + ":" + actualTime.Millisecond);
             return new Tuple<DateTime,RTPPacket>(actualTime, new RTPFetchKeyPacket(++this.seq, RTPPacket.BuildTimestamp(actualTime), this.syncid));
         }

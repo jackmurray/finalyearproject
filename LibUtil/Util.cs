@@ -62,8 +62,8 @@ namespace LibUtil
         public static string FormatDate(DateTime dt)
         {
             DateTime utc = dt.ToUniversalTime();
-            return String.Format("{0:d4}-{1:d2}-{2:d2} {3:d2}:{4:d2}:{5:d2}", utc.Year, utc.Month, utc.Day, utc.Hour, utc.Minute,
-                                 utc.Second);
+            return String.Format("{0:d4}-{1:d2}-{2:d2} {3:d2}:{4:d2}:{5:d2}.{6:d3}", utc.Year, utc.Month, utc.Day, utc.Hour, utc.Minute,
+                                 utc.Second, utc.Millisecond);
         }
 
         public static byte[] Encode(int val)

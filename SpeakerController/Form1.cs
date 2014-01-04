@@ -98,11 +98,12 @@ namespace SpeakerController
                 bool result = v.Verify(args.StrippedPacket, Util.Base64ToByteArray(args.Packet.signature));
                 if (result)
                 {
-                    TimeSpan diff = DateTime.Now.ToUniversalTime() - args.Packet.Date;
-                    if (Math.Abs(diff.TotalSeconds) > Config.GetInt(Config.MAX_TIMEDIFF))
+                    TimeSpan diff = DateTime.UtcNow - args.Packet.Date;
+                    int maxAllowedDiff = Config.GetInt(Config.MAX_TIMEDIFF);
+                    if (Math.Abs(diff.TotalMilliseconds) > maxAllowedDiff)
                     {
                         c = Color.Red;
-                        Log.Critical("!!!Time check failed on SSDP packet. Diff was " + diff.TotalSeconds + " seconds.!!!");
+                        Log.Critical("!!!Time check failed on SSDP packet. Diff was " + diff.TotalMilliseconds + " milliseconds (max allowed is " + maxAllowedDiff + ").!!!");
                     }
                     else
                     {

@@ -7,14 +7,14 @@
 	<deviceFriendlyName>Unnamed Device</deviceFriendlyName>
 	<traceLevel>Verbose</traceLevel>
 	<pairingKey>EXAMPLEKEY</pairingKey>
-	<maxTimeDifference>30</maxTimeDifference>
-	<streamBufferTime>2</streamBufferTime>
+	<maxTimeDifference>2500</maxTimeDifference> <!-- Max difference in milliseconds between timestamp sent in SSDP response and the clock on the controller that receives it. The RPi takes a while (1700-2100 ms) to compute the signature, so set this to no less than 2500ms. -->
+	<streamBufferTime>2000</streamBufferTime> <!-- The number of milliseconds of audio data to buffer. -->
 	<playerExecutable>vlc</playerExecutable>
 	<playerArgs>--play-and-exit --file-caching=0 -</playerArgs>
 	<!-- If on Linux, add --aout alsa to playerArgs. -->
 	<enableEncryption>true</enableEncryption>
 	<enableAuthentication>true</enableAuthentication>
-	<rotateKeyTime>10</rotateKeyTime>
+	<rotateKeyTime>10000</rotateKeyTime> <!-- The number of milliseconds in the future a RotateKey packet should be scheduled for, measured from the time it's generated. -->
 	<ipAddr></ipAddr>
-	<maxStreamError>100</maxStreamError>
+	<maxStreamError>100</maxStreamError> <!-- number of milliseconds of stream drift we allow before we apply compensation. controller only. -->
 </config>

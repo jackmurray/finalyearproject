@@ -27,13 +27,13 @@ namespace LibConfig
         public const string DEVICE_FRIENDLY_NAME = "deviceFriendlyName";
         public const string TRACE_LEVEL = "traceLevel";
         public const string PAIRING_KEY = "pairingKey"; //This must be the same on all devices.
-        public const string MAX_TIMEDIFF = "maxTimeDifference";
-        public const string STREAM_BUFFER_TIME = "streamBufferTime"; //The number of seconds of audio data to pre-buffer.
+        public const string MAX_TIMEDIFF = "maxTimeDifference"; //Max difference in milliseconds between timestamp sent in SSDP response and the clock on the controller that receives it. The RPi takes a while (1700-2100 ms) to compute the signature, so set this to no less than 2500ms.
+        public const string STREAM_BUFFER_TIME = "streamBufferTime"; //The number of milliseconds of audio data to buffer.
         public const string PLAYER_EXECUTABLE = "playerExecutable";
         public const string PLAYER_ARGUMENTS = "playerArgs";
         public const string ENABLE_ENCRYPTION = "enableEncryption";
         public const string ENABLE_AUTHENTICATION = "enableAuthentication";
-        public const string ROTATE_KEY_TIME = "rotateKeyTime"; //The number of seconds in the future a RotateKey packet should be scheduled for, measured from the time it's generated.
+        public const string ROTATE_KEY_TIME = "rotateKeyTime"; //The number of milliseconds in the future a RotateKey packet should be scheduled for, measured from the time it's generated.
         public const string IP_ADDRESS = "ipAddr";
         public const string MAX_STREAM_ERROR = "maxStreamError"; //number of milliseconds of stream drift we allow before we apply compensation. controller only.
 
