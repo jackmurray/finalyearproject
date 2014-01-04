@@ -37,7 +37,7 @@ namespace SpeakerController
         private bool firstRun = true;
         private ActiveReceiverManager activeReceiverManager;
         private LoopbackWavCapture loopback;
-        private CircularStream circbuf = new CircularStream();
+        private CircularStream circbuf;
         private ControllerState state = new ControllerState() {Mode = StreamMode.File};
 
         private PacketEncrypterKeyManager pekm;
@@ -456,6 +456,7 @@ namespace SpeakerController
 
         private void btnLoopback_Click(object sender, EventArgs e)
         {
+            circbuf = new CircularStream();
             this.loopback = new LoopbackWavCapture(circbuf);
             Thread.Sleep(5); //wait for a little while for the first bit of data to come in
             this.audio = SupportedAudio.FindReaderForFile(new AudioStreamReader(circbuf));
