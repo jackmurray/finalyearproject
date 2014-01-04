@@ -199,7 +199,7 @@ namespace LibTransport
                 remainingTicks = timerinterval - elapsedTicks;
                 if (totalError >= maxAllowedError) //if there's too much built up error
                 {
-                    Log.Verbose(totalError + "ms of drift has built up, reducing it by " + maxAllowedError);
+                    //Log.Verbose(totalError + "ms of drift has built up, reducing it by " + maxAllowedError); //disabled for perf.
                     remainingTicks += maxAllowedError; //sleep for extra time to reduce it
                     totalError -= maxAllowedError; //and subtract the compensation we're going to apply from the total.
                 }
