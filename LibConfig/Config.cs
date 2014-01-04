@@ -112,10 +112,13 @@ namespace LibConfig
 
         public static XmlNode GetRawNode(string key)
         {
-            XmlNode n = xml.SelectSingleNode("/config/" + key);
-            if (n == null)
-                throw new ConfigException("Missing config key: " + key);
-            return n;
+            lock (configLock)
+            {
+                XmlNode n = xml.SelectSingleNode("/config/" + key);
+                if (n == null)
+                    throw new ConfigException("Missing config key: " + key);
+                return n;
+            }
         }
         
         /// <summary>
@@ -123,22 +126,23 @@ namespace LibConfig
         /// </summary>
         public static void LoadConfig()
         {
-            if (IsLoaded)
-                return;
-            xml = new XmlDocument();
-            try
+            lock (configLock)
             {
-                var p = Util.ResolvePath(CONFIG_FILENAME);
-                xml.Load(p);
-                Console.WriteLine("Loaded config from " + p);
-            }
-            catch (Exception ex)
-            {
-                throw new ConfigException("Unable to load config: " + ex.Message);
-            }
-            IsLoaded = true;
+                xml = new XmlDocument();
+                try
+                {
+                    var p = Util.ResolvePath(CONFIG_FILENAME);
+                    xml.Load(p);
+                    Console.WriteLine("Loaded config from " + p);
+                }
+                catch (Exception ex)
+                {
+                    throw new ConfigException("Unable to load config: " + ex.Message);
+                }
+                IsLoaded = true;
 
-            SanityCheck();
+                SanityCheck();
+            }
         }
 
         public static SourceLevels GetTraceLevel()
