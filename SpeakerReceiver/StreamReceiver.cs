@@ -92,6 +92,9 @@ namespace SpeakerReceiver
                 RTPControlPacket p = _p as RTPControlPacket;
                 switch (p.Action)
                 {
+                    case RTPControlAction.Play:
+                        Log.Information("Stream started.");
+                        break;
                     case RTPControlAction.Stop:
                         Log.Information("Stop packet received - end of stream.");
                         this.EndPlayerThread();
@@ -99,6 +102,11 @@ namespace SpeakerReceiver
                     case RTPControlAction.Pause:
                         Log.Information("Pausing stream.");
                         this.EndPlayerThread();
+                        break;
+                    case RTPControlAction.FetchKey:
+                    case RTPControlAction.SwitchKey:
+                        Log.Verbose(
+                            "Fetch/SwitchKey packet taken from buffer. Don't care as it's already been actioned.");
                         break;
                     default:
                         Log.Warning(String.Format("Control packet received but unable to handle. Type={0} seq={1}", p.Action, p.SequenceNumber));
@@ -159,19 +167,20 @@ namespace SpeakerReceiver
                         {
                             this.s.RotateKey();
                         }
-                        else
+                        else if (cp.Action == RTPControlAction.Stop)
                         {
                             lock (syncLock)
                             {
                                 Log.Verbose("There are " + (Buffer.Count - i) + " packets left in the buffer.");
                             }
-                            BufferPacket(p);
+                        }
+                        else
+                        {
+                            Log.Warning("Unknown control packet received.");
                         }
                     }
-                    else
-                    {
-                        BufferPacket(p);
-                    }
+
+                    BufferPacket(p); //always buffer all packets, even if they're control.
                 }
                 catch (SocketException ex)
                 {
@@ -183,10 +192,8 @@ namespace SpeakerReceiver
 
         private void BufferPacket(RTPPacket p)
         {
-            //no lock is required for WaitingBuffer because it's only ever accessed by the receiving thread.
             lock (syncLock)
             {
-                //TODO: what do we do if we never get the next packet? when do we give up?
                 if (TryBufferPacket(p))
                 {
                     if (WaitingBuffer.Count > 0)
@@ -201,13 +208,13 @@ namespace SpeakerReceiver
 
         private bool TryBufferPacket(RTPPacket p)
         {
-            if (Buffer.Count == 0 && p.SequenceNumber == 2) //seq 1 is the Play packet, so 2 is the first data packet. have to special-case this because Buffer.Last() fails when empty
+            if (Buffer.Count == 0) //have to special-case this because Buffer.Last() fails when empty
             {
                 Buffer.Add(p);
                 return true;
             }
 
-            ushort expect = (ushort)((Buffer.Last().SequenceNumber)+1);
+            ushort expect = (ushort)((Buffer.Last().SequenceNumber) + 1);
             if (p.SequenceNumber == expect) //if this is the correct next packet
             {
                 Buffer.Add(p);
@@ -249,9 +256,12 @@ namespace SpeakerReceiver
         private void PlayerThreadProc()
         {
             i = 0;
+            int maxAllowedError = LibConfig.Config.GetInt(LibConfig.Config.MAX_STREAM_ERROR); //in millisec
+            double totalError = 0;
             while (shouldRunPlayer)
             {
                 RTPPacket p = null;
+
                 while (p == null)
                 {
                     //this section uses Monitor directly instead of the lock statement because we don't want to sleep holding the lock or have to acquire it twice
@@ -270,6 +280,9 @@ namespace SpeakerReceiver
                             return;
                         }
                         Log.Warning("Receiver buffer underrun!");
+                        Log.Warning(String.Format("It is currently {0} and the last packet we got is for {1}",
+                                                  LibUtil.Util.FormatDate(DateTime.UtcNow),
+                                                  LibUtil.Util.FormatDate(RTPPacket.BuildDateTime(Buffer[i - 1].Timestamp, this.basetime))));
                         if (WaitingBuffer.Count > 0)
                         {
                             Log.Warning("WaitingBuffer has some packets, swapping it out for the main buffer.");
@@ -286,14 +299,27 @@ namespace SpeakerReceiver
                         }
                     }
                 }
+
                 DateTime packetactiontime = RTPPacket.BuildDateTime(p.Timestamp, this.basetime);
                 if (packetactiontime > DateTime.UtcNow)
                 {
                     TimeSpan sleeptime = packetactiontime - DateTime.UtcNow;
-                    Thread.Sleep((int) sleeptime.TotalMilliseconds);
+                    double actualtime = sleeptime.TotalMilliseconds;
+                    int timersleep = (int) actualtime; //what we're actually going to call Sleep() with
+                    totalError += actualtime - timersleep;
+
+                    if (totalError >= maxAllowedError)
+                    {
+                        //Log.Verbose(totalError + "ms of drift has built up, reducing it by " + maxAllowedError); //disabled for perf
+                        timersleep += maxAllowedError;
+                        totalError -= maxAllowedError;
+                    }
+
+                    Thread.Sleep(timersleep);
                 }
 
                 HandlePacket(p);
+                Log.Verbose("Remaining: " + (Buffer.Count - i));
             }
             player.Reset(); //this thread is terminating, so reset the audio output for the next one.
         }
