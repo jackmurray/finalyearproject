@@ -280,9 +280,9 @@ namespace SpeakerReceiver
                             return;
                         }
                         Log.Warning("Receiver buffer underrun!");
-                        Log.Warning(String.Format("It is currently {0} and the last packet we got is for {1}",
+                        /*Log.Warning(String.Format("It is currently {0} and the last packet we got is for {1}",
                                                   LibUtil.Util.FormatDate(DateTime.UtcNow),
-                                                  LibUtil.Util.FormatDate(RTPPacket.BuildDateTime(Buffer[i - 1].Timestamp, this.basetime))));
+                                                  LibUtil.Util.FormatDate(RTPPacket.BuildDateTime(Buffer[i - 1].Timestamp, this.basetime))));*/
                         if (WaitingBuffer.Count > 0)
                         {
                             Log.Warning("WaitingBuffer has some packets, swapping it out for the main buffer.");
@@ -319,7 +319,7 @@ namespace SpeakerReceiver
                 }
 
                 HandlePacket(p);
-                Log.Verbose("Remaining: " + (Buffer.Count - i));
+                //Log.Verbose("Remaining: " + (Buffer.Count - i)); //disabled for perf
             }
             player.Reset(); //this thread is terminating, so reset the audio output for the next one.
         }
