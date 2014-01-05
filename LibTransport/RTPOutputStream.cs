@@ -241,6 +241,9 @@ namespace LibTransport
                 this.continueStreaming = false;
                 this.Send(this.BuildStopPacket());
                 if (seekToStart) audio.SeekToStart();
+                seq = 0;
+                deltaSeq = 0;
+                encryption_ctr = 0;
             }
         }
 
