@@ -171,8 +171,11 @@ namespace LibTransport
 
         public void SendSync()
         {
-            this.deltaSeq++;
-            this.Send(this.BuildPlayPacket());
+            lock (synclock)
+            {
+                this.deltaSeq++;
+                this.Send(this.BuildPlayPacket());
+            }
         }
 
         private void StreamThreadProc()
