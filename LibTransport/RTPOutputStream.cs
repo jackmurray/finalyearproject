@@ -183,10 +183,7 @@ namespace LibTransport
         private void StreamThreadProc()
         {
             float frameLength;
-            float totalError = 0;
             int timerinterval;
-            int maxAllowedError = LibConfig.Config.GetInt(LibConfig.Config.MAX_STREAM_ERROR); //in millisec
-            int correction = (int) (maxAllowedError*0.9f); //remove 90% of the drift. helps protect against us being 'vulnerable' when the buffer is low.
 
             while (continueStreaming)
             {
@@ -196,29 +193,19 @@ namespace LibTransport
 
                 frameLength = audio.GetFrameLength() * 1000; //convert to milliseconds.
                 timerinterval = (int)frameLength; //we have to truncate because you can't sleep for fractional milliseconds.
-                float packetError = frameLength - timerinterval;
-                totalError += packetError; //add the error that the truncation caused to the total count.
 
                 RTPPacket p = TimerTick();
 
                 elapsedTicks = (int)((uint)Environment.TickCount - startTicks);
                 remainingTicks = timerinterval - elapsedTicks;
 
-                TimeSpan diff = RTPPacket.BuildDateTime(p.Timestamp, basetimestamp) - DateTime.UtcNow;
-                int behindms = (int) ((bufferTime + audio.GetFrameLength()*1000) - diff.TotalMilliseconds);
-                if (behindms > 0 || diff.TotalMilliseconds < 0)
-                {
-                    Log.Warning("Packet being sent is only " + diff.TotalMilliseconds + " in the future!");
-                    remainingTicks -= behindms;
-                }
+                TimeSpan diff = RTPPacket.BuildDateTime(p.Timestamp, basetimestamp) - DateTime.UtcNow; //difference between when the packet will be actioned and now.
+                int behindms = (int) (bufferTime - diff.TotalMilliseconds); //difference between when the packet *should* be actioned and when it *will* be
 
-                if (totalError >= maxAllowedError) //if there's too much built up error
-                {
-                    Log.Verbose(totalError + "ms of drift has built up, reducing it by " + correction); //disabled for perf.
-                    remainingTicks += correction; //sleep for extra time to reduce it
-                    totalError -= correction; //and subtract the compensation we're going to apply from the total.
-                }
-                if (remainingTicks > 0) Thread.Sleep(remainingTicks);
+                remainingTicks -= behindms; //behindms will be +ve if the packet is late, and -ve if it's early. this means we'll sleep less time if it's late or more time if it's early.
+
+                if (remainingTicks > 0) Thread.Sleep(remainingTicks); //can't sleep for a -ve time. if remainingTicks ends up -ve it means we're late anyway, so we want to loop again immidiately.
+                //else Log.Verbose("Not sleeping because remainingTicks=" + remainingTicks);
             }
         }
 
