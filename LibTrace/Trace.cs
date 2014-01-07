@@ -24,7 +24,8 @@ namespace LibTrace
         {
             s = new TraceSource(sourceName, StartLevel);
             s.Listeners.Clear();
-            s.Listeners.Add(GetTraceListener(sourceName));
+            if (Config.Get(Config.LOG_PATH) != "")
+                s.Listeners.Add(GetTraceListener(sourceName));
             if (Config.GetFlag(Config.WRITE_TRACE_TO_CONSOLE))
                 s.Listeners.Add(new ConsoleTraceListener());
             ExtraListeners.ForEach(l => s.Listeners.Add(l));
