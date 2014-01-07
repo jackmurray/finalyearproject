@@ -36,6 +36,7 @@ namespace LibConfig
         public const string ROTATE_KEY_TIME = "rotateKeyTime"; //The number of milliseconds in the future a RotateKey packet should be scheduled for, measured from the time it's generated.
         public const string IP_ADDRESS = "ipAddr";
         public const string MAX_STREAM_ERROR = "maxStreamError"; //number of milliseconds of stream drift we allow before we apply compensation. controller only.
+        public const string PLAYER_STARTUP_WAIT = "playerStartupWait"; //number of milliseconds to wait before returning success in TransportService/JoinGroup. Used to allow time for the player to start up before we start piping packets into it.
 
         public static string Get(string key)
         {

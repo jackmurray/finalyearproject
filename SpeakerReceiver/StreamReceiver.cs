@@ -31,6 +31,7 @@ namespace SpeakerReceiver
         {
             this.s = s;
             s.SetReceiveTimeout(1000);
+            this.player = new AudioPlayer();
         }
 
         /// <summary>
@@ -53,7 +54,6 @@ namespace SpeakerReceiver
             shouldRunReceiver = true;
             shouldRunPlayer = true;
 
-            this.player = new AudioPlayer();
             this.receiveThread = new Thread(ReceiveThreadProc);
             this.receiveThread.Start();
 

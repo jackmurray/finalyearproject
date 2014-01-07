@@ -133,6 +133,16 @@ namespace SpeakerReceiver
             if (r != null)
                 r.Stop();
             r = new StreamReceiver(new RTPInputStream(new IPEndPoint(ip, 10452)));
+
+            //wait the configured amount of time because things like VLC take a while to start before you can start writing data to them.
+            int startupWait = Config.GetInt(Config.PLAYER_STARTUP_WAIT);
+            if (startupWait > 0)
+            {
+                Log.Verbose("Waiting " + startupWait + "ms for player to start.");
+                Thread.Sleep(startupWait);
+            }
+
+
             r.OnKeyRotatePacketReceived += Handler_OnRotateKeyPacketReceived;
             r.Start();
         }

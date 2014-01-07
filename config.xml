@@ -12,6 +12,7 @@
 	<playerExecutable>vlc</playerExecutable>
 	<playerArgs>--play-and-exit --file-caching=0 -</playerArgs>
 	<!-- If on Linux, add --aout alsa to playerArgs. -->
+	<playerStartupWait>0</playerStartupWait> <!-- number of milliseconds to wait before returning success in TransportService/JoinGroup. Used to allow time for the player to start up before we start piping packets into it. -->
 	<enableEncryption>true</enableEncryption>
 	<enableAuthentication>true</enableAuthentication>
 	<rotateKeyTime>10000</rotateKeyTime> <!-- The number of milliseconds in the future a RotateKey packet should be scheduled for, measured from the time it's generated. -->
