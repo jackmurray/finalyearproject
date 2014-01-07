@@ -174,6 +174,10 @@ namespace SpeakerReceiver
                                 Log.Verbose("There are " + (Buffer.Count - i) + " packets left in the buffer.");
                             }
                         }
+                        else if (cp.Action == RTPControlAction.Pause)
+                        {
+                            
+                        } //don't care about pause as it's not that interesting (basically the same as Stop).
                         else
                         {
                             Log.Warning("Unknown control packet received.");
