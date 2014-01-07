@@ -201,7 +201,11 @@ namespace LibTransport
                         break;
                     case RTPControlAction.SwitchKey:
                         controlPacket = new RTPSwitchKeyPacket(seq, timestamp, ssrc);
-                    break;
+                        break;
+                    case RTPControlAction.HeaderSync:
+                        controlPacket = new RTPHeaderSyncPacket(seq, timestamp, ssrc, extradata);
+                        break;
+
                     default: throw new FormatException("RTPPacket.Parse() does not know what class to use for Action=" + a);
                 }
                 return controlPacket;

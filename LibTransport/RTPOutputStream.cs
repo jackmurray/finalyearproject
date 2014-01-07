@@ -94,6 +94,12 @@ namespace LibTransport
             return new RTPPlayPacket(++this.seq, 0, syncid, this.basetimestamp);
         }
 
+        protected RTPPacket BuildHeaderSyncPacket()
+        {
+            this.deltaSeq++;
+            return new RTPHeaderSyncPacket(++this.seq, 0, syncid, this.audioHeader);
+        }
+
         protected RTPPacket BuildStopPacket()
         {
             return new RTPStopPacket(++this.seq, this.nextTimestamp(), this.syncid);
@@ -160,12 +166,23 @@ namespace LibTransport
             if (sendFileHeader && this.audioHeader != null && this.audioHeader.Length > 0)
             {
                 ++this.deltaSeq;
-                this.Send(new RTPDataPacket(false, ++this.seq, this.nextTimestamp(), this.syncid, this.audioHeader));
+                this.Send(new RTPHeaderSyncPacket(++this.seq, 0, this.syncid, this.audioHeader));
                 Log.Verbose("Sending audio header as requested.");
             }
             Log.Verbose("Base timestamp: " + basetimestamp + ":" + basetimestamp.Millisecond);
             new Thread(StreamThreadProc).Start();
             State = OutputStreamState.Started;
+        }
+
+        public void SendHeaderSync()
+        {
+            if (this.audioHeader == null || this.audioHeader.Length == 0)
+                return; //if we don't have a header (because we don't need one) then don't do anything.
+
+            lock (synclock)
+            {
+                this.Send(this.BuildHeaderSyncPacket());
+            }
         }
 
         public void SendSync()

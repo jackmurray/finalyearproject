@@ -330,7 +330,10 @@ namespace SpeakerController
             activeReceiverManager.Add(r);
 
             if (stream != null && stream.State == OutputStreamState.Started)
+            {
+                stream.SendHeaderSync();
                 stream.SendSync();
+            }
 
             btnStream.Enabled = true;
             btnStreamTestSound.Enabled = true;

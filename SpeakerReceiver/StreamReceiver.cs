@@ -105,8 +105,9 @@ namespace SpeakerReceiver
                         break;
                     case RTPControlAction.FetchKey:
                     case RTPControlAction.SwitchKey:
+                    case RTPControlAction.HeaderSync:
                         Log.Verbose(
-                            "Fetch/SwitchKey packet taken from buffer. Don't care as it's already been actioned.");
+                            "Fetch/SwitchKey/HeaderSync packet taken from buffer. Don't care as it's already been actioned.");
                         break;
                     default:
                         Log.Warning(String.Format("Control packet received but unable to handle. Type={0} seq={1}", p.Action, p.SequenceNumber));
@@ -118,7 +119,10 @@ namespace SpeakerReceiver
                 if (basetime == null)
                     return; //if we haven't yet got a basetime we can't proceed processing a data packet.
 
-                player.Write(_p.Payload);
+                lock (player)
+                {
+                    player.Write(_p.Payload);
+                }
             }
         }
 
@@ -172,6 +176,13 @@ namespace SpeakerReceiver
                             lock (syncLock)
                             {
                                 Log.Verbose("There are " + (Buffer.Count - i) + " packets left in the buffer.");
+                            }
+                        }
+                        else if (cp.Action == RTPControlAction.HeaderSync)
+                        {
+                            lock (player) //perhaps not strictly necessary but we want to make sure that nothing tries to write at the same time.
+                            {
+                                player.Write(cp.ExtraData);
                             }
                         }
                         else if (cp.Action == RTPControlAction.Pause)
