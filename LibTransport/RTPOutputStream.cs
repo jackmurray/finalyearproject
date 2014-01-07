@@ -29,6 +29,8 @@ namespace LibTransport
         private bool rotateKeyWaiting = false; //Are we now waiting until the correct time to perform the rotation?
         private DateTime rotateKeyTime;
 
+        private int bufferTime = LibConfig.Config.GetInt(LibConfig.Config.STREAM_BUFFER_TIME);
+
         public OutputStreamState State { get; protected set; }
 
         public RTPOutputStream(IPEndPoint ep) : base(ep)
@@ -83,7 +85,7 @@ namespace LibTransport
         
         protected void setupBaseTime()
         {
-            this.basetimestamp = DateTime.UtcNow.AddMilliseconds(LibConfig.Config.GetInt(LibConfig.Config.STREAM_BUFFER_TIME));
+            this.basetimestamp = DateTime.UtcNow.AddMilliseconds(bufferTime);
         }
 
         protected RTPPacket BuildPlayPacket()
@@ -171,16 +173,17 @@ namespace LibTransport
 
         public void SendSync()
         {
-            this.deltaSeq++;
-            this.Send(this.BuildPlayPacket());
+            lock (synclock)
+            {
+                this.deltaSeq++;
+                this.Send(this.BuildPlayPacket());
+            }
         }
 
         private void StreamThreadProc()
         {
             float frameLength;
-            float totalError = 0;
             int timerinterval;
-            int maxAllowedError = LibConfig.Config.GetInt(LibConfig.Config.MAX_STREAM_ERROR); //in millisec
 
             while (continueStreaming)
             {
@@ -190,24 +193,23 @@ namespace LibTransport
 
                 frameLength = audio.GetFrameLength() * 1000; //convert to milliseconds.
                 timerinterval = (int)frameLength; //we have to truncate because you can't sleep for fractional milliseconds.
-                float packetError = frameLength - timerinterval;
-                totalError += packetError; //add the error that the truncation caused to the total count.
 
-                TimerTick();
+                RTPPacket p = TimerTick();
 
                 elapsedTicks = (int)((uint)Environment.TickCount - startTicks);
                 remainingTicks = timerinterval - elapsedTicks;
-                if (totalError >= maxAllowedError) //if there's too much built up error
-                {
-                    //Log.Verbose(totalError + "ms of drift has built up, reducing it by " + maxAllowedError); //disabled for perf.
-                    remainingTicks += maxAllowedError; //sleep for extra time to reduce it
-                    totalError -= maxAllowedError; //and subtract the compensation we're going to apply from the total.
-                }
-                if (remainingTicks > 0) Thread.Sleep(remainingTicks);
+
+                TimeSpan diff = RTPPacket.BuildDateTime(p.Timestamp, basetimestamp) - DateTime.UtcNow; //difference between when the packet will be actioned and now.
+                int behindms = (int) (bufferTime - diff.TotalMilliseconds); //difference between when the packet *should* be actioned and when it *will* be
+
+                remainingTicks -= behindms; //behindms will be +ve if the packet is late, and -ve if it's early. this means we'll sleep less time if it's late or more time if it's early.
+
+                if (remainingTicks > 0) Thread.Sleep(remainingTicks); //can't sleep for a -ve time. if remainingTicks ends up -ve it means we're late anyway, so we want to loop again immidiately.
+                //else Log.Verbose("Not sleeping because remainingTicks=" + remainingTicks);
             }
         }
 
-        private void TimerTick()
+        private RTPPacket TimerTick()
         {
             /*
              * Acquire the lock here rather than in StreamThreadProc. Doing it here means that if we have to wait a few hundred usecs
@@ -217,13 +219,17 @@ namespace LibTransport
             {
                 this.processPendingEvents();
 
-                this.Send(this.BuildPacket(audio.GetFrame()));
+                RTPPacket p = this.BuildPacket(audio.GetFrame());
+                
+                this.Send(p);
                 if (audio.EndOfFile())
                 {
                     this.Stop();
                     if (this.StreamingCompleted != null)
                         StreamingCompleted(this, null);
                 }
+
+                return p;
             }
         }
 
@@ -238,6 +244,9 @@ namespace LibTransport
                 this.continueStreaming = false;
                 this.Send(this.BuildStopPacket());
                 if (seekToStart) audio.SeekToStart();
+                seq = 0;
+                deltaSeq = 0;
+                encryption_ctr = 0;
             }
         }
 
