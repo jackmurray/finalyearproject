@@ -202,6 +202,7 @@ namespace SpeakerReceiver
                 else
                 {
                     WaitingBuffer.Add(p);
+                    Log.Verbose("Out of order packet received. Got " + p.SequenceNumber);
                 }
             }
         }
@@ -222,7 +223,6 @@ namespace SpeakerReceiver
             }
             else
             {
-                Log.Verbose("Out of order packet received. Got " + p.SequenceNumber + ", expecting " + expect);
                 return false;
             }
         }
@@ -257,6 +257,7 @@ namespace SpeakerReceiver
         {
             i = 0;
             int maxAllowedError = LibConfig.Config.GetInt(LibConfig.Config.MAX_STREAM_ERROR); //in millisec
+            int streamBufferTime = LibConfig.Config.GetInt(LibConfig.Config.STREAM_BUFFER_TIME); //in millisec
             double totalError = 0;
             while (shouldRunPlayer)
             {
@@ -295,27 +296,27 @@ namespace SpeakerReceiver
                         {
                             Log.Warning("WaitingBuffer was empty, no help from there!");
                             Monitor.Exit(syncLock);
-                            Thread.Sleep(1); //maybe after sleeping this thread there'll be some more packets.
+                            Thread.Sleep(streamBufferTime); //maybe after sleeping this thread there'll be some more packets.
                         }
                     }
                 }
 
                 DateTime packetactiontime = RTPPacket.BuildDateTime(p.Timestamp, this.basetime);
-                if (packetactiontime > DateTime.UtcNow)
+                TimeSpan sleeptime = packetactiontime - DateTime.UtcNow;
+                int sleep = (int) sleeptime.TotalMilliseconds;
+                if (sleep > 0)
                 {
-                    TimeSpan sleeptime = packetactiontime - DateTime.UtcNow;
-                    double actualtime = sleeptime.TotalMilliseconds;
-                    int timersleep = (int) actualtime; //what we're actually going to call Sleep() with
-                    totalError += actualtime - timersleep;
+                    //totalError += actualtime - timersleep;
 
-                    if (totalError >= maxAllowedError)
+                    /*if (totalError >= maxAllowedError)
                     {
                         //Log.Verbose(totalError + "ms of drift has built up, reducing it by " + maxAllowedError); //disabled for perf
                         timersleep += maxAllowedError;
                         totalError -= maxAllowedError;
-                    }
+                    }*/
 
-                    Thread.Sleep(timersleep);
+                    //if (timersleep > 0)
+                        Thread.Sleep(sleep);
                 }
 
                 HandlePacket(p);
