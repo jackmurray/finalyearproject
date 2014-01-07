@@ -195,6 +195,8 @@ namespace LibTransport
                 timerinterval = (int)frameLength; //we have to truncate because you can't sleep for fractional milliseconds.
 
                 RTPPacket p = TimerTick();
+                if (p == null)
+                    return; //if TimerTick() returns null then we're done streaming.
 
                 elapsedTicks = (int)((uint)Environment.TickCount - startTicks);
                 remainingTicks = timerinterval - elapsedTicks;
@@ -217,6 +219,8 @@ namespace LibTransport
              */
             lock (synclock)
             {
+                if (!this.continueStreaming)
+                    return null; //while we're waiting for the lock, this could have been set to false so check it again once we hold it.
                 this.processPendingEvents();
 
                 RTPPacket p = this.BuildPacket(audio.GetFrame());
