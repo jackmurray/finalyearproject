@@ -20,6 +20,7 @@ namespace LibTransport
         private uint syncid = (uint)new Random().Next();
         private DateTime basetimestamp;
         private Signer signer = null;
+        private byte[] audioHeader;
 
         public delegate void StreamingCompletedHandler(object sender, EventArgs args);
         public event StreamingCompletedHandler StreamingCompleted;
@@ -147,24 +148,20 @@ namespace LibTransport
         public void Stream(IAudioFormat audio)
         {
             this.audio = audio;
+            this.audioHeader = audio.GetHeader();
             StartStream(true);
         }
 
         private void StartStream(bool sendFileHeader = false)
         {
-            byte[] header = null;
-            if (sendFileHeader)
-            {
-                header = audio.GetHeader();
-            }
-
             this.continueStreaming = true;
             this.setupBaseTime();
             this.Send(this.BuildPlayPacket());
-            if (sendFileHeader && header != null && header.Length > 0)
+            if (sendFileHeader && this.audioHeader != null && this.audioHeader.Length > 0)
             {
                 ++this.deltaSeq;
-                this.Send(new RTPDataPacket(false, ++this.seq, this.nextTimestamp(), this.syncid, header));
+                this.Send(new RTPDataPacket(false, ++this.seq, this.nextTimestamp(), this.syncid, this.audioHeader));
+                Log.Verbose("Sending audio header as requested.");
             }
             Log.Verbose("Base timestamp: " + basetimestamp + ":" + basetimestamp.Millisecond);
             new Thread(StreamThreadProc).Start();
@@ -271,7 +268,7 @@ namespace LibTransport
             {
                 Log.Information("Resuming stream.");
                 deltaSeq = seq;
-                StartStream();
+                StartStream(true);
             }
         }
 
