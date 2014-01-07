@@ -77,7 +77,7 @@ namespace SpeakerReceiver
         }
 
         /// <summary>
-        /// Call from the receive thread to reset the player thread.
+        /// Call from the player thread to stop it.
         /// </summary>
         private void EndPlayerThread()
         {
