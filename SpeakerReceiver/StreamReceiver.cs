@@ -174,7 +174,7 @@ namespace SpeakerReceiver
                         {
                             lock (syncLock)
                             {
-                                //Log.Verbose("There are " + (Buffer.Count - i) + " packets left in the buffer.");
+                                Log.Verbose("There are " + Buffer.Count + " packets left in the buffer.");
                             }
                         }
                         else if (cp.Action == RTPControlAction.HeaderSync)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using LibConfig;
 
 namespace LibAudio
 {
@@ -74,6 +75,8 @@ namespace LibAudio
             var Log = LibTrace.Trace.GetInstance("LibAudio");
             Log.Verbose(String.Format("Audio format: {0}-bit WAV {1}kHz {2}CH.", FmtHeader.BitsPerSample, FmtHeader.SampleRate, FmtHeader.NumChannels));
             Log.Verbose(String.Format("{0} samples/frame ({1} bytes). Duration {2}sec", SamplesPerFrame, ActualFrameLength, GetFrameLength()));
+            Log.Verbose(String.Format("Target buffer size: {0} packets.",
+                                          Config.GetInt(Config.STREAM_BUFFER_TIME) / (GetFrameLength() * 1000)));
         }
 
         /// <summary>
