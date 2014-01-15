@@ -20,9 +20,8 @@ namespace SpeakerReceiver
         private DateTime basetime;
         private Trace Log = Trace.GetInstance("LibTransport");
         private AudioPlayer player = null;
-        private List<RTPPacket> Buffer = new List<RTPPacket>();
-        private List<RTPPacket> WaitingBuffer = new List<RTPPacket>(); //used to hold all packets that come in out of order.
-        private int i = 0; //read pointer for the buffer.
+        private Dictionary<int, RTPPacket> Buffer = new Dictionary<int, RTPPacket>();
+        private int i = 1; //read pointer for the buffer. yes, 1, because the first packet has sequencenumber=1
 
         public delegate void NotifyKeyRotation();
         public event NotifyKeyRotation OnKeyRotatePacketReceived;
@@ -175,7 +174,7 @@ namespace SpeakerReceiver
                         {
                             lock (syncLock)
                             {
-                                Log.Verbose("There are " + (Buffer.Count - i) + " packets left in the buffer.");
+                                //Log.Verbose("There are " + (Buffer.Count - i) + " packets left in the buffer.");
                             }
                         }
                         else if (cp.Action == RTPControlAction.HeaderSync)
@@ -209,60 +208,8 @@ namespace SpeakerReceiver
         {
             lock (syncLock)
             {
-                if (TryBufferPacket(p))
-                {
-                    if (WaitingBuffer.Count > 0)
-                        TryFlushWaitingBuffer();
-                }
-                else
-                {
-                    WaitingBuffer.Add(p);
-                    Log.Verbose("Out of order packet received. Got " + p.SequenceNumber);
-                }
+                Buffer[p.SequenceNumber] = p;
             }
-        }
-
-        private bool TryBufferPacket(RTPPacket p)
-        {
-            if (Buffer.Count == 0) //have to special-case this because Buffer.Last() fails when empty
-            {
-                Buffer.Add(p);
-                return true;
-            }
-
-            ushort expect = (ushort)((Buffer.Last().SequenceNumber) + 1);
-            if (p.SequenceNumber == expect) //if this is the correct next packet
-            {
-                Buffer.Add(p);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Tries to take packets out of the waiting buffer and put them into the main buffer. Ensure lock (syncLock) before calling.
-        /// </summary>
-        private void TryFlushWaitingBuffer()
-        {
-            //There's no point sorting the waiting buffer by seq, because we don't expect to have many out of order packets.
-            bool flushedAny = false;
-            do
-            {
-                List<RTPPacket> toRemove = new List<RTPPacket>(); //you can't remove from a collection while iterating it, so make a list of what to remove and do it at the end.
-                foreach (RTPPacket p in WaitingBuffer)
-                {
-                    if (TryBufferPacket(p))
-                    {
-                        flushedAny = true;
-                        toRemove.Add(p);
-                    }
-                }
-                foreach (RTPPacket p in toRemove)
-                    WaitingBuffer.Remove(p);
-            } while (flushedAny); //if we flushed any packets then go through the list again and see if we can do any more.
         }
 
         /// <summary>
@@ -270,7 +217,7 @@ namespace SpeakerReceiver
         /// </summary>
         private void PlayerThreadProc()
         {
-            i = 0;
+            i = 1;
             int maxAllowedError = LibConfig.Config.GetInt(LibConfig.Config.MAX_STREAM_ERROR); //in millisec
             int streamBufferTime = LibConfig.Config.GetInt(LibConfig.Config.STREAM_BUFFER_TIME); //in millisec
             double totalError = 0;
@@ -282,9 +229,10 @@ namespace SpeakerReceiver
                 {
                     //this section uses Monitor directly instead of the lock statement because we don't want to sleep holding the lock or have to acquire it twice
                     Monitor.Enter(syncLock);
-                    if (Buffer.Count > i)
+                    if (Buffer.ContainsKey(i))
                     {
                         p = Buffer[i];
+                        Buffer.Remove(i);
                         Monitor.Exit(syncLock);
                         i++;
                     }
@@ -299,20 +247,9 @@ namespace SpeakerReceiver
                         /*Log.Warning(String.Format("It is currently {0} and the last packet we got is for {1}",
                                                   LibUtil.Util.FormatDate(DateTime.UtcNow),
                                                   LibUtil.Util.FormatDate(RTPPacket.BuildDateTime(Buffer[i - 1].Timestamp, this.basetime))));*/
-                        if (WaitingBuffer.Count > 0)
-                        {
-                            Log.Warning("WaitingBuffer has some packets, swapping it out for the main buffer.");
-                            Buffer = WaitingBuffer;
-                            WaitingBuffer = new List<RTPPacket>();
-                            i = 0;
-                            Monitor.Exit(syncLock);
-                        }
-                        else
-                        {
-                            Log.Warning("WaitingBuffer was empty, no help from there!");
-                            Monitor.Exit(syncLock);
-                            Thread.Sleep(streamBufferTime); //maybe after sleeping this thread there'll be some more packets.
-                        }
+                        
+                        Monitor.Exit(syncLock);
+                        Thread.Sleep(streamBufferTime); //maybe after sleeping this thread there'll be some more packets.
                     }
                 }
 
