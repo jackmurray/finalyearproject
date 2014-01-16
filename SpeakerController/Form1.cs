@@ -459,11 +459,20 @@ namespace SpeakerController
 
         private void btnLoopback_Click(object sender, EventArgs e)
         {
-            circbuf = new CircularStream();
-            this.loopback = new LoopbackWavCapture(circbuf);
-            Thread.Sleep(5); //wait for a little while for the first bit of data to come in
-            this.audio = SupportedAudio.FindReaderForFile(new AudioStreamReader(circbuf));
-            btnStream_Click(this, null);
+            try
+            {
+                circbuf = new CircularStream();
+                this.loopback = new LoopbackWavCapture(circbuf);
+                Thread.Sleep(5); //wait for a little while for the first bit of data to come in
+                this.audio = SupportedAudio.FindReaderForFile(new AudioStreamReader(circbuf));
+                btnStream_Click(this, null);
+            }
+            catch (ArgumentException ex)
+            {
+                if (ex.Message == "Unsupported Wave Format")
+                    MessageBox.Show(
+                        "The current speaker configuration is unsupported. Change to one with fewer channels or lower sample rate.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void UpdateButtonState()
