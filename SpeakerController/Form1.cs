@@ -529,6 +529,11 @@ namespace SpeakerController
             LoadStateFromConfig();
             Log.Information("Config reloaded.");
         }
+
+        private void lstDevicesAvail_DoubleClick(object sender, EventArgs e)
+        {
+            btnJoinGroup_Click(this, null);
+        }
     }
 
     public class DataGridTraceListener : TraceListener

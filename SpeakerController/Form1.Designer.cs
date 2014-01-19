@@ -127,6 +127,7 @@
             this.lstDevicesAvail.UseCompatibleStateImageBehavior = false;
             this.lstDevicesAvail.View = System.Windows.Forms.View.List;
             this.lstDevicesAvail.SelectedIndexChanged += new System.EventHandler(this.lstDevicesAvail_SelectedIndexChanged);
+            this.lstDevicesAvail.DoubleClick += new System.EventHandler(this.lstDevicesAvail_DoubleClick);
             // 
             // dGridTrace
             // 
