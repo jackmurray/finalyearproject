@@ -40,9 +40,9 @@ namespace LibAudio
                 mp3.Parse();
                 Log.Verbose("Detected format: MP3. The following format info will only be correct for CBR files.");
                 Log.Verbose(String.Format("Audio format: MP3 {0}bit/s {1}kHz.", mp3.BitRate, mp3.Frequency));
-                Log.Verbose(String.Format("{0} bytes/frame. Duration {1}sec", mp3.BytesPerFrame, mp3.GetFrameLength()));
+                Log.Verbose(String.Format("{0} bytes/frame. Duration {1}ms", mp3.BytesPerFrame, mp3.GetFrameLength()));
                 Log.Verbose(String.Format("Target buffer size: {0} packets.",
-                                          Config.GetInt(Config.STREAM_BUFFER_TIME) / (mp3.GetFrameLength() * 1000)));
+                                          Config.GetInt(Config.STREAM_BUFFER_TIME) / mp3.GetFrameLength()));
                 return mp3;
             }
 

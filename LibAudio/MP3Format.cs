@@ -129,10 +129,10 @@ namespace LibAudio
             return new Tuple<float, byte[]>(timeRead, ms.ToArray());
         }*/
 
-        public float GetFrameLength()
+        public double GetFrameLength()
         {
             //assume that the sample frequency never changes in the file. should always be the case.
-            return 1152 / (float)this.Frequency;
+            return (1152/(double) this.Frequency)*1000;
         }
 
         public bool EndOfFile()

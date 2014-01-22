@@ -74,9 +74,9 @@ namespace LibAudio
 
             var Log = LibTrace.Trace.GetInstance("LibAudio");
             Log.Verbose(String.Format("Audio format: {0}-bit WAV {1}kHz {2}CH.", FmtHeader.BitsPerSample, FmtHeader.SampleRate, FmtHeader.NumChannels));
-            Log.Verbose(String.Format("{0} samples/frame ({1} bytes). Duration {2}sec", SamplesPerFrame, ActualFrameLength, GetFrameLength()));
+            Log.Verbose(String.Format("{0} samples/frame ({1} bytes). Duration {2}ms", SamplesPerFrame, ActualFrameLength, GetFrameLength()));
             Log.Verbose(String.Format("Target buffer size: {0} packets.",
-                                          Config.GetInt(Config.STREAM_BUFFER_TIME) / (GetFrameLength() * 1000)));
+                                          Config.GetInt(Config.STREAM_BUFFER_TIME) / GetFrameLength()));
         }
 
         /// <summary>
@@ -102,9 +102,9 @@ namespace LibAudio
             return s.Read(ActualFrameLength);
         }
 
-        public float GetFrameLength()
+        public double GetFrameLength()
         {
-            return (float)SamplesPerFrame / FmtHeader.SampleRate / FmtHeader.NumChannels;
+            return ((double) SamplesPerFrame/FmtHeader.SampleRate/FmtHeader.NumChannels)*1000;
         }
 
         public bool EndOfFile()

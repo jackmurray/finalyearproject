@@ -27,10 +27,10 @@ namespace LibAudio
         byte[] GetFrame();
 
         /// <summary>
-        /// The length of one frame of audio data in seconds.
+        /// The length of one frame of audio data in milliseconds.
         /// </summary>
         /// <returns></returns>
-        float GetFrameLength();
+        double GetFrameLength();
 
         /// <summary>
         /// Are we at the end of the file?
