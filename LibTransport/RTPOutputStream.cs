@@ -196,7 +196,7 @@ namespace LibTransport
 
         private void StreamThreadProc()
         {
-            float frameLength;
+            double frameLength;
             int timerinterval;
 
             while (continueStreaming)
@@ -205,7 +205,7 @@ namespace LibTransport
                 int elapsedTicks, remainingTicks;
                 startTicks = (uint) Environment.TickCount;
 
-                frameLength = audio.GetFrameLength() * 1000; //convert to milliseconds.
+                frameLength = audio.GetFrameLength(); //convert to milliseconds.
                 timerinterval = (int)frameLength; //we have to truncate because you can't sleep for fractional milliseconds.
 
                 RTPPacket p = TimerTick();
