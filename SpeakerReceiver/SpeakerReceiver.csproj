@@ -51,7 +51,9 @@
     <Compile Include="StreamReceiver.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LibAudio\LibAudio.csproj">
@@ -90,10 +92,14 @@
       <Project>{85997238-2a70-41b1-9a58-dcd4ce5606bc}</Project>
       <Name>LibUtil</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SDL2-CS-master\SDL2-CS.csproj">
+      <Project>{85480198-8711-4355-830e-72fd794ad3f6}</Project>
+      <Name>SDL2-CS</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>robocopy /fft /njh /njs /nfl "$(TargetDir)\" \\10.0.1.2\deploy\receiver *.dll *.exe
+    <PostBuildEvent>robocopy /fft /njh /njs /nfl "$(TargetDir)\" \\10.0.1.2\deploy\receiver *.dll *.exe *.config
 exit 0</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>

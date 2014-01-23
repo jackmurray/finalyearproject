@@ -4,11 +4,13 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using LibAudio;
 using LibCommon;
 using LibSecurity;
 using LibService;
@@ -16,6 +18,7 @@ using LibTrace;
 using LibConfig;
 using LibTransport;
 using LibUtil;
+using SDL2;
 
 
 namespace SpeakerReceiver
@@ -27,6 +30,11 @@ namespace SpeakerReceiver
         private static KeyManager key;
         private static CertManager cert;
         private static Controller controller;
+
+        static uint len;
+        static IntPtr bufloc;
+        static int pos = 0;
+        static SDL.SDL_AudioSpec want;
 
         private static void Main(string[] args)
         {
@@ -117,6 +125,17 @@ namespace SpeakerReceiver
                 TrustedKeys.Remove(i);
                 Environment.Exit(0);
             }
+            if (args[0] == "--sdl-test")
+            {
+                SDLOutput.Init();
+                SDLOutput.OpenDevice(myCallback, 44100, 2, 4096);
+
+
+                SDL.SDL_AudioSpec wavspec = new SDL.SDL_AudioSpec();
+                SDL.SDL_LoadWAV("thepretender.wav", ref wavspec, out bufloc, out len);
+
+                SDLOutput.Play();
+            }
         }
 
         private static void ProcessConfigOverride(string[] args)
@@ -184,6 +203,14 @@ namespace SpeakerReceiver
         public static void Handler_SetSigningKey(Verifier v)
         {
             r.SetVerifier(v);
+        }
+
+        private static void myCallback(IntPtr i, IntPtr j, int k)
+        {
+            byte[] temp = new byte[k];
+            Marshal.Copy(bufloc + pos, temp, 0, k);
+            Marshal.Copy(temp, 0, j, k);
+            pos += k;
         }
     }
 }
