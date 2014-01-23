@@ -11,10 +11,15 @@ namespace LibAudio
     {
         private static uint dev;
         private static SDL.SDL_AudioSpec want, have;
+        private static bool Inited = false;
 
         public static void Init()
         {
-            SDL.SDL_Init(SDL.SDL_INIT_AUDIO);
+            if (!Inited)
+            {
+                SDL.SDL_Init(SDL.SDL_INIT_AUDIO);
+                Inited = true;
+            }
         }
 
         public static void OpenDevice(SDL.SDL_AudioCallback callback, int freq, byte channels, ushort samples)
