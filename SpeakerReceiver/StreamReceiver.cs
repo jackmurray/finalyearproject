@@ -181,7 +181,7 @@ namespace SpeakerReceiver
                         {
                             lock (player) //perhaps not strictly necessary but we want to make sure that nothing tries to write at the same time.
                             {
-                                player.Write(cp.ExtraData);
+                                player.Setup(this.Callback, cp.ExtraData);
                             }
                         }
                         else if (cp.Action == RTPControlAction.Pause)
@@ -280,6 +280,11 @@ namespace SpeakerReceiver
         public void DeliverNewKey(byte[] key, byte[] nonce)
         {
             this.s.DeliverNewKey(key, nonce);
+        }
+
+        public void Callback(IntPtr user, IntPtr buffer, int length)
+        {
+            
         }
     }
 }
