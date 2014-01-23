@@ -124,6 +124,9 @@ namespace LibAudio
             byte[] header = s.Read(DataStartPos);
             return header;
         }
+
+        public int Frequency { get { return (int) FmtHeader.SampleRate; } }
+        public byte Channels { get { return (byte)FmtHeader.NumChannels; } }
     }
 
     class WavFmtHeader

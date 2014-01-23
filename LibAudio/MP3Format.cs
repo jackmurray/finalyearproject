@@ -17,6 +17,7 @@ namespace LibAudio
 
         public int BitRate { get; private set; }
         public int Frequency { get; private set; }
+        public byte Channels { get { return 2; } } //TODO: this properly
 
         private const int MP3_HEADER_SIZE = 4;
         private readonly int[] FrequencyLookup = {44100, 48000, 32000};

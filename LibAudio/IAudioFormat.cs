@@ -49,5 +49,8 @@ namespace LibAudio
         /// </summary>
         /// <returns></returns>
         byte[] GetHeader();
+
+        int Frequency { get; }
+        byte Channels { get; }
     }
 }
