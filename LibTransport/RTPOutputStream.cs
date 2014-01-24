@@ -32,7 +32,6 @@ namespace LibTransport
 
         private int bufferTime = LibConfig.Config.GetInt(LibConfig.Config.STREAM_BUFFER_TIME);
 
-        public OutputStreamState State { get; protected set; }
         public RTPOutputStream(IPEndPoint ep) : base(ep)
         {
             
@@ -170,7 +169,7 @@ namespace LibTransport
             }
             Log.Verbose("Base timestamp: " + basetimestamp + ":" + basetimestamp.Millisecond);
             new Thread(StreamThreadProc).Start();
-            State = OutputStreamState.Started;
+            State = StreamState.Started;
         }
 
         public void SendHeaderSync()
@@ -274,7 +273,7 @@ namespace LibTransport
                 Log.Information("Pausing stream.");
                 this.continueStreaming = false;
                 this.Send(this.BuildPausePacket());
-                State = OutputStreamState.Paused;
+                State = StreamState.Paused;
             }
         }
 
@@ -318,6 +317,4 @@ namespace LibTransport
             }
         }
     }
-
-    public enum OutputStreamState {Stopped, Started, Paused}
 }

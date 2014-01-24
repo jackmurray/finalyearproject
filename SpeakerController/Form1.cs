@@ -329,7 +329,7 @@ namespace SpeakerController
 
             activeReceiverManager.Add(r);
 
-            if (stream != null && stream.State == OutputStreamState.Started)
+            if (stream != null && stream.State == StreamState.Started)
             {
                 stream.SendHeaderSync();
                 stream.SendSync();
@@ -450,9 +450,9 @@ namespace SpeakerController
         {
             if (this.stream != null)
             {
-                if (stream.State == OutputStreamState.Started)
+                if (stream.State == StreamState.Started)
                     this.stream.Pause();
-                else if (stream.State == OutputStreamState.Paused)
+                else if (stream.State == StreamState.Paused)
                     this.stream.Resume();
             }
         }

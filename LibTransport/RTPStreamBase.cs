@@ -18,6 +18,8 @@ namespace LibTransport
         protected PacketEncrypterKeyManager pekm = null;
         //CTR is the sequence value. don't need a separate value here.
 
+        public StreamState State { get; protected set; }
+
         protected RTPStreamBase(IPEndPoint ep)
         {
             if (ep.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork)
@@ -38,4 +40,6 @@ namespace LibTransport
             Log.Information("Enabling RTP packet encryption");
         }
     }
+
+    public enum StreamState { Stopped, Started, Paused }
 }
