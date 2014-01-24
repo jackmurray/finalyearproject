@@ -45,5 +45,10 @@ namespace LibAudio
             this.sdlcallback = new SDL.SDL_AudioCallback(callback);
             SDLOutput.OpenDevice(sdlcallback, freq, channels, 4096);
         }
+
+        public void Start()
+        {
+            SDLOutput.Play();
+        }
     }
 }
