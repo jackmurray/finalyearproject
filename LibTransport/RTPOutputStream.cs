@@ -91,7 +91,7 @@ namespace LibTransport
 
         protected RTPPacket BuildPlayPacket()
         {
-            return new RTPPlayPacket(++this.seq, 0, syncid, this.basetimestamp);
+            return new RTPPlayPacket(++this.seq, 0, syncid, this.basetimestamp, audio.SamplesPerFrame);
         }
 
         protected RTPPacket BuildHeaderSyncPacket()
