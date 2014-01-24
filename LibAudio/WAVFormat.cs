@@ -127,7 +127,7 @@ namespace LibAudio
             return header;
         }
 
-        public int Frequency { get { return (int) FmtHeader.SampleRate; } }
+        public ushort Frequency { get { return (ushort)FmtHeader.SampleRate; } }
         public byte Channels { get { return (byte)FmtHeader.NumChannels; } }
     }
 

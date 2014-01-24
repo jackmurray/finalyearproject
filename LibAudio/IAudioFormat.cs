@@ -50,7 +50,7 @@ namespace LibAudio
         /// <returns></returns>
         byte[] GetHeader();
 
-        int Frequency { get; }
+        ushort Frequency { get; }
         byte Channels { get; }
         ushort SamplesPerFrame { get; } //The number of samples this format will return per frame
     }
