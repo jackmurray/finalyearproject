@@ -10,14 +10,19 @@ namespace LibTransport
     {
         public DateTime baseTime;
         public ushort SamplesPerFrame;
+        public ushort Frequency;
+        public byte Channels;
 
-        public RTPPlayPacket(ushort SequenceNumber, uint Timestamp, uint SyncSource, DateTime baseTime, ushort SamplesPerFrame) : base(RTPControlAction.Play, EncodeData(baseTime, SamplesPerFrame), SequenceNumber, Timestamp, SyncSource)
+        public RTPPlayPacket(ushort SequenceNumber, uint Timestamp, uint SyncSource, DateTime baseTime, ushort SamplesPerFrame, ushort Frequency, byte Channels) :
+            base(RTPControlAction.Play, EncodeData(baseTime, SamplesPerFrame, Frequency, Channels), SequenceNumber, Timestamp, SyncSource)
         {
             this.baseTime = baseTime;
             this.SamplesPerFrame = SamplesPerFrame;
+            this.Frequency = Frequency;
+            this.Channels = Channels;
         }
 
-        private static byte[] EncodeData(DateTime timestamp, ushort samples)
+        private static byte[] EncodeData(DateTime timestamp, ushort samples, ushort freq, byte channels)
         {
             MemoryStream ms = new MemoryStream();
             byte[] ticks = LibUtil.Util.Encode(timestamp.Ticks);
@@ -25,6 +30,11 @@ namespace LibTransport
 
             byte[] samplesenc = LibUtil.Util.Encode(samples);
             ms.Write(samplesenc, 0, samplesenc.Length);
+
+            byte[] freqenc = LibUtil.Util.Encode(freq);
+            ms.Write(freqenc, 0, freqenc.Length);
+
+            ms.Write(new byte[] {channels}, 0, 1);
 
             return ms.ToArray();
         }

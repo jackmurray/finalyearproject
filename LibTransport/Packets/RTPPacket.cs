@@ -190,8 +190,11 @@ namespace LibTransport
                     case RTPControlAction.Play:
                         //format is 8 bytes of timestamp followed by 2 bytes of samplecount
                         byte[] ticks = extradata.Take(8).ToArray();
+                        ushort samplesperframe = Util.DecodeUshort(extradata, 8);
+                        ushort freq = Util.DecodeUshort(extradata, 10);
+                        byte channels = extradata[12];
 
-                        controlPacket = new RTPPlayPacket(seq, timestamp, ssrc, RTPPlayPacket.ComputeBaseTime(ticks), Util.DecodeUshort(extradata, 8));
+                        controlPacket = new RTPPlayPacket(seq, timestamp, ssrc, RTPPlayPacket.ComputeBaseTime(ticks), samplesperframe, freq, channels);
                         break;
                     case RTPControlAction.Pause:
                         controlPacket = new RTPPausePacket(seq, timestamp, ssrc);
