@@ -33,7 +33,6 @@ namespace LibTransport
         private int bufferTime = LibConfig.Config.GetInt(LibConfig.Config.STREAM_BUFFER_TIME);
 
         public OutputStreamState State { get; protected set; }
-
         public RTPOutputStream(IPEndPoint ep) : base(ep)
         {
             
@@ -141,7 +140,7 @@ namespace LibTransport
 
         protected DateTime nextTimestampAsDT()
         {
-            return basetimestamp.AddMilliseconds((seq - deltaSeq) * audio.GetFrameLength() * 1000);
+            return basetimestamp.AddMilliseconds((seq - deltaSeq) * audio.GetFrameLength());
         }
 
         protected uint nextTimestamp()
