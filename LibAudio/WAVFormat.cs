@@ -22,9 +22,11 @@ namespace LibAudio
         private static readonly byte[] MAGIC_DATA = {0x64, 0x61, 0x74, 0x61}; //ASCII 'data'
 
         private WavFmtHeader FmtHeader;
-        private ushort ActualFrameLength, SamplesPerFrame;
+        private ushort ActualFrameLength;
         private int DataStartPos = 0;
         private AudioReaderBase s;
+
+        public ushort SamplesPerFrame { get; private set; }
 
         public WAVFormat(AudioReaderBase s)
         {

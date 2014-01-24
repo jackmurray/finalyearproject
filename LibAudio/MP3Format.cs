@@ -18,6 +18,7 @@ namespace LibAudio
         public int BitRate { get; private set; }
         public int Frequency { get; private set; }
         public byte Channels { get { return 2; } } //TODO: this properly
+        public ushort SamplesPerFrame { get { return 1152; } } //1152 is defined by the MP3 spec and won't change.
 
         private const int MP3_HEADER_SIZE = 4;
         private readonly int[] FrequencyLookup = {44100, 48000, 32000};
@@ -133,7 +134,7 @@ namespace LibAudio
         public double GetFrameLength()
         {
             //assume that the sample frequency never changes in the file. should always be the case.
-            return (1152/(double) this.Frequency)*1000;
+            return (SamplesPerFrame/(double) this.Frequency)*1000;
         }
 
         public bool EndOfFile()
