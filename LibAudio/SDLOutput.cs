@@ -49,12 +49,11 @@ namespace LibAudio
         }
 
         /// <summary>
-        /// Stop playback and close device. Must call OpenDevice() before using the player again.
+        /// Stop playback.
         /// </summary>
         public static void Stop()
         {
             Pause();
-            SDL.SDL_CloseAudioDevice(dev);
         }
     }
 }
