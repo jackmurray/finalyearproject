@@ -162,24 +162,11 @@ namespace LibTransport
             State = StreamState.Started;
         }
 
-        public void SendHeaderSync()
-        {
-            if (this.audioHeader == null || this.audioHeader.Length == 0)
-                return; //if we don't have a header (because we don't need one) then don't do anything.
-
-            lock (synclock)
-            {
-                this.Send(this.BuildSyncPacket());
-            }
-        }
-
-        public void SendSync()
+        public void SendPlayForNewDevice()
         {
             lock (synclock)
             {
-                uint ts = this.nextTimestamp(); //get the timestamp *before* we change basetime, because the timestamp on the play packet is what we'll use on the receiver to determine when to change the basetime
-                this.setupBaseTime(true);
-                this.Send(new RTPSyncPacket(++this.seq, ts, syncid, this.basetimestamp));
+                this.Send(this.BuildPlayPacket());
             }
         }
 

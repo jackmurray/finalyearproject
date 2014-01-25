@@ -331,8 +331,7 @@ namespace SpeakerController
 
             if (stream != null && stream.State == StreamState.Started)
             {
-                stream.SendHeaderSync();
-                stream.SendSync();
+                stream.SendPlayForNewDevice();
             }
 
             btnStream.Enabled = true;
