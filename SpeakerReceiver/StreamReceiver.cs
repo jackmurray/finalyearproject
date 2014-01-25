@@ -27,7 +27,7 @@ namespace SpeakerReceiver
         private Trace Log = Trace.GetInstance("LibTransport");
         private AudioPlayer player = null;
         private SortedDictionary<int, RTPPacket> Buffer = new SortedDictionary<int, RTPPacket>();
-        private int i = 1; //read pointer for the buffer. yes, 1, because the first packet has sequencenumber=1
+        private ushort i = 1; //read pointer for the buffer. yes, 1, because the first packet has sequencenumber=1
         private int packetPos = 0; //position within the current packet, if a partial read is needed to satisfy the player's request.
         private int dataPacketsBuffered = 0; //count of how many data packets we have. don't want to just use Buffer.Count() because it will include controls too.
         private int minBufPackets = int.MaxValue; //so we don't need an additional check for 'did we calculate the value yet'
