@@ -176,6 +176,7 @@ namespace LibTransport
             int timerinterval;
             int resyncnum = 100;
             int sent = 0;
+            double error = 0; //accumulated timing errors. packets are being sent this many milliseconds too soon.
 
             while (continueStreaming)
             {
@@ -184,6 +185,7 @@ namespace LibTransport
 
                 frameLength = audio.GetFrameLength();
                 timerinterval = (int)frameLength; //we have to truncate because you can't sleep for fractional milliseconds.
+                error += frameLength - timerinterval;
 
                 RTPPacket p = TimerTick();
                 if (p == null)
@@ -203,6 +205,12 @@ namespace LibTransport
                 //have to do this after the timing calculations because sendsync() changes basetime
                 //if (sent % resyncnum == 0) //resync every resyncnum packets
                //     SendSync();
+
+                if (error > 1)
+                {
+                    remainingTicks++;
+                    error--;
+                }
 
                 if (remainingTicks > 0) Thread.Sleep((int)remainingTicks); //can't sleep for a -ve time. if remainingTicks ends up -ve it means we're late anyway, so we want to loop again immidiately.
                 //else Log.Verbose("Not sleeping because remainingTicks=" + remainingTicks);
