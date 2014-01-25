@@ -40,7 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Packets\RTPHeaderSyncPacket.cs" />
+    <Compile Include="Packets\RTPSyncPacket.cs" />
     <Compile Include="Packets\RTPSwitchKeyPacket.cs" />
     <Compile Include="Packets\RTPFetchKeyPacket.cs" />
     <Compile Include="Packets\RTPStopPacket.cs" />
