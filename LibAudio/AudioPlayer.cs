@@ -50,5 +50,15 @@ namespace LibAudio
         {
             SDLOutput.Play();
         }
+
+        public void Pause()
+        {
+            SDLOutput.Pause();
+        }
+
+        public void Stop()
+        {
+            SDLOutput.Stop();
+        }
     }
 }

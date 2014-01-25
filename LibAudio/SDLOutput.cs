@@ -42,5 +42,19 @@ namespace LibAudio
         {
             SDL.SDL_PauseAudioDevice(dev, 0); //unpause the device (it will always be opened paused)
         }
+
+        public static void Pause()
+        {
+            SDL.SDL_PauseAudioDevice(dev, 1);
+        }
+
+        /// <summary>
+        /// Stop playback and close device. Must call OpenDevice() before using the player again.
+        /// </summary>
+        public static void Stop()
+        {
+            Pause();
+            SDL.SDL_CloseAudioDevice(dev);
+        }
     }
 }
