@@ -39,7 +39,6 @@ namespace SpeakerReceiver
         {
             this.s = s;
             s.SetReceiveTimeout(1000);
-            this.player = new AudioPlayer();
         }
 
         /// <summary>
@@ -62,6 +61,7 @@ namespace SpeakerReceiver
 
             this.receiveThread = new Thread(ReceiveThreadProc);
             this.receiveThread.Start();
+            this.player = new AudioPlayer();
         }
 
         public void SetEncryptionKey(PacketEncrypterKeyManager pekm)
@@ -81,6 +81,10 @@ namespace SpeakerReceiver
         {
             this.player.Stop();
             Buffer.Clear();
+            i = 1;
+            dataPacketsBuffered = 0;
+            packetPos = 0;
+            minBufPackets = int.MaxValue;
         }
 
         private void HandleControlPacket(RTPControlPacket p)
