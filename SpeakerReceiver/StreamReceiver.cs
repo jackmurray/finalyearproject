@@ -16,7 +16,7 @@ namespace SpeakerReceiver
     {
         private object syncLock = new object();
         private RTPInputStream s;
-        private bool shouldRunReceiver = true, shouldRunPlayer = true;
+        private bool shouldRunReceiver = true, shouldStartPlaying = false;
         private Thread receiveThread;
 
         private DateTime basetime;
@@ -26,7 +26,7 @@ namespace SpeakerReceiver
 
         private Trace Log = Trace.GetInstance("LibTransport");
         private AudioPlayer player = null;
-        private Dictionary<int, RTPPacket> Buffer = new Dictionary<int, RTPPacket>();
+        private SortedDictionary<int, RTPPacket> Buffer = new SortedDictionary<int, RTPPacket>();
         private int i = 1; //read pointer for the buffer. yes, 1, because the first packet has sequencenumber=1
         private int packetPos = 0; //position within the current packet, if a partial read is needed to satisfy the player's request.
         private int dataPacketsBuffered = 0; //count of how many data packets we have. don't want to just use Buffer.Count() because it will include controls too.
@@ -59,7 +59,6 @@ namespace SpeakerReceiver
         public void Start()
         {
             shouldRunReceiver = true;
-            shouldRunPlayer = true;
 
             this.receiveThread = new Thread(ReceiveThreadProc);
             this.receiveThread.Start();
@@ -80,7 +79,7 @@ namespace SpeakerReceiver
         /// </summary>
         private void EndPlayerThread()
         {
-            shouldRunPlayer = false;
+            this.player.Stop();
             Buffer.Clear();
         }
 
@@ -90,14 +89,18 @@ namespace SpeakerReceiver
             {
                 case RTPControlAction.Play:
                     Log.Information("Stream started.");
+                    SetBaseTime(p as RTPPlayPacket);
+                    s.State = StreamState.Started;
                     break;
                 case RTPControlAction.Stop:
                     Log.Information("Stop packet received - end of stream.");
                     this.EndPlayerThread();
+                    s.State = StreamState.Stopped;
                     break;
                 case RTPControlAction.Pause:
                     Log.Information("Pausing stream.");
-                    this.EndPlayerThread();
+                    this.player.Pause();
+                    s.State = StreamState.Paused;
                     break;
                 case RTPControlAction.FetchKey:
                 case RTPControlAction.SwitchKey:
@@ -126,16 +129,22 @@ namespace SpeakerReceiver
                         var cp = p as RTPControlPacket;
                         if (cp.Action == RTPControlAction.Play)
                         {
+                            var playPacket = (cp as RTPPlayPacket);
+
                             if (s.State == StreamState.Started)
                             {
                                 Log.Information("Got a Play packet while already playing. Ignoring it.");
                             }
+                            else if (s.State == StreamState.Paused)
+                            {
+                                SetBaseTime(playPacket);
+                                shouldStartPlaying = true;
+                            }
                             else
                             {
-                                var playPacket = (cp as RTPPlayPacket);
-                                this.basetime = playPacket.baseTime;
-                                Log.Verbose("Taking " + basetime + ":" + basetime.Millisecond +
-                                            " as the base time stamp.");
+                                SetBaseTime(playPacket);
+                                shouldStartPlaying = true;
+
                                 this.SamplesPerFrame = playPacket.SamplesPerFrame;
                                 this.Frequency = playPacket.Frequency;
                                 this.Channels = playPacket.Channels;
@@ -181,15 +190,12 @@ namespace SpeakerReceiver
                     {
                         dataPacketsBuffered++;
 
-                        if (s.State != StreamState.Started && s.State != StreamState.Paused && dataPacketsBuffered >= minBufPackets)
+                        if (shouldStartPlaying && s.State != StreamState.Started && dataPacketsBuffered >= minBufPackets) //if we're not started and we have enough packets that we can start, do so.
                         {
-                            lock (player)
-                            //perhaps not strictly necessary but we want to make sure that nothing tries to write at the same time.
-                            {
-                                Log.Verbose("Hit our target of " + minBufPackets + ", starting playback.");
-                                this.player.Start();
-                                s.State = StreamState.Started;
-                            }
+                            Log.Verbose("Hit our target of " + minBufPackets + ", starting playback.");
+                            this.player.Start();
+                            s.State = StreamState.Started;
+                            shouldStartPlaying = false; //we're started now, so set this to false so that we can't restart without a play packet.
                         }
                     }
 
@@ -201,6 +207,18 @@ namespace SpeakerReceiver
                         throw;
                 }
             }
+        }
+
+        private void SetBaseTime(RTPPlayPacket p)
+        {
+            this.basetime = p.baseTime;
+            Log.Verbose("Received " + LibUtil.Util.FormatDate(basetime) + " as the base time stamp.");
+            /* we know that the basetime 'should' be the current timestamp on the controller + the stream buffer time.
+                                * we calculate the difference between our local clock and controller clock and adjust all further timestamps by this. */
+            int msdiff = (int)(DateTime.UtcNow - basetime).TotalMilliseconds;
+            Log.Verbose("Calculated timediff as " + msdiff + "ms");
+            this.basetime = basetime.AddMilliseconds(msdiff);
+            Log.Verbose("Actual basetime is now " + LibUtil.Util.FormatDate(basetime));
         }
 
         private void BufferPacket(RTPPacket p)
