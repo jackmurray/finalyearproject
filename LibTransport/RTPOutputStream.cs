@@ -214,8 +214,8 @@ namespace LibTransport
                 remainingTicks -= behindms; //behindms will be +ve if the packet is late, and -ve if it's early. this means we'll sleep less time if it's late or more time if it's early.
 
                 //have to do this after the timing calculations because sendsync() changes basetime
-                if (sent % resyncnum == 0) //resync every resyncnum packets
-                    SendSync();
+                //if (sent % resyncnum == 0) //resync every resyncnum packets
+               //     SendSync();
 
                 if (remainingTicks > 0) Thread.Sleep((int)remainingTicks); //can't sleep for a -ve time. if remainingTicks ends up -ve it means we're late anyway, so we want to loop again immidiately.
                 //else Log.Verbose("Not sleeping because remainingTicks=" + remainingTicks);
