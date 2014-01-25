@@ -43,7 +43,7 @@ namespace LibAudio
         public void Setup(AudioCallback callback, int freq, byte channels)
         {
             this.sdlcallback = new SDL.SDL_AudioCallback(callback);
-            SDLOutput.OpenDevice(sdlcallback, freq, channels, 4096);
+            SDLOutput.OpenDevice(sdlcallback, freq, channels, 8192);
         }
 
         public void Start()
