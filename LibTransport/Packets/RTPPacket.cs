@@ -97,33 +97,16 @@ namespace LibTransport
             return wholeBlocks + (extra != 0 ? 1 : 0);
         }
 
-        public static uint BuildTimestamp(DateTime dt)
+        public static uint BuildTimestamp(DateTime dt, DateTime basetime)
         {
-            TimeSpan fullspan = (dt - new DateTime(1970, 1, 1, 0, 0, 0));
-            long secs = (long)fullspan.TotalSeconds;
-            ushort rtpsecs = (ushort)(secs % (1 << 16));
-            double frac = (fullspan.Milliseconds == 0 ? 0 : fullspan.TotalSeconds - secs);
-            double shifted = frac * (1 << 16);
-            uint fixpoint = ((uint)shifted);
-
-            uint ret = rtpsecs;
-            ret <<= 16;
-            ret += fixpoint;
-            return ret;
+            TimeSpan fullspan = (dt - basetime);
+            double ret = fullspan.TotalMilliseconds*1000;
+            return (uint)ret;
         }
 
         public static DateTime BuildDateTime(uint timestamp, DateTime basetime)
         {
-            ushort msecbits = (ushort) (timestamp & 0x0000FFFF);
-            double msec = (double)msecbits/(1 << 16);
-            uint secsbits = timestamp & 0xFFFF0000;
-            secsbits >>= 16;
-
-            basetime = basetime.Subtract(new TimeSpan(0, 0, 0, 0, basetime.Millisecond));
-            long unixtime = (long)(basetime - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds;
-            DateTime ret = basetime.Subtract(new TimeSpan(0, 0, (int)(unixtime%(1 << 16))));
-
-            return ret.AddSeconds(secsbits).AddSeconds(msec);
+            return basetime.AddMilliseconds((double)(timestamp)/1000);
         }
 
         public static RTPPacket Parse(byte[] data, PacketEncrypterKeyManager pekm = null, Verifier v = null)

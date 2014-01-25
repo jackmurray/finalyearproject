@@ -122,7 +122,7 @@ namespace LibTransport
             int delta = (configbuftime < rotateKeyTime) ? rotateKeyTime - configbuftime : 0;
             DateTime actualTime = calculatedTime.AddMilliseconds(delta);
             Log.Verbose("Built FetchKey packet for time " + actualTime + ":" + actualTime.Millisecond);
-            return new Tuple<DateTime,RTPPacket>(actualTime, new RTPFetchKeyPacket(++this.seq, RTPPacket.BuildTimestamp(actualTime), this.syncid));
+            return new Tuple<DateTime,RTPPacket>(actualTime, new RTPFetchKeyPacket(++this.seq, RTPPacket.BuildTimestamp(actualTime, basetimestamp), this.syncid));
         }
 
         protected RTPPacket BuildSwitchKeyPacket()
@@ -146,7 +146,7 @@ namespace LibTransport
         {
             DateTime packetdt = nextTimestampAsDT();
             //Log.Verbose("Packet timestamp: " + packetdt + ":"+packetdt.Millisecond);
-            return RTPPacket.BuildTimestamp(packetdt);
+            return RTPPacket.BuildTimestamp(packetdt, basetimestamp);
         }
 
         public void Stream(IAudioFormat audio)
