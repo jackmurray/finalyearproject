@@ -104,7 +104,7 @@ namespace SpeakerReceiver
                     break;
                 case RTPControlAction.FetchKey:
                 case RTPControlAction.SwitchKey:
-                case RTPControlAction.HeaderSync:
+                case RTPControlAction.Sync:
                     Log.Verbose(
                         "Fetch/SwitchKey/HeaderSync packet taken from buffer. Don't care as it's already been actioned.");
                     break;
@@ -173,7 +173,7 @@ namespace SpeakerReceiver
                                 Log.Verbose("There are " + Buffer.Count + " packets left in the buffer.");
                             }
                         }
-                        else if (cp.Action == RTPControlAction.HeaderSync)
+                        else if (cp.Action == RTPControlAction.Sync)
                         {
                             
                         }

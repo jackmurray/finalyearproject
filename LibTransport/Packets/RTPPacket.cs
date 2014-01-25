@@ -175,7 +175,7 @@ namespace LibTransport
                         ushort freq = Util.DecodeUshort(extradata, 10);
                         byte channels = extradata[12];
 
-                        controlPacket = new RTPPlayPacket(seq, timestamp, ssrc, RTPPlayPacket.ComputeBaseTime(ticks), samplesperframe, freq, channels);
+                        controlPacket = new RTPPlayPacket(seq, timestamp, ssrc, RTPTimestampPacket.ComputeBaseTime(ticks), samplesperframe, freq, channels);
                         break;
                     case RTPControlAction.Pause:
                         controlPacket = new RTPPausePacket(seq, timestamp, ssrc);
@@ -189,8 +189,9 @@ namespace LibTransport
                     case RTPControlAction.SwitchKey:
                         controlPacket = new RTPSwitchKeyPacket(seq, timestamp, ssrc);
                         break;
-                    case RTPControlAction.HeaderSync:
-                        controlPacket = new RTPHeaderSyncPacket(seq, timestamp, ssrc, extradata);
+                    case RTPControlAction.Sync:
+                        byte[] syncticks = extradata.Take(8).ToArray();
+                        controlPacket = new RTPSyncPacket(seq, timestamp, ssrc, RTPTimestampPacket.ComputeBaseTime(syncticks));
                         break;
 
                     default: throw new FormatException("RTPPacket.Parse() does not know what class to use for Action=" + a);

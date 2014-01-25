@@ -48,6 +48,7 @@
     <Compile Include="Packets\RTPDataPacket.cs" />
     <Compile Include="Packets\RTPPausePacket.cs" />
     <Compile Include="Packets\RTPPlayPacket.cs" />
+    <Compile Include="Packets\RTPTimestampPacket.cs" />
     <Compile Include="RTPInputStream.cs" />
     <Compile Include="RTPOutputStream.cs" />
     <Compile Include="Packets\RTPPacket.cs" />

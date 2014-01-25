@@ -99,9 +99,9 @@ namespace LibTransport
             return new RTPPlayPacket(++this.seq, 0, syncid, this.basetimestamp, audio.SamplesPerFrame, audio.Frequency, audio.Channels);
         }
 
-        protected RTPPacket BuildHeaderSyncPacket()
+        protected RTPPacket BuildSyncPacket()
         {
-            return new RTPHeaderSyncPacket(++this.seq, this.nextTimestamp(), syncid, this.audioHeader);
+            return new RTPSyncPacket(++this.seq, this.nextTimestamp(), syncid, DateTime.UtcNow);
         }
 
         protected RTPPacket BuildStopPacket()
@@ -149,19 +149,14 @@ namespace LibTransport
         {
             this.audio = audio;
             this.audioHeader = audio.GetHeader();
-            StartStream(true);
+            StartStream();
         }
 
-        private void StartStream(bool sendFileHeader = false)
+        private void StartStream()
         {
             this.continueStreaming = true;
             this.setupBaseTime();
             this.Send(this.BuildPlayPacket());
-            if (sendFileHeader && this.audioHeader != null && this.audioHeader.Length > 0)
-            {
-                this.Send(new RTPHeaderSyncPacket(++this.seq, 0, this.syncid, this.audioHeader));
-                Log.Verbose("Sending audio header as requested.");
-            }
             Log.Verbose("Base timestamp: " + basetimestamp + ":" + basetimestamp.Millisecond);
             new Thread(StreamThreadProc).Start();
             State = StreamState.Started;
@@ -174,7 +169,7 @@ namespace LibTransport
 
             lock (synclock)
             {
-                this.Send(this.BuildHeaderSyncPacket());
+                this.Send(this.BuildSyncPacket());
             }
         }
 
@@ -184,7 +179,7 @@ namespace LibTransport
             {
                 uint ts = this.nextTimestamp(); //get the timestamp *before* we change basetime, because the timestamp on the play packet is what we'll use on the receiver to determine when to change the basetime
                 this.setupBaseTime(true);
-                this.Send(new RTPPlayPacket(++this.seq, ts, syncid, this.basetimestamp, audio.SamplesPerFrame, audio.Frequency, audio.Channels));
+                this.Send(new RTPSyncPacket(++this.seq, ts, syncid, this.basetimestamp));
             }
         }
 
@@ -285,7 +280,7 @@ namespace LibTransport
             lock (synclock)
             {
                 Log.Information("Resuming stream.");
-                StartStream(true);
+                StartStream();
             }
         }
 
