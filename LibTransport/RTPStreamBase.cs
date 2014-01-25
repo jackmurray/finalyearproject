@@ -18,7 +18,7 @@ namespace LibTransport
         protected PacketEncrypterKeyManager pekm = null;
         //CTR is the sequence value. don't need a separate value here.
 
-        public StreamState State { get; protected set; }
+        public StreamState State { get; set; }
 
         protected RTPStreamBase(IPEndPoint ep)
         {
