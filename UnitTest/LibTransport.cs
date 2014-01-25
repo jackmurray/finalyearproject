@@ -54,7 +54,7 @@ namespace UnitTest
         {
             DateTime dt = DateTime.UtcNow;
             dt = dt.Subtract(new TimeSpan(0, 0, 0, 0, dt.Millisecond)); //strip off the milliseconds because in the real use-case we won't have any.
-            uint timestamp = RTPPacket.BuildTimestamp(dt.AddSeconds(2), dt);
+            uint timestamp = RTPPacket.BuildTimestamp(2000);
             DateTime dt2 = RTPPacket.BuildDateTime(timestamp, dt);
             Assert.AreEqual(dt.AddSeconds(2), dt2);
         }

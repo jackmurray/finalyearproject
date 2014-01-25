@@ -15,12 +15,13 @@ namespace LibTransport
     {
         private object synclock = new object(); //used so calls from the GUI thread won't mess things up.
         private IAudioFormat audio;
-        private ushort deltaSeq = 0; //deltaSeq is used to count the number of packets which shouldn't consume a timestamp interval (e.g. rotatekey packets)
         private long encryption_ctr = 0;
         private uint syncid = (uint)new Random().Next();
         private DateTime basetimestamp;
+        private double streamTime = 0;
         private Signer signer = null;
         private byte[] audioHeader;
+        private System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
 
         public delegate void StreamingCompletedHandler(object sender, EventArgs args);
         public event StreamingCompletedHandler StreamingCompleted;
@@ -28,7 +29,7 @@ namespace LibTransport
 
         private bool rotateKeyRequested = false; //Has a rotation been requested?
         private bool rotateKeyWaiting = false; //Are we now waiting until the correct time to perform the rotation?
-        private DateTime rotateKeyTime;
+        private double rotateKeyTime;
 
         private int bufferTime = LibConfig.Config.GetInt(LibConfig.Config.STREAM_BUFFER_TIME);
 
@@ -74,17 +75,23 @@ namespace LibTransport
             c.Send(data, data.Length, ep);
         }
 
-        protected RTPPacket BuildPacket(byte[] data)
+        protected RTPPacket BuildDataPacket()
         {
+            streamTime += audio.GetFrameLength();
+            byte[] data = audio.GetFrame();
             uint ts = this.nextTimestamp(); //get the timestamp before incrementing seq, so that the first timestamp will be basetime+0.
             ushort sequence = ++this.seq;
             //Log.Verbose("Building RTP packet seq:" + sequence);
             return new RTPDataPacket(false, sequence, ts, this.syncid, data);
         }
         
-        protected void setupBaseTime()
+        protected void setupBaseTime(bool resync = false)
         {
-            this.basetimestamp = DateTime.UtcNow.AddMilliseconds(bufferTime);
+            this.basetimestamp = DateTime.UtcNow;
+            if (!resync)
+                streamTime = bufferTime;
+            else
+                streamTime = 0;
         }
 
         protected RTPPacket BuildPlayPacket()
@@ -94,8 +101,7 @@ namespace LibTransport
 
         protected RTPPacket BuildHeaderSyncPacket()
         {
-            this.deltaSeq++;
-            return new RTPHeaderSyncPacket(++this.seq, 0, syncid, this.audioHeader);
+            return new RTPHeaderSyncPacket(++this.seq, this.nextTimestamp(), syncid, this.audioHeader);
         }
 
         protected RTPPacket BuildStopPacket()
@@ -112,22 +118,18 @@ namespace LibTransport
         /// Returns a new FetchKey packet, and the time at which it is to be actioned.
         /// </summary>
         /// <returns></returns>
-        protected Tuple<DateTime, RTPPacket> BuildFetchKeyPacket()
+        protected Tuple<double, RTPPacket> BuildFetchKeyPacket()
         {
-            this.deltaSeq++;
-            DateTime calculatedTime = this.nextTimestampAsDT();
             int configbuftime = LibConfig.Config.GetInt(LibConfig.Config.STREAM_BUFFER_TIME);
             int rotateKeyTime = LibConfig.Config.GetInt(LibConfig.Config.ROTATE_KEY_TIME);
 
             int delta = (configbuftime < rotateKeyTime) ? rotateKeyTime - configbuftime : 0;
-            DateTime actualTime = calculatedTime.AddMilliseconds(delta);
-            Log.Verbose("Built FetchKey packet for time " + actualTime + ":" + actualTime.Millisecond);
-            return new Tuple<DateTime,RTPPacket>(actualTime, new RTPFetchKeyPacket(++this.seq, RTPPacket.BuildTimestamp(actualTime, basetimestamp), this.syncid));
+            double actualTime = streamTime + delta;
+            return new Tuple<double, RTPPacket>(actualTime, new RTPFetchKeyPacket(++this.seq, RTPPacket.BuildTimestamp(actualTime), this.syncid));
         }
 
         protected RTPPacket BuildSwitchKeyPacket()
         {
-            this.deltaSeq++;
             return new RTPSwitchKeyPacket(++this.seq, this.nextTimestamp(), this.syncid);
         }
 
@@ -137,16 +139,10 @@ namespace LibTransport
             return new RTPPausePacket(++this.seq, this.nextTimestamp(), this.syncid);
         }
 
-        protected DateTime nextTimestampAsDT()
-        {
-            return basetimestamp.AddMilliseconds((seq - deltaSeq) * audio.GetFrameLength());
-        }
-
         protected uint nextTimestamp()
         {
-            DateTime packetdt = nextTimestampAsDT();
             //Log.Verbose("Packet timestamp: " + packetdt + ":"+packetdt.Millisecond);
-            return RTPPacket.BuildTimestamp(packetdt, basetimestamp);
+            return RTPPacket.BuildTimestamp(streamTime);
         }
 
         public void Stream(IAudioFormat audio)
@@ -163,7 +159,6 @@ namespace LibTransport
             this.Send(this.BuildPlayPacket());
             if (sendFileHeader && this.audioHeader != null && this.audioHeader.Length > 0)
             {
-                ++this.deltaSeq;
                 this.Send(new RTPHeaderSyncPacket(++this.seq, 0, this.syncid, this.audioHeader));
                 Log.Verbose("Sending audio header as requested.");
             }
@@ -187,8 +182,9 @@ namespace LibTransport
         {
             lock (synclock)
             {
-                this.deltaSeq++;
-                this.Send(this.BuildPlayPacket());
+                uint ts = this.nextTimestamp(); //get the timestamp *before* we change basetime, because the timestamp on the play packet is what we'll use on the receiver to determine when to change the basetime
+                this.setupBaseTime(true);
+                this.Send(new RTPPlayPacket(++this.seq, ts, syncid, this.basetimestamp, audio.SamplesPerFrame, audio.Frequency, audio.Channels));
             }
         }
 
@@ -196,21 +192,25 @@ namespace LibTransport
         {
             double frameLength;
             int timerinterval;
+            int resyncnum = 100;
+            int sent = 0;
 
             while (continueStreaming)
             {
-                uint startTicks;
-                int elapsedTicks, remainingTicks;
-                startTicks = (uint) Environment.TickCount;
+                long elapsedTicks, remainingTicks;
+                sw.Start();
 
-                frameLength = audio.GetFrameLength(); //convert to milliseconds.
+                frameLength = audio.GetFrameLength();
                 timerinterval = (int)frameLength; //we have to truncate because you can't sleep for fractional milliseconds.
 
                 RTPPacket p = TimerTick();
                 if (p == null)
                     return; //if TimerTick() returns null then we're done streaming.
+                sent++;
 
-                elapsedTicks = (int)((uint)Environment.TickCount - startTicks);
+                sw.Stop();
+                elapsedTicks = sw.ElapsedMilliseconds;
+                sw.Reset();
                 remainingTicks = timerinterval - elapsedTicks;
 
                 TimeSpan diff = RTPPacket.BuildDateTime(p.Timestamp, basetimestamp) - DateTime.UtcNow; //difference between when the packet will be actioned and now.
@@ -218,7 +218,11 @@ namespace LibTransport
 
                 remainingTicks -= behindms; //behindms will be +ve if the packet is late, and -ve if it's early. this means we'll sleep less time if it's late or more time if it's early.
 
-                if (remainingTicks > 0) Thread.Sleep(remainingTicks); //can't sleep for a -ve time. if remainingTicks ends up -ve it means we're late anyway, so we want to loop again immidiately.
+                //have to do this after the timing calculations because sendsync() changes basetime
+                if (sent % resyncnum == 0) //resync every resyncnum packets
+                    SendSync();
+
+                if (remainingTicks > 0) Thread.Sleep((int)remainingTicks); //can't sleep for a -ve time. if remainingTicks ends up -ve it means we're late anyway, so we want to loop again immidiately.
                 //else Log.Verbose("Not sleeping because remainingTicks=" + remainingTicks);
             }
         }
@@ -235,7 +239,7 @@ namespace LibTransport
                     return null; //while we're waiting for the lock, this could have been set to false so check it again once we hold it.
                 this.processPendingEvents();
 
-                RTPPacket p = this.BuildPacket(audio.GetFrame());
+                RTPPacket p = this.BuildDataPacket();
                 
                 this.Send(p);
                 if (audio.EndOfFile())
@@ -261,7 +265,6 @@ namespace LibTransport
                 this.Send(this.BuildStopPacket());
                 if (seekToStart) audio.SeekToStart();
                 seq = 0;
-                deltaSeq = 0;
                 encryption_ctr = 0;
             }
         }
@@ -282,7 +285,6 @@ namespace LibTransport
             lock (synclock)
             {
                 Log.Information("Resuming stream.");
-                deltaSeq = seq;
                 StartStream(true);
             }
         }
@@ -301,7 +303,7 @@ namespace LibTransport
             }
             if (this.rotateKeyWaiting)
             {
-                if (this.rotateKeyTime <= DateTime.UtcNow)
+                if (this.rotateKeyTime <= streamTime)
                 {
                     this.Send(this.BuildSwitchKeyPacket());
                     Log.Verbose("RTPOutputStream: Rotating key. The first seq to use the new key is " + (this.seq + 1));

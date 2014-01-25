@@ -97,11 +97,9 @@ namespace LibTransport
             return wholeBlocks + (extra != 0 ? 1 : 0);
         }
 
-        public static uint BuildTimestamp(DateTime dt, DateTime basetime)
+        public static uint BuildTimestamp(double offset)
         {
-            TimeSpan fullspan = (dt - basetime);
-            double ret = fullspan.TotalMilliseconds*1000;
-            return (uint)ret;
+            return (uint)(offset * 1000); // * 1000 lets us hold on to the .xx fractional milliseconds accurately. it means the RTP timestamp field is measured in microseconds (usecs)
         }
 
         public static DateTime BuildDateTime(uint timestamp, DateTime basetime)
