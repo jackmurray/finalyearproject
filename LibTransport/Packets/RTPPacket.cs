@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using LibAudio;
 using LibSecurity;
 using LibUtil;
 
@@ -174,8 +175,10 @@ namespace LibTransport
                         ushort samplesperframe = Util.DecodeUshort(extradata, 8);
                         ushort freq = Util.DecodeUshort(extradata, 10);
                         byte channels = extradata[12];
+                        byte bitspersample = extradata[13];
+                        SupportedFormats format = (SupportedFormats) extradata[14];
 
-                        controlPacket = new RTPPlayPacket(seq, timestamp, ssrc, RTPTimestampPacket.ComputeBaseTime(ticks), samplesperframe, freq, channels);
+                        controlPacket = new RTPPlayPacket(seq, timestamp, ssrc, RTPTimestampPacket.ComputeBaseTime(ticks), samplesperframe, freq, channels, bitspersample, format);
                         break;
                     case RTPControlAction.Pause:
                         controlPacket = new RTPPausePacket(seq, timestamp, ssrc);

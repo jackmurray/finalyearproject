@@ -16,6 +16,8 @@ namespace LibAudio
         /// </summary>
         private const ushort FRAME_LENGTH_TARGET = 1400;
 
+        public SupportedFormats Format { get { return SupportedFormats.WAV; } }
+
         private static readonly byte[] MAGIC_RIFF = {0x52, 0x49, 0x46, 0x46}; //ASCII 'RIFF'
         private static readonly byte[] MAGIC_WAVE = {0x57, 0x41, 0x56, 0x45}; //ASCII 'WAVE'
         private static readonly byte[] MAGIC_FORMAT = {0x66, 0x6D, 0x74, 0x20}; //ASCII 'fmt ' (space)
@@ -129,6 +131,7 @@ namespace LibAudio
 
         public ushort Frequency { get { return (ushort)FmtHeader.SampleRate; } }
         public byte Channels { get { return (byte)FmtHeader.NumChannels; } }
+        public byte BitsPerSample {get { return (byte)FmtHeader.BitsPerSample; } }
     }
 
     class WavFmtHeader

@@ -128,7 +128,7 @@ namespace SpeakerReceiver
             if (args[0] == "--sdl-test")
             {
                 SDLOutput.Init();
-                SDLOutput.OpenDevice(myCallback, 44100, 2, 4096);
+                SDLOutput.OpenDevice(myCallback, 44100, 2, 4096, 32);
 
 
                 SDL.SDL_AudioSpec wavspec = new SDL.SDL_AudioSpec();

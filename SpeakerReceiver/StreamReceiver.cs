@@ -23,6 +23,8 @@ namespace SpeakerReceiver
         private ushort SamplesPerFrame;
         private ushort Frequency;
         private byte Channels;
+        private byte BitsPerSample;
+        private SupportedFormats Format;
 
         private Trace Log = Trace.GetInstance("LibTransport");
         private AudioPlayer player = null;
@@ -152,12 +154,14 @@ namespace SpeakerReceiver
                                 this.SamplesPerFrame = playPacket.SamplesPerFrame;
                                 this.Frequency = playPacket.Frequency;
                                 this.Channels = playPacket.Channels;
+                                this.BitsPerSample = playPacket.BitsPerSample;
+                                this.Format = playPacket.Format;
 
                                 double ratefrac = (double)LibConfig.Config.GetInt(LibConfig.Config.STREAM_BUFFER_TIME)/1000; //fraction of 1 second we want to buffer
                                 double framefrac = Frequency/((double)SamplesPerFrame/Channels); //num of frames to make 1 s
                                 minBufPackets = (int)Math.Ceiling(framefrac*ratefrac);
 
-                                player.Setup(this.Callback, Frequency, Channels);
+                                player.Setup(this.Callback, Frequency, Channels, BitsPerSample);
                             }
                         }
                         else if (cp.Action == RTPControlAction.FetchKey)
@@ -289,9 +293,8 @@ namespace SpeakerReceiver
                     else //packet not in buffer. zero fill instead
                     {
                         Thread.Sleep(1);
-                        int needed = Math.Min(SamplesPerFrame * 4, length);
+                        int needed = Math.Min(SamplesPerFrame * (BitsPerSample/8), length); //divide to get bytes
                         Array.Clear(managedbuf, managedbufptr, needed);
-                            //TODO: integrate properly with format sample size
                         managedbufptr += needed;
                         length -= needed;
                         i++;

@@ -38,13 +38,13 @@ namespace LibAudio
         public void Setup(AudioCallback callback, byte[] header)
         {
             IAudioFormat af = SupportedAudio.FindReaderForFile(new AudioStreamReader(new MemoryStream(header)));
-            this.Setup(callback, af.Frequency, af.Channels);
+            this.Setup(callback, af.Frequency, af.Channels, af.BitsPerSample);
         }
 
-        public void Setup(AudioCallback callback, int freq, byte channels)
+        public void Setup(AudioCallback callback, int freq, byte channels, byte bitspersample)
         {
             this.sdlcallback = new SDL.SDL_AudioCallback(callback);
-            SDLOutput.OpenDevice(sdlcallback, freq, channels, 8192);
+            SDLOutput.OpenDevice(sdlcallback, freq, channels, 8192, bitspersample);
         }
 
         public void Start()

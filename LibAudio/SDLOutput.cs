@@ -22,16 +22,33 @@ namespace LibAudio
             }
         }
 
-        public static void OpenDevice(SDL.SDL_AudioCallback callback, int freq, byte channels, ushort samples)
+        public static void OpenDevice(SDL.SDL_AudioCallback callback, int freq, byte channels, ushort samples, byte bitspersample)
         {
             string devname = SDL.SDL_GetAudioDeviceName(0, 0);
+
+            ushort format = SDL.AUDIO_F32; //might as well init as this
+
+            switch (bitspersample)
+            {
+                case 32:
+                    format = SDL.AUDIO_F32; //float 32 (single)
+                    break;
+                case 16:
+                    format = SDL.AUDIO_S16; //signed 16-bit
+                    break;
+                case 8:
+                    format = SDL.AUDIO_U8; //unsigned 8-bit
+                    break;
+                default:
+                    throw new FormatException("Unsupported audio sample size (" + bitspersample + ")");
+            }
 
             want = new SDL.SDL_AudioSpec()
             {
                 freq = freq,
                 channels = channels,
                 samples = samples,
-                format = SDL.AUDIO_F32,
+                format = format,
                 callback = callback
             };
 

@@ -19,6 +19,8 @@ namespace LibAudio
         public ushort Frequency { get; private set; }
         public byte Channels { get { return 2; } } //TODO: this properly
         public ushort SamplesPerFrame { get { return 1152; } } //1152 is defined by the MP3 spec and won't change.
+        public byte BitsPerSample { get { return 0; } } //not useful for mp3 as we can decode it however we want
+        public SupportedFormats Format { get { return SupportedFormats.MP3; } }
 
         private const int MP3_HEADER_SIZE = 4;
         private readonly ushort[] FrequencyLookup = {44100, 48000, 32000};

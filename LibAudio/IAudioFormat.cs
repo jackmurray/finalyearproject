@@ -53,5 +53,14 @@ namespace LibAudio
         ushort Frequency { get; }
         byte Channels { get; }
         ushort SamplesPerFrame { get; } //The number of samples this format will return per frame
+        byte BitsPerSample { get; }
+
+        SupportedFormats Format { get; }
+    }
+
+    public enum SupportedFormats
+    {
+        WAV,
+        MP3
     }
 }
