@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using LibConfig;
 using SDL2;
 
@@ -58,7 +59,16 @@ namespace LibAudio
 
         public void Stop()
         {
-            SDLOutput.Stop();
+            /*
+             * SDL runs the callback on its own internal thread. The callback then processes packets trying to fill SDL’s buffer,
+             * and executes control packets when it sees them. The Stop control packet then causes this same thread to eventually
+             * call SDL_CloseAudioDevice(). That function then calls (on Windows anyway), WaitForSingleObject() passing the handle
+             * to the callback thread and an infinite timout, so that the callback can finish executing before the thread is terminated.
+             * This obviously causes a deadlock as the thread is left blocked waiting for itself to finish. Fix is pretty simple –
+             * have the wrapper code that would call down into SDL_CloseAudioDevice() to fire up a new short-lived thread to actually do the call.
+             * This means that the callback will be able to return, and WFSO will be able to return and halt the thread.
+             */
+            new Thread(SDLOutput.Stop).Start();
         }
     }
 }

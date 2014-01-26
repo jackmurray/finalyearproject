@@ -53,7 +53,7 @@ namespace LibAudio
         /// </summary>
         public static void Stop()
         {
-            Pause();
+            SDL.SDL_CloseAudioDevice(dev);
         }
     }
 }
