@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F4041FC6-CAEB-4476-A06D-CE301258E500}</ProjectGuid>
+    <ProjectGuid>{A455764B-3B3C-4353-B60F-2724FD82870E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LibAudio</RootNamespace>
-    <AssemblyName>LibAudio</AssemblyName>
+    <RootNamespace>MPG123Wrapper</RootNamespace>
+    <AssemblyName>MPG123Wrapper</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -17,6 +17,8 @@
     <PlatformTarget>x86</PlatformTarget>
     <OutputPath>bin\x86\Debug\</OutputPath>
     <Prefer32Bit>false</Prefer32Bit>
+    <DefineConstants>DEBUG</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <PlatformTarget>x86</PlatformTarget>
@@ -24,16 +26,11 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Test|x86'">
-    <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x86\Test\</OutputPath>
     <PlatformTarget>x86</PlatformTarget>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NAudio">
-      <HintPath>..\packages\NAudio.1.7\lib\net35\NAudio.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -43,41 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AudioFileReader.cs" />
-    <Compile Include="AudioReaderBase.cs" />
-    <Compile Include="AudioPlayer.cs" />
-    <Compile Include="AudioStreamReader.cs" />
-    <Compile Include="IAudioFormat.cs" />
-    <Compile Include="ID3Tag.cs" />
-    <Compile Include="LoopbackWavCapture.cs" />
-    <Compile Include="MP3Format.cs" />
-    <Compile Include="MP3Decoder.cs" />
+    <Compile Include="MPG123Interop.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RawSamplePlayer.cs" />
-    <Compile Include="SDLOutput.cs" />
-    <Compile Include="SupportedAudio.cs" />
-    <Compile Include="WAVFormat.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\LibConfig\LibConfig.csproj">
-      <Project>{37be8328-6872-494f-9458-d3540d7dc44f}</Project>
-      <Name>LibConfig</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\LibTrace\LibTrace.csproj">
-      <Project>{aaa4347e-a677-438e-97da-bc8fb2f57822}</Project>
-      <Name>LibTrace</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MPG123Wrapper\MPG123Wrapper.csproj">
-      <Project>{a455764b-3b3c-4353-b60f-2724fd82870e}</Project>
-      <Name>MPG123Wrapper</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SDL2-CS-master\SDL2-CS.csproj">
-      <Project>{85480198-8711-4355-830e-72fd794ad3f6}</Project>
-      <Name>SDL2-CS</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

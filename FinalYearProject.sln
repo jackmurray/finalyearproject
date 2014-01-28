@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibCommon", "LibCommon\LibC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDL2-CS", "SDL2-CS-master\SDL2-CS.csproj", "{85480198-8711-4355-830E-72FD794AD3F6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MPG123Wrapper", "MPG123Wrapper\MPG123Wrapper.csproj", "{A455764B-3B3C-4353-B60F-2724FD82870E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -110,8 +112,14 @@ Global
 		{85480198-8711-4355-830E-72FD794AD3F6}.Debug|x86.Build.0 = Debug|x86
 		{85480198-8711-4355-830E-72FD794AD3F6}.Release|x86.ActiveCfg = Release|x86
 		{85480198-8711-4355-830E-72FD794AD3F6}.Release|x86.Build.0 = Release|x86
-		{85480198-8711-4355-830E-72FD794AD3F6}.Test|x86.ActiveCfg = Release|x86
-		{85480198-8711-4355-830E-72FD794AD3F6}.Test|x86.Build.0 = Release|x86
+		{85480198-8711-4355-830E-72FD794AD3F6}.Test|x86.ActiveCfg = Test|x86
+		{85480198-8711-4355-830E-72FD794AD3F6}.Test|x86.Build.0 = Test|x86
+		{A455764B-3B3C-4353-B60F-2724FD82870E}.Debug|x86.ActiveCfg = Debug|x86
+		{A455764B-3B3C-4353-B60F-2724FD82870E}.Debug|x86.Build.0 = Debug|x86
+		{A455764B-3B3C-4353-B60F-2724FD82870E}.Release|x86.ActiveCfg = Release|x86
+		{A455764B-3B3C-4353-B60F-2724FD82870E}.Release|x86.Build.0 = Release|x86
+		{A455764B-3B3C-4353-B60F-2724FD82870E}.Test|x86.ActiveCfg = Test|x86
+		{A455764B-3B3C-4353-B60F-2724FD82870E}.Test|x86.Build.0 = Test|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
