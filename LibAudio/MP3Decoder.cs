@@ -66,7 +66,10 @@ namespace LibAudio
             Marshal.FreeHGlobal(nativein);
             Marshal.FreeHGlobal(nativeout);
 
-            return managedout;
+            if (!managedout.Any(b => b != 0))
+                LibTrace.Trace.GetInstance("LibAudio").Verbose("MP3 packet decoded as all NULLs");
+
+            return managedout.Take(done).ToArray(); //only return as many bytes as there actually are of data
         }
 
         private static void LogFormatChange()
