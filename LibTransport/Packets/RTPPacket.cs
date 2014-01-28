@@ -22,7 +22,7 @@ namespace LibTransport
         public ushort SequenceNumber { get; protected set; }
         public uint Timestamp {get; protected set;}
         public uint SyncSource { get; protected set; }
-        public byte[] Payload { get; protected set;}
+        public byte[] Payload { get; set;}
 
         protected byte[] extensionHeaderID = {0x00, 0x00};
 
