@@ -52,7 +52,7 @@ namespace LibAudio
 
         ushort Frequency { get; }
         byte Channels { get; }
-        ushort SamplesPerFrame { get; } //The number of samples this format will return per frame
+        ushort SamplesPerFrame { get; } //The *total* number of samples this format will return per frame. NOT the number of samples/channel/frame.
         byte BitsPerSample { get; }
 
         SupportedFormats Format { get; }
