@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using LibAudio;
 using LibSecurity;
 
 namespace LibTransport
@@ -11,6 +12,7 @@ namespace LibTransport
     public class RTPInputStream : RTPStreamBase
     {
         protected Verifier verifier;
+        public SupportedFormats Format;
 
         public RTPInputStream(IPEndPoint ep) : base(ep)
         {
@@ -38,6 +40,7 @@ namespace LibTransport
                     p = RTPPacket.Parse(data);
 
                 this.seq = p.SequenceNumber;
+                if (!p.Marker) DecodePayload(p as RTPDataPacket);
                 return p;
             }
             catch (CryptographicException ex)
@@ -71,6 +74,15 @@ namespace LibTransport
             this.useAuthentication = true;
             this.verifier = v;
             Log.Information("Enabling RTP signature verification");
+        }
+
+        private void DecodePayload(RTPDataPacket p)
+        {
+            if (Format == SupportedFormats.WAV)
+                return;
+
+            if (Format == SupportedFormats.MP3)
+                p.Payload = MP3Decoder.Decode(p.Payload);
         }
     }
 }

@@ -18,7 +18,7 @@ namespace LibAudio
         public int BitRate { get; private set; }
         public ushort Frequency { get; private set; }
         public byte Channels { get { return 2; } } //TODO: this properly
-        public ushort SamplesPerFrame { get { return 1152; } } //1152 is defined by the MP3 spec and won't change.
+        public ushort SamplesPerFrame { get { return (ushort) (1152 * Channels); } } //1152 is defined by the MP3 spec and won't change.
         public byte BitsPerSample { get { return 0; } } //not useful for mp3 as we can decode it however we want
         public SupportedFormats Format { get { return SupportedFormats.MP3; } }
 
@@ -136,7 +136,7 @@ namespace LibAudio
         public double GetFrameLength()
         {
             //assume that the sample frequency never changes in the file. should always be the case.
-            return (SamplesPerFrame/(double) this.Frequency)*1000;
+            return ((SamplesPerFrame/(double) this.Frequency)/Channels)*1000;
         }
 
         public bool EndOfFile()

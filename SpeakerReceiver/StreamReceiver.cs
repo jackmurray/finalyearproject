@@ -17,6 +17,7 @@ namespace SpeakerReceiver
         private object syncLock = new object();
         private RTPInputStream s;
         private bool shouldRunReceiver = true, shouldStartPlaying = false;
+        private bool shouldRunPlayer = false; //used so the HandlePacket() function can signal the callback's fetch loop to stop when it's time.
         private Thread receiveThread;
 
         private DateTime basetime;
@@ -24,7 +25,6 @@ namespace SpeakerReceiver
         private ushort Frequency;
         private byte Channels;
         private byte BitsPerSample;
-        private SupportedFormats Format;
 
         private Trace Log = Trace.GetInstance("LibTransport");
         private AudioPlayer player = null;
@@ -87,6 +87,7 @@ namespace SpeakerReceiver
             dataPacketsBuffered = 0;
             packetPos = 0;
             minBufPackets = int.MaxValue;
+            shouldRunPlayer = false;
         }
 
         private void HandleControlPacket(RTPControlPacket p)
@@ -150,18 +151,28 @@ namespace SpeakerReceiver
                             {
                                 SetBaseTime(playPacket);
                                 shouldStartPlaying = true;
+                                shouldRunPlayer = true;
 
                                 this.SamplesPerFrame = playPacket.SamplesPerFrame;
                                 this.Frequency = playPacket.Frequency;
                                 this.Channels = playPacket.Channels;
                                 this.BitsPerSample = playPacket.BitsPerSample;
-                                this.Format = playPacket.Format;
+                                this.s.Format = playPacket.Format; //tell the RTPInputStream what format we've got so it can decode things for us.
 
                                 double ratefrac = (double)LibConfig.Config.GetInt(LibConfig.Config.STREAM_BUFFER_TIME)/1000; //fraction of 1 second we want to buffer
                                 double framefrac = Frequency/((double)SamplesPerFrame/Channels); //num of frames to make 1 s
                                 minBufPackets = (int)Math.Ceiling(framefrac*ratefrac);
 
-                                player.Setup(this.Callback, Frequency, Channels, BitsPerSample);
+                                if (playPacket.Format == SupportedFormats.WAV)
+                                    player.Setup(this.Callback, Frequency, Channels, BitsPerSample);
+                                else if (playPacket.Format == SupportedFormats.MP3)
+                                {
+                                    MP3Decoder.Init();
+                                    player.Setup(this.Callback, Frequency, Channels, MP3Decoder.SAMPLE_SIZE);
+                                }
+                                else
+                                    throw new FormatException("Don't know what sample size format=" + playPacket.Format +
+                                                              " should be decoded to!");
                             }
                         }
                         else if (cp.Action == RTPControlAction.FetchKey)
@@ -253,7 +264,7 @@ namespace SpeakerReceiver
             byte[] managedbuf = new byte[length];
             int managedbufptr = 0;
 
-            while (length > 0)
+            while (length > 0 && shouldRunPlayer)
             {
                 lock (syncLock)
                 {
