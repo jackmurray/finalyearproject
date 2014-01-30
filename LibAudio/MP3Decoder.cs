@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using LibTrace;
 using MPG123Wrapper;
 
 namespace LibAudio
@@ -15,9 +16,10 @@ namespace LibAudio
         /// <summary>
         /// Decoded sample size in *BITS*
         /// </summary>
-        public const int SAMPLE_SIZE = 32;
+        public const int SAMPLE_SIZE = 16;
 
         private static IntPtr handle;
+        private static Trace Log;
 
         /// <summary>
         /// Sets up the MPG123 handle and sets the output format.
@@ -28,9 +30,10 @@ namespace LibAudio
             handle = MPG123Interop.mpg123_new(null, IntPtr.Zero);
 
             MPG123Interop.mpg123_format_none(handle); //remove all output formats from the list of acceptable ones
-            MPG123Interop.mpg123_format(handle, 44100, 2, MPG123Interop.MPG123_ENC_FLOAT_32); //force output to be stereo 44.1kHz 32-bit float. if the input doesn't match this mpg123 will resample it for us.
+            MPG123Interop.mpg123_format(handle, 44100, 2, MPG123Interop.MPG123_ENC_SIGNED_16); //force output to be stereo 44.1kHz signed 16-bit. if the input doesn't match this mpg123 will resample it for us.
 
             MPG123Interop.mpg123_open_feed(handle);
+            MP3Decoder.Log = LibTrace.Trace.GetInstance("LibAudio");
         }
 
         public static byte[] Decode(byte[] mp3data)
@@ -57,6 +60,7 @@ namespace LibAudio
             else if (ret != MPG123Interop.MPG123_OK)
             {
                 int err = MPG123Interop.mpg123_errcode(handle);
+                Log.Error("MPG123: Error " + err);
             }
 
             done = Marshal.ReadInt32(nativedone);
@@ -67,8 +71,9 @@ namespace LibAudio
             Marshal.FreeHGlobal(nativeout);
 
             if (!managedout.Any(b => b != 0))
-                LibTrace.Trace.GetInstance("LibAudio").Verbose("MP3 packet decoded as all NULLs");
+                Log.Verbose("MP3 packet decoded as all NULLs");
 
+            Log.Verbose("MP3 decoder output size: " + done);
             return managedout.Take(done).ToArray(); //only return as many bytes as there actually are of data
         }
 
@@ -78,8 +83,7 @@ namespace LibAudio
 
             MPG123Interop.mpg123_getformat(handle, out rate, out channels, out encoding);
 
-            LibTrace.Trace.GetInstance("LibAudio")
-                    .Verbose(string.Format("libmpg123: Format changed to rate={0} channels={1} encoding={2}", rate, channels, encoding));
+            Log.Verbose(string.Format("libmpg123: Format changed to rate={0} channels={1} encoding={2}", rate, channels, encoding));
         }
 
         private static IntPtr AllocInt()
