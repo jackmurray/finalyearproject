@@ -43,7 +43,7 @@ namespace SDL2
 		/// <summary>
 		/// Used by DllImport to load the native library.
 		/// </summary>
-		private const string nativeLibName = "SDL2.dll";
+		private const string nativeLibName = "libSDL2";
 
 		#endregion
 
