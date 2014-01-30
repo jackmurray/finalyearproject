@@ -169,6 +169,7 @@ namespace SpeakerReceiver
                                 {
                                     MP3Decoder.Init();
                                     player.Setup(this.Callback, Frequency, Channels, MP3Decoder.SAMPLE_SIZE);
+                                    this.BitsPerSample = MP3Decoder.SAMPLE_SIZE;
                                 }
                                 else
                                     throw new FormatException("Don't know what sample size format=" + playPacket.Format +
