@@ -73,7 +73,7 @@ namespace LibAudio
             if (!managedout.Any(b => b != 0))
                 Log.Verbose("MP3 packet decoded as all NULLs");
 
-            Log.Verbose("MP3 decoder output size: " + done);
+            //Log.Verbose("MP3 decoder output size: " + done);
             return managedout.Take(done).ToArray(); //only return as many bytes as there actually are of data
         }
 
