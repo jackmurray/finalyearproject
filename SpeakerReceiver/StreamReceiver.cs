@@ -96,7 +96,6 @@ namespace SpeakerReceiver
             {
                 case RTPControlAction.Play:
                     Log.Information("Stream started.");
-                    SetBaseTime(p as RTPPlayPacket);
                     s.State = StreamState.Started;
                     break;
                 case RTPControlAction.Stop:
@@ -161,7 +160,7 @@ namespace SpeakerReceiver
 
                                 double ratefrac = (double)LibConfig.Config.GetInt(LibConfig.Config.STREAM_BUFFER_TIME)/1000; //fraction of 1 second we want to buffer
                                 double framefrac = Frequency/((double)SamplesPerFrame/Channels); //num of frames to make 1 s
-                                minBufPackets = (int)Math.Ceiling(framefrac*ratefrac);
+                                minBufPackets = (int)Math.Ceiling(framefrac*ratefrac) - 1; //-1 so we start a little early
 
                                 if (playPacket.Format == SupportedFormats.WAV)
                                     player.Setup(this.Callback, Frequency, Channels, BitsPerSample);
@@ -249,6 +248,19 @@ namespace SpeakerReceiver
             }
         }
 
+        /// <summary>
+        /// Removes packet i from the buffer and resets variables.
+        /// </summary>
+        private void DebufferPacket()
+        {
+            lock (syncLock)
+            {
+                Buffer.Remove(i);
+                i++;
+                packetPos = 0;
+            }
+        }
+
         public void DeliverNewKey(byte[] key, byte[] nonce)
         {
             this.s.DeliverNewKey(key, nonce);
@@ -275,21 +287,41 @@ namespace SpeakerReceiver
                         if (p.Marker)
                         {
                             HandleControlPacket(p as RTPControlPacket);
-                            Buffer.Remove(i);
-                            i++;
-                            packetPos = 0;
+                            DebufferPacket();
                         }
                         else
                         {
+                            DateTime packettime = RTPPacket.BuildDateTime(p.Timestamp, basetime);
+                            TimeSpan span = packettime - DateTime.UtcNow;
+                            if (span.TotalMilliseconds < 0)
+                            {
+                                double latems = Math.Abs(span.TotalMilliseconds);
+                                Log.Verbose("Packet " + i + " " + latems + "ms late");                                
+                                double packetTimeLength = (((double)SamplesPerFrame/Channels)/Frequency)*1000; //length in milliseconds
+                                if (packetTimeLength <= latems)
+                                    //if dropping this packet won't make up all the lateness, drop it all and loop again so we can drop more.
+                                {
+                                    Log.Verbose("Dropping packet " + i);
+                                    DebufferPacket();
+                                    continue;
+                                }
+                                else
+                                {
+                                    double dropfrac = latems / packetTimeLength;
+                                    int dropsamples = (int) (dropfrac*SamplesPerFrame); //drop this many samples from this packet.
+                                    packetPos = dropsamples*(BitsPerSample/8); //drop the samples by setting packetPos to skip over them.
+                                    Log.Verbose("Dropping " + packetPos + " bytes (" + dropsamples +
+                                                " samples) from packet " + i);
+                                }
+                            }
+
                             if ((p.Payload.Length - packetPos) <= length)
                                 //if this packet isn't enough to fully satisfy the request, copy all its contents and loop again
                             {
                                 Array.Copy(p.Payload, packetPos, managedbuf, managedbufptr, p.Payload.Length - packetPos);
                                 managedbufptr += p.Payload.Length;
                                 length -= p.Payload.Length;
-                                Buffer.Remove(i);
-                                i++;
-                                packetPos = 0;
+                                DebufferPacket();
                                 dataPacketsBuffered--;
                             }
                             else //take part of the packet and make a note of how much we used.
@@ -304,7 +336,6 @@ namespace SpeakerReceiver
                     }
                     else //packet not in buffer. zero fill instead
                     {
-                        Thread.Sleep(1);
                         int needed = Math.Min(SamplesPerFrame * (BitsPerSample/8), length); //divide to get bytes
                         Array.Clear(managedbuf, managedbufptr, needed);
                         managedbufptr += needed;
