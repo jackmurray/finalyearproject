@@ -10,6 +10,7 @@ namespace LibTransport
     public class RTPTimestampPacket : RTPControlPacket
     {
         public DateTime Time { get; protected set; }
+        public DateTime Now { get; protected set; }
 
         public RTPTimestampPacket(RTPControlAction action, ushort SequenceNumber, uint Timestamp, uint SyncSource,
                                   DateTime time, byte[] Payload)
@@ -20,13 +21,15 @@ namespace LibTransport
 
         private static byte[] JoinPayload(DateTime time, byte[] Payload)
         {
-            byte[] data = Payload != null ? new byte[Payload.Length + sizeof (long)] : new byte[sizeof (long)];
+            byte[] data = Payload != null ? new byte[Payload.Length + sizeof (long)*2] : new byte[sizeof (long)*2];
             byte[] ticks = Util.Encode(time.Ticks);
+            byte[] nowticks = Util.Encode(DateTime.UtcNow.Ticks);
 
             Array.Copy(ticks, data, ticks.Length);
+            Array.Copy(nowticks, 0, data, ticks.Length, nowticks.Length);
 
             if (Payload != null)
-                Array.Copy(Payload, 0, data, sizeof (long), Payload.Length);
+                Array.Copy(Payload, 0, data, sizeof (long)*2, Payload.Length);
 
             return data;
         }
@@ -41,6 +44,11 @@ namespace LibTransport
 
             DateTime basetime = RTPPacket.BuildDateTime(this.Timestamp, sendingTimestamp)/* - latency;*/
             return new DateTime(Util.DecodeLong(extraData, 0));
+        }
+
+        public void SetNowTimestamp(byte[] now)
+        {
+            Now = new DateTime(Util.DecodeLong(now, 0));
         }
     }
 }
