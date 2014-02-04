@@ -158,7 +158,10 @@ namespace LibTransport
             this.setupBaseTime();
             this.Send(this.BuildPlayPacket());
             Log.Verbose("Base timestamp: " + basetimestamp + ":" + basetimestamp.Millisecond);
-            new Thread(StreamThreadProc).Start();
+            var t = new Thread(StreamThreadProc);
+            t.Priority = ThreadPriority.Highest;
+            t.Start();
+
             State = StreamState.Started;
         }
 
