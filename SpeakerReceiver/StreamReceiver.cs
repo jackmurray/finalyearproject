@@ -162,6 +162,11 @@ namespace SpeakerReceiver
                                 double framefrac = Frequency/((double)SamplesPerFrame/Channels); //num of frames to make 1 s
                                 minBufPackets = (int)Math.Ceiling(framefrac*ratefrac) - 1; //-1 so we start a little early
 
+                                lock (syncLock)
+                                {
+                                    i = (ushort) (playPacket.SequenceNumber + 1); //start the callback fetching data from the next packet after this.
+                                }
+
                                 if (playPacket.Format == SupportedFormats.WAV)
                                     player.Setup(this.Callback, Frequency, Channels, BitsPerSample);
                                 else if (playPacket.Format == SupportedFormats.MP3)
@@ -231,10 +236,11 @@ namespace SpeakerReceiver
         private void SetBaseTime(RTPPlayPacket p)
         {
             this.basetime = p.baseTime;
+            DateTime sendts = p.Now;
             Log.Verbose("Received " + LibUtil.Util.FormatDate(basetime) + " as the base time stamp.");
-            /* we know that the basetime 'should' be the current timestamp on the controller + the stream buffer time.
-                                * we calculate the difference between our local clock and controller clock and adjust all further timestamps by this. */
-            int msdiff = (int)(DateTime.UtcNow - basetime).TotalMilliseconds;
+            Log.Verbose("Received " + LibUtil.Util.FormatDate(p.Now) + " as the sending time stamp.");
+            /* we calculate the difference between our local clock and controller clock (using the sending timestamp) and adjust basetime by this. */
+            int msdiff = (int)(DateTime.UtcNow - sendts).TotalMilliseconds;
             Log.Verbose("Calculated timediff as " + msdiff + "ms");
             this.basetime = basetime.AddMilliseconds(msdiff);
             Log.Verbose("Actual basetime is now " + LibUtil.Util.FormatDate(basetime));
