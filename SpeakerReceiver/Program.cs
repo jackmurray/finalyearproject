@@ -48,7 +48,7 @@ namespace SpeakerReceiver
             foreach (AssemblyName n in Util.GetReferencedAssemblies())
                 Log.Verbose(n.Name + "-" + n.Version);
             
-            Log.Information("Platform: " + (Util.IsRunningOnMono ? "Mono" : "MS.NET"));
+            Log.Information("Platform: " + (Config.IsRunningOnMono ? "Mono" : "MS.NET"));
             try
             {
                 key = KeyManager.GetKey();
@@ -124,17 +124,6 @@ namespace SpeakerReceiver
                 int i = int.Parse(args[1]);
                 TrustedKeys.Remove(i);
                 Environment.Exit(0);
-            }
-            if (args[0] == "--sdl-test")
-            {
-                SDLOutput.Init();
-                SDLOutput.OpenDevice(myCallback, 44100, 2, 4096, 32);
-
-
-                SDL.SDL_AudioSpec wavspec = new SDL.SDL_AudioSpec();
-                SDL.SDL_LoadWAV("thepretender.wav", ref wavspec, out bufloc, out len);
-
-                SDLOutput.Play();
             }
         }
 

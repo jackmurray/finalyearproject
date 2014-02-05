@@ -6,6 +6,7 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using LibConfig;
 
 namespace LibSSDP
 {
@@ -15,7 +16,7 @@ namespace LibSSDP
         {
             UdpClient c = new UdpClient(AddressFamily.InterNetwork);
             c.JoinMulticastGroup(IPAddress.Parse("239.255.255.250"));
-            if (!LibUtil.Util.IsRunningOnMono) //TODO: Later, build the new mono and work out how to do this for linux.
+            if (!Config.IsRunningOnMono) //TODO: Later, build the new mono and work out how to do this for linux.
             {
                 int netIfIndex = GetNetIFIndex();
                 if (netIfIndex != -1) //-1 means we couldn't find it.

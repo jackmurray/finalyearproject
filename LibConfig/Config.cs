@@ -12,6 +12,8 @@ namespace LibConfig
 {
     public static class Config
     {
+        public static bool IsRunningOnMono { get; private set; }
+
         public static string CONFIG_FILENAME = "config.xml";
         public static string TRUSTED_KEYS_FILENAME = "trustedKeys.xml";
 
@@ -138,6 +140,7 @@ namespace LibConfig
                     var p = Util.ResolvePath(CONFIG_FILENAME);
                     xml.Load(p);
                     Console.WriteLine("Loaded config from " + p);
+                    Config.IsRunningOnMono = Type.GetType("Mono.Runtime") != null;
                 }
                 catch (Exception ex)
                 {
@@ -194,8 +197,8 @@ namespace LibConfig
         public static void CreateItems()
         {
             Util.MkDir(GetPath(LOG_PATH));
-            Util.MkDir(Util.ResolvePath(Get(Config.CRYPTO_PATH), "trustedKeys")); //can't use getpath here because we need to join with the dir name
-            if (!File.Exists(Util.ResolvePath(Get(Config.CRYPTO_PATH), TRUSTED_KEYS_FILENAME)))
+            Util.MkDir(Util.ResolvePath(Get(CRYPTO_PATH), "trustedKeys")); //can't use getpath here because we need to join with the dir name
+            if (!File.Exists(Util.ResolvePath(Get(CRYPTO_PATH), TRUSTED_KEYS_FILENAME)))
                 SaveTrustedKeys(); //If the file didn't exist then we can call this and it'll make it for us.
         }
     }
