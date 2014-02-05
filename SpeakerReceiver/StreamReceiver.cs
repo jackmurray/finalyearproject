@@ -19,6 +19,7 @@ namespace SpeakerReceiver
         private bool shouldRunReceiver = true, shouldStartPlaying = false;
         private bool shouldRunPlayer = false; //used so the HandlePacket() function can signal the callback's fetch loop to stop when it's time.
         private Thread receiveThread;
+        private int maxStreamError = LibConfig.Config.GetInt(LibConfig.Config.MAX_STREAM_ERROR); //drop samples after we become this many ms late
 
         private DateTime basetime;
         private ushort SamplesPerFrame;
@@ -299,15 +300,15 @@ namespace SpeakerReceiver
                         {
                             DateTime packettime = RTPPacket.BuildDateTime(p.Timestamp, basetime);
                             TimeSpan span = packettime - DateTime.UtcNow;
-                            if (span.TotalMilliseconds < 0)
+                            if (span.TotalMilliseconds < -maxStreamError)
                             {
                                 double latems = Math.Abs(span.TotalMilliseconds);
-                                Log.Verbose("Packet " + i + " " + latems + "ms late");                                
+                                //Log.Verbose("Packet " + i + " " + latems + "ms late");                                
                                 double packetTimeLength = (((double)SamplesPerFrame/Channels)/Frequency)*1000; //length in milliseconds
                                 if (packetTimeLength <= latems)
                                     //if dropping this packet won't make up all the lateness, drop it all and loop again so we can drop more.
                                 {
-                                    Log.Verbose("Dropping packet " + i);
+                                    //Log.Verbose("Dropping packet " + i);
                                     DebufferPacket();
                                     continue;
                                 }
@@ -316,8 +317,7 @@ namespace SpeakerReceiver
                                     double dropfrac = latems / packetTimeLength;
                                     int dropsamples = (int) (dropfrac*SamplesPerFrame); //drop this many samples from this packet.
                                     packetPos = dropsamples*(BitsPerSample/8); //drop the samples by setting packetPos to skip over them.
-                                    Log.Verbose("Dropping " + packetPos + " bytes (" + dropsamples +
-                                                " samples) from packet " + i);
+                                    //Log.Verbose("Dropping " + packetPos + " bytes (" + dropsamples + " samples) from packet " + i);
                                 }
                             }
 

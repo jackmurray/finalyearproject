@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
-	<logPath>logs</logPath>
+	<logPath></logPath>
 	<cryptoPath>crypto</cryptoPath>
 	<generatePKCS12Cert>false</generatePKCS12Cert>
 	<writeTraceToConsole>true</writeTraceToConsole>
@@ -8,14 +8,9 @@
 	<traceLevel>Verbose</traceLevel>
 	<pairingKey>EXAMPLEKEY</pairingKey>
 	<maxTimeDifference>2500</maxTimeDifference> <!-- Max difference in milliseconds between timestamp sent in SSDP response and the clock on the controller that receives it. The RPi takes a while (1700-2100 ms) to compute the signature, so set this to no less than 2500ms. -->
-	<streamBufferTime>2000</streamBufferTime> <!-- The number of milliseconds of audio data to buffer. -->
-	<playerExecutable>vlc</playerExecutable>
-	<playerArgs>--play-and-exit --file-caching=0 -</playerArgs>
-	<!-- If on Linux, add --aout alsa to playerArgs. -->
-	<playerStartupWait>0</playerStartupWait> <!-- number of milliseconds to wait before returning success in TransportService/JoinGroup. Used to allow time for the player to start up before we start piping packets into it. -->
-	<enableEncryption>true</enableEncryption>
-	<enableAuthentication>true</enableAuthentication>
+	<streamBufferTime>500</streamBufferTime> <!-- The number of milliseconds of audio data to buffer. -->
+	<enableEncryption>false</enableEncryption>
+	<enableAuthentication>false</enableAuthentication>
 	<rotateKeyTime>10000</rotateKeyTime> <!-- The number of milliseconds in the future a RotateKey packet should be scheduled for, measured from the time it's generated. -->
-	<ipAddr></ipAddr>
-	<maxStreamError>100</maxStreamError> <!-- number of milliseconds of stream drift we allow before we apply compensation. controller only. -->
+	<maxStreamError>50</maxStreamError> <!-- number of milliseconds of stream drift we allow before we apply compensation. receiver only. -->
 </config>
