@@ -193,13 +193,5 @@ namespace SpeakerReceiver
         {
             r.SetVerifier(v);
         }
-
-        private static void myCallback(IntPtr i, IntPtr j, int k)
-        {
-            byte[] temp = new byte[k];
-            Marshal.Copy(bufloc + pos, temp, 0, k);
-            Marshal.Copy(temp, 0, j, k);
-            pos += k;
-        }
     }
 }
