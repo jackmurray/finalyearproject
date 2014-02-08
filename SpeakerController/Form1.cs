@@ -296,11 +296,11 @@ namespace SpeakerController
                 }
 
                 var remoteconfig = commonclient.GetConfigState();
-                if (!remoteconfig.Equals(ConfigState.GetConfigState()))
+                if (!ConfigState.GetConfigState().CanAccept(remoteconfig))
                 {
                     Log.Error("Local config state: " + ConfigState.GetConfigState());
                     Log.Error("Remote config state: " + remoteconfig);
-                    throw new Exception("Remote config state didn't match ours!");
+                    throw new Exception("Remote config state isn't acceptable!");
                 }
                 else
                     Log.Verbose("Config state check passed.");

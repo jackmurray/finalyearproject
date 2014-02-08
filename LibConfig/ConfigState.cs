@@ -34,6 +34,24 @@ namespace LibConfig
         {
             return "ConfigState {Flags=" + Flags + "}";
         }
+
+        /// <summary>
+        /// Check if the given remote ConfigState is compatible with this instance.
+        /// </summary>
+        /// <param name="s">Remote party's ConfigState</param>
+        /// <returns></returns>
+        public bool CanAccept(ConfigState s)
+        {
+            //if we have encryption and they don't, then fail.
+            if (Flags.HasFlag(ConfigStateFlags.EncryptionEnabled) && !s.Flags.HasFlag(ConfigStateFlags.EncryptionEnabled))
+                return false;
+
+            //if we have auth and they don't, then fail
+            if (Flags.HasFlag(ConfigStateFlags.AuthenticationEnabled) && !s.Flags.HasFlag(ConfigStateFlags.AuthenticationEnabled))
+                return false;
+
+            return true;
+        }
     }
 
     [Flags]
