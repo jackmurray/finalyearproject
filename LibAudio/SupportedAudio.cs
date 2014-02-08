@@ -64,6 +64,9 @@ namespace LibAudio
             if (obj.CheckMagic())
             {
                 obj.Parse();
+                var Log = LibTrace.Trace.GetInstance("LibAudio");
+                Log.Verbose("Format: " + typeof (T));
+                Log.Verbose(string.Format("{0} bit/sample {1}Hz {2}CH", obj.BitsPerSample, obj.Frequency, obj.Channels));
                 return obj;
             }
             else return null;

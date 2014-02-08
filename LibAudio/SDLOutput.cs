@@ -26,7 +26,7 @@ namespace LibAudio
         {
             string devname = SDL.SDL_GetAudioDeviceName(0, 0);
 
-            ushort format = SDL.AUDIO_F32; //might as well init as this
+            ushort format;
 
             switch (bitspersample)
             {
@@ -53,6 +53,7 @@ namespace LibAudio
             };
 
             dev = SDL.SDL_OpenAudioDevice(devname, 0, ref want, out have, (int)SDL.SDL_AUDIO_ALLOW_FORMAT_CHANGE);
+            LibTrace.Trace.GetInstance("SDL").Verbose(string.Format("Initialised playback at {0}-bit {1}Hz {2}CH", bitspersample, freq, channels));
         }
 
         public static void Play()
