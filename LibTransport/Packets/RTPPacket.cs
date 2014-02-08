@@ -77,6 +77,10 @@ namespace LibTransport
             {
                 byte[] sig = s.Sign(Payload);
                 extensionHeader.Write(sig, 0, sig.Length);
+                /*
+                if (SequenceNumber%100 == 0)
+                    Payload[0] = 0x00; //corrupt on purpose to test sig verify
+                */
             }
 
             byte[] extensionData = extensionHeader.ToArray();
