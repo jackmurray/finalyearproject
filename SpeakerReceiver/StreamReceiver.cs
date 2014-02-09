@@ -34,6 +34,7 @@ namespace SpeakerReceiver
         private int packetPos = 0; //position within the current packet, if a partial read is needed to satisfy the player's request.
         private int dataPacketsBuffered = 0; //count of how many data packets we have. don't want to just use Buffer.Count() because it will include controls too.
         private int minBufPackets = int.MaxValue; //so we don't need an additional check for 'did we calculate the value yet'
+        private int volume = SDLOutput.MaxVolume;
 
         public delegate void NotifyKeyRotation();
         public event NotifyKeyRotation OnKeyRotatePacketReceived;
@@ -112,8 +113,9 @@ namespace SpeakerReceiver
                 case RTPControlAction.FetchKey:
                 case RTPControlAction.SwitchKey:
                 case RTPControlAction.Sync:
+                case RTPControlAction.Volume:
                     Log.Verbose(
-                        "Fetch/SwitchKey/HeaderSync packet taken from buffer. Don't care as it's already been actioned.");
+                        "Fetch/SwitchKey/HeaderSync/Volume packet taken from buffer. Don't care as it's already been actioned.");
                     break;
                 default:
                     Log.Warning(String.Format("Control packet received but unable to handle. Type={0} seq={1}", p.Action, p.SequenceNumber));
@@ -206,6 +208,13 @@ namespace SpeakerReceiver
                         {
 
                         } //don't care about pause as it's not that interesting (basically the same as Stop).
+                        else if (cp.Action == RTPControlAction.Volume)
+                        {
+                            lock (syncLock)
+                            {
+                                volume = (cp as RTPVolumePacket).Volume;
+                            }
+                        }
                         else
                         {
                             Log.Warning("Unknown control packet received.");
@@ -353,7 +362,10 @@ namespace SpeakerReceiver
                 }
             }
 
-            Marshal.Copy(managedbuf, 0, buffer, managedbuf.Length); //although we don't actually need the lock any more, we don't want any other threads to run until this completes so we won't release it until the copy is done
+            byte[] mixbuf = new byte[managedbuf.Length];
+            SDL2.SDL.SDL_MixAudioFormat(mixbuf, managedbuf, SDLOutput.AudioSpec.format, (uint)managedbuf.Length, volume); //mix the audio to the specifed volume
+
+            Marshal.Copy(mixbuf, 0, buffer, mixbuf.Length); //copy the mixed audio to SDL's output buffer.
         }
     }
 }

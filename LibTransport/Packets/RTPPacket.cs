@@ -202,6 +202,10 @@ namespace LibTransport
                         byte[] syncticks = extradata.Take(8).ToArray();
                         controlPacket = new RTPSyncPacket(seq, timestamp, ssrc, RTPTimestampPacket.ComputeBaseTime(syncticks));
                         break;
+                    case RTPControlAction.Volume:
+                        int volume = Util.Decode(extradata);
+                        controlPacket = new RTPVolumePacket(seq, timestamp, ssrc, volume);
+                        break;
 
                     default: throw new FormatException("RTPPacket.Parse() does not know what class to use for Action=" + a);
                 }

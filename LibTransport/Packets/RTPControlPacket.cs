@@ -30,5 +30,5 @@ namespace LibTransport
         }
     }
 
-    public enum RTPControlAction {Play, Pause, Stop, FetchKey, SwitchKey, Sync}
+    public enum RTPControlAction {Play, Pause, Stop, FetchKey, SwitchKey, Sync, Volume}
 }

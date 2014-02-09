@@ -139,6 +139,11 @@ namespace LibTransport
             return new RTPPausePacket(++this.seq, this.nextTimestamp(), this.syncid);
         }
 
+        protected RTPPacket BuildChangeVolumePacket(int volume)
+        {
+            return new RTPVolumePacket(++this.seq, this.nextTimestamp(), this.syncid, volume);
+        }
+
         protected uint nextTimestamp()
         {
             //Log.Verbose("Packet timestamp: " + packetdt + ":"+packetdt.Millisecond);
@@ -279,6 +284,15 @@ namespace LibTransport
             {
                 Log.Information("Resuming stream.");
                 StartStream();
+            }
+        }
+
+        public void ChangeVolume(int volume)
+        {
+            lock (synclock)
+            {
+                Log.Information("Changing volume to " + volume + "/" + SDLOutput.MaxVolume);
+                this.Send(this.BuildChangeVolumePacket(volume));
             }
         }
 

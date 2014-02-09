@@ -62,10 +62,14 @@
             this.grpLoopbackStream = new System.Windows.Forms.GroupBox();
             this.grpFileStream = new System.Windows.Forms.GroupBox();
             this.btnReloadConfig = new System.Windows.Forms.Button();
+            this.numVolume = new System.Windows.Forms.NumericUpDown();
+            this.btnApplyVolume = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dGridTrace)).BeginInit();
             this.grpStreamMode.SuspendLayout();
             this.grpLoopbackStream.SuspendLayout();
             this.grpFileStream.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numVolume)).BeginInit();
             this.SuspendLayout();
             // 
             // btnDiscover
@@ -426,11 +430,40 @@
             this.btnReloadConfig.UseVisualStyleBackColor = true;
             this.btnReloadConfig.Click += new System.EventHandler(this.btnReloadConfig_Click);
             // 
+            // numVolume
+            // 
+            this.numVolume.Location = new System.Drawing.Point(490, 196);
+            this.numVolume.Name = "numVolume";
+            this.numVolume.Size = new System.Drawing.Size(57, 20);
+            this.numVolume.TabIndex = 32;
+            // 
+            // btnApplyVolume
+            // 
+            this.btnApplyVolume.Location = new System.Drawing.Point(553, 193);
+            this.btnApplyVolume.Name = "btnApplyVolume";
+            this.btnApplyVolume.Size = new System.Drawing.Size(43, 23);
+            this.btnApplyVolume.TabIndex = 33;
+            this.btnApplyVolume.Text = "Apply";
+            this.btnApplyVolume.UseVisualStyleBackColor = true;
+            this.btnApplyVolume.Click += new System.EventHandler(this.btnApplyVolume_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(442, 198);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(42, 13);
+            this.label1.TabIndex = 34;
+            this.label1.Text = "Volume";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1068, 528);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.btnApplyVolume);
+            this.Controls.Add(this.numVolume);
             this.Controls.Add(this.btnReloadConfig);
             this.Controls.Add(this.grpFileStream);
             this.Controls.Add(this.grpLoopbackStream);
@@ -464,6 +497,7 @@
             this.grpStreamMode.PerformLayout();
             this.grpLoopbackStream.ResumeLayout(false);
             this.grpFileStream.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.numVolume)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -505,6 +539,9 @@
         private System.Windows.Forms.GroupBox grpLoopbackStream;
         private System.Windows.Forms.GroupBox grpFileStream;
         private System.Windows.Forms.Button btnReloadConfig;
+        private System.Windows.Forms.NumericUpDown numVolume;
+        private System.Windows.Forms.Button btnApplyVolume;
+        private System.Windows.Forms.Label label1;
     }
 }
 

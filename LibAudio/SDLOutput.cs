@@ -13,6 +13,9 @@ namespace LibAudio
         private static SDL.SDL_AudioSpec want, have;
         private static bool Inited = false;
 
+        public static SDL.SDL_AudioSpec AudioSpec { get { return have; } }
+        public static int MaxVolume { get { return SDL.SDL_MIX_MAXVOLUME; } }
+
         public static void Init()
         {
             if (!Inited)

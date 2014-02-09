@@ -177,6 +177,8 @@ namespace SpeakerController
             LoadStateFromConfig();
             this.activeReceiverManager = new ActiveReceiverManager(lstDevicesActive);
             UpdateButtonState();
+            numVolume.Maximum = SDLOutput.MaxVolume;
+            numVolume.Value = numVolume.Maximum;
         }
 
         private void LoadStateFromConfig()
@@ -532,6 +534,11 @@ namespace SpeakerController
         private void lstDevicesAvail_DoubleClick(object sender, EventArgs e)
         {
             btnJoinGroup_Click(this, null);
+        }
+
+        private void btnApplyVolume_Click(object sender, EventArgs e)
+        {
+            stream.ChangeVolume((int)numVolume.Value);
         }
     }
 
