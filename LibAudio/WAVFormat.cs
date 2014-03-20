@@ -14,7 +14,7 @@ namespace LibAudio
         /// and pretend that that's a frame instead. The actual frame size is determined during Parse()
         /// once we know the Frequency and Sample Size.
         /// </summary>
-        private const ushort FRAME_LENGTH_TARGET = 1400;
+        private const ushort FRAME_LENGTH_TARGET = 1384;
 
         public SupportedFormats Format { get { return SupportedFormats.WAV; } }
 
