@@ -130,9 +130,7 @@ namespace LibUtil
                 Environment.ExpandEnvironmentVariables(Environment.OSVersion.Platform == PlatformID.Win32NT
                                                            ? "%LOCALAPPDATA%"
                                                            : "%HOME%");
-            string appdir = Environment.ExpandEnvironmentVariables(Environment.OSVersion.Platform == PlatformID.Win32NT
-                                                           ? "mcspkr"
-                                                           : ".mcspkr");
+            string appdir = Environment.OSVersion.Platform == PlatformID.Win32NT ? "mcspkr" : ".mcspkr";
             string typedir = Util.IsController() ? "controller" : "receiver";
 
             var ret = new List<string>() {basedir, appdir, typedir};
