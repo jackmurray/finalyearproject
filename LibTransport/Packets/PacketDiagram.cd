@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="LibTransport.RTPPacket">
+    <Position X="6.5" Y="0.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>IAgxgAAAAAABAEAAgAgSAQAAAgAAAAAAACIAAAAAAAE=</HashCode>
+      <FileName>Packets\RTPPacket.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LibTransport.RTPControlPacket" Collapsed="true">
+    <Position X="6.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAQ=</HashCode>
+      <FileName>Packets\RTPControlPacket.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LibTransport.RTPDataPacket" Collapsed="true">
+    <Position X="9.25" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Packets\RTPDataPacket.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LibTransport.RTPFetchKeyPacket" Collapsed="true">
+    <Position X="4.25" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Packets\RTPFetchKeyPacket.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LibTransport.RTPPausePacket" Collapsed="true">
+    <Position X="4.25" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Packets\RTPPausePacket.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LibTransport.RTPStopPacket" Collapsed="true">
+    <Position X="4.25" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Packets\RTPStopPacket.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LibTransport.RTPSwitchKeyPacket" Collapsed="true">
+    <Position X="8.25" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Packets\RTPSwitchKeyPacket.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LibTransport.RTPTimestampPacket" Collapsed="true">
+    <Position X="8.25" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQAAAAAAAAAEAACAAAAgAAAAAAAAAAQA=</HashCode>
+      <FileName>Packets\RTPTimestampPacket.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LibTransport.RTPVolumePacket" Collapsed="true">
+    <Position X="8.25" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAA=</HashCode>
+      <FileName>Packets\RTPVolumePacket.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LibTransport.RTPPlayPacket" Collapsed="true">
+    <Position X="10.25" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAEAAAAAAAAAAIkgAgAAAAAAAAAAEAA=</HashCode>
+      <FileName>Packets\RTPPlayPacket.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
