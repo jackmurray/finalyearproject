@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.btnDiscover = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
             this.txtFriendlyName = new System.Windows.Forms.TextBox();
             this.btnSaveFriendlyName = new System.Windows.Forms.Button();
             this.btnTrustDevice = new System.Windows.Forms.Button();
@@ -81,17 +80,6 @@
             this.btnDiscover.Text = "Discover";
             this.btnDiscover.UseVisualStyleBackColor = true;
             this.btnDiscover.Click += new System.EventHandler(this.btnDiscover_Click);
-            // 
-            // button1
-            // 
-            this.button1.Enabled = false;
-            this.button1.Location = new System.Drawing.Point(12, 225);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "Call";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // txtFriendlyName
             // 
@@ -195,7 +183,7 @@
             // 
             // btnListPairedDevices
             // 
-            this.btnListPairedDevices.Location = new System.Drawing.Point(93, 225);
+            this.btnListPairedDevices.Location = new System.Drawing.Point(37, 287);
             this.btnListPairedDevices.Name = "btnListPairedDevices";
             this.btnListPairedDevices.Size = new System.Drawing.Size(109, 23);
             this.btnListPairedDevices.TabIndex = 10;
@@ -306,7 +294,7 @@
             // 
             // btnRotateKey
             // 
-            this.btnRotateKey.Location = new System.Drawing.Point(792, 306);
+            this.btnRotateKey.Location = new System.Drawing.Point(812, 90);
             this.btnRotateKey.Name = "btnRotateKey";
             this.btnRotateKey.Size = new System.Drawing.Size(75, 23);
             this.btnRotateKey.TabIndex = 21;
@@ -336,7 +324,7 @@
             // 
             // btnStop
             // 
-            this.btnStop.Location = new System.Drawing.Point(536, 161);
+            this.btnStop.Location = new System.Drawing.Point(515, 229);
             this.btnStop.Name = "btnStop";
             this.btnStop.Size = new System.Drawing.Size(24, 24);
             this.btnStop.TabIndex = 24;
@@ -346,7 +334,7 @@
             // 
             // btnPause
             // 
-            this.btnPause.Location = new System.Drawing.Point(567, 161);
+            this.btnPause.Location = new System.Drawing.Point(546, 229);
             this.btnPause.Name = "btnPause";
             this.btnPause.Size = new System.Drawing.Size(24, 24);
             this.btnPause.TabIndex = 25;
@@ -356,11 +344,11 @@
             // 
             // btnLoopback
             // 
-            this.btnLoopback.Location = new System.Drawing.Point(61, 30);
+            this.btnLoopback.Location = new System.Drawing.Point(6, 19);
             this.btnLoopback.Name = "btnLoopback";
-            this.btnLoopback.Size = new System.Drawing.Size(75, 23);
+            this.btnLoopback.Size = new System.Drawing.Size(75, 37);
             this.btnLoopback.TabIndex = 26;
-            this.btnLoopback.Text = "Loopback";
+            this.btnLoopback.Text = "Begin Live Stream";
             this.btnLoopback.UseVisualStyleBackColor = true;
             this.btnLoopback.Click += new System.EventHandler(this.btnLoopback_Click);
             // 
@@ -370,7 +358,7 @@
             this.grpStreamMode.Controls.Add(this.radioFile);
             this.grpStreamMode.Location = new System.Drawing.Point(667, 177);
             this.grpStreamMode.Name = "grpStreamMode";
-            this.grpStreamMode.Size = new System.Drawing.Size(200, 100);
+            this.grpStreamMode.Size = new System.Drawing.Size(100, 78);
             this.grpStreamMode.TabIndex = 28;
             this.grpStreamMode.TabStop = false;
             this.grpStreamMode.Text = "Streaming Mode";
@@ -380,9 +368,9 @@
             this.radioLoopback.AutoSize = true;
             this.radioLoopback.Location = new System.Drawing.Point(7, 54);
             this.radioLoopback.Name = "radioLoopback";
-            this.radioLoopback.Size = new System.Drawing.Size(73, 17);
+            this.radioLoopback.Size = new System.Drawing.Size(45, 17);
             this.radioLoopback.TabIndex = 1;
-            this.radioLoopback.Text = "Loopback";
+            this.radioLoopback.Text = "Live";
             this.radioLoopback.UseVisualStyleBackColor = true;
             // 
             // radioFile
@@ -401,19 +389,19 @@
             // grpLoopbackStream
             // 
             this.grpLoopbackStream.Controls.Add(this.btnLoopback);
-            this.grpLoopbackStream.Location = new System.Drawing.Point(468, 225);
+            this.grpLoopbackStream.Location = new System.Drawing.Point(644, 12);
             this.grpLoopbackStream.Name = "grpLoopbackStream";
-            this.grpLoopbackStream.Size = new System.Drawing.Size(154, 100);
+            this.grpLoopbackStream.Size = new System.Drawing.Size(92, 69);
             this.grpLoopbackStream.TabIndex = 29;
             this.grpLoopbackStream.TabStop = false;
-            this.grpLoopbackStream.Text = "Loopback Streaming";
+            this.grpLoopbackStream.Text = "Live Streaming";
             // 
             // grpFileStream
             // 
             this.grpFileStream.Controls.Add(this.btnStreamTestSound);
             this.grpFileStream.Controls.Add(this.btnOpenFile);
             this.grpFileStream.Controls.Add(this.btnStream);
-            this.grpFileStream.Location = new System.Drawing.Point(523, 12);
+            this.grpFileStream.Location = new System.Drawing.Point(438, 12);
             this.grpFileStream.Name = "grpFileStream";
             this.grpFileStream.Size = new System.Drawing.Size(200, 129);
             this.grpFileStream.TabIndex = 30;
@@ -432,14 +420,14 @@
             // 
             // numVolume
             // 
-            this.numVolume.Location = new System.Drawing.Point(490, 196);
+            this.numVolume.Location = new System.Drawing.Point(469, 264);
             this.numVolume.Name = "numVolume";
             this.numVolume.Size = new System.Drawing.Size(57, 20);
             this.numVolume.TabIndex = 32;
             // 
             // btnApplyVolume
             // 
-            this.btnApplyVolume.Location = new System.Drawing.Point(553, 193);
+            this.btnApplyVolume.Location = new System.Drawing.Point(532, 261);
             this.btnApplyVolume.Name = "btnApplyVolume";
             this.btnApplyVolume.Size = new System.Drawing.Size(43, 23);
             this.btnApplyVolume.TabIndex = 33;
@@ -450,7 +438,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(442, 198);
+            this.label1.Location = new System.Drawing.Point(421, 266);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(42, 13);
             this.label1.TabIndex = 34;
@@ -486,10 +474,9 @@
             this.Controls.Add(this.btnTrustDevice);
             this.Controls.Add(this.btnSaveFriendlyName);
             this.Controls.Add(this.txtFriendlyName);
-            this.Controls.Add(this.button1);
             this.Controls.Add(this.btnDiscover);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Speaker Controller";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dGridTrace)).EndInit();
@@ -506,7 +493,6 @@
         #endregion
 
         private System.Windows.Forms.Button btnDiscover;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TextBox txtFriendlyName;
         private System.Windows.Forms.Button btnSaveFriendlyName;
         private System.Windows.Forms.Button btnTrustDevice;

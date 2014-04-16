@@ -497,13 +497,11 @@ namespace SpeakerController
             {
                 btnJoinGroup.Enabled = true;
                 btnTrustDevice.Enabled = true;
-                button1.Enabled = true;
             }
             else
             {
                 btnJoinGroup.Enabled = false;
                 btnTrustDevice.Enabled = false;
-                button1.Enabled = false;
             }
 
             if (state.Mode == StreamMode.File)
