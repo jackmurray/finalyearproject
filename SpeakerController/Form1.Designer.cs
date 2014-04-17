@@ -324,7 +324,7 @@
             // 
             // btnStop
             // 
-            this.btnStop.Location = new System.Drawing.Point(515, 229);
+            this.btnStop.Location = new System.Drawing.Point(605, 274);
             this.btnStop.Name = "btnStop";
             this.btnStop.Size = new System.Drawing.Size(24, 24);
             this.btnStop.TabIndex = 24;
@@ -334,7 +334,7 @@
             // 
             // btnPause
             // 
-            this.btnPause.Location = new System.Drawing.Point(546, 229);
+            this.btnPause.Location = new System.Drawing.Point(636, 274);
             this.btnPause.Name = "btnPause";
             this.btnPause.Size = new System.Drawing.Size(24, 24);
             this.btnPause.TabIndex = 25;
@@ -356,7 +356,7 @@
             // 
             this.grpStreamMode.Controls.Add(this.radioLoopback);
             this.grpStreamMode.Controls.Add(this.radioFile);
-            this.grpStreamMode.Location = new System.Drawing.Point(667, 177);
+            this.grpStreamMode.Location = new System.Drawing.Point(644, 90);
             this.grpStreamMode.Name = "grpStreamMode";
             this.grpStreamMode.Size = new System.Drawing.Size(100, 78);
             this.grpStreamMode.TabIndex = 28;
@@ -420,14 +420,14 @@
             // 
             // numVolume
             // 
-            this.numVolume.Location = new System.Drawing.Point(469, 264);
+            this.numVolume.Location = new System.Drawing.Point(559, 309);
             this.numVolume.Name = "numVolume";
             this.numVolume.Size = new System.Drawing.Size(57, 20);
             this.numVolume.TabIndex = 32;
             // 
             // btnApplyVolume
             // 
-            this.btnApplyVolume.Location = new System.Drawing.Point(532, 261);
+            this.btnApplyVolume.Location = new System.Drawing.Point(622, 306);
             this.btnApplyVolume.Name = "btnApplyVolume";
             this.btnApplyVolume.Size = new System.Drawing.Size(43, 23);
             this.btnApplyVolume.TabIndex = 33;
@@ -438,7 +438,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(421, 266);
+            this.label1.Location = new System.Drawing.Point(511, 311);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(42, 13);
             this.label1.TabIndex = 34;
