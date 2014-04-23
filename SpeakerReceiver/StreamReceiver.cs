@@ -29,7 +29,7 @@ namespace SpeakerReceiver
 
         private Trace Log = Trace.GetInstance("LibTransport");
         private AudioPlayer player = null;
-        private SortedDictionary<int, RTPPacket> Buffer = new SortedDictionary<int, RTPPacket>();
+        private Dictionary<int, RTPPacket> Buffer = new Dictionary<int, RTPPacket>();
         private ushort i = 1; //read pointer for the buffer. yes, 1, because the first packet has sequencenumber=1
         private int packetPos = 0; //position within the current packet, if a partial read is needed to satisfy the player's request.
         private int dataPacketsBuffered = 0; //count of how many data packets we have. don't want to just use Buffer.Count() because it will include controls too.
@@ -246,14 +246,7 @@ namespace SpeakerReceiver
         private void SetBaseTime(RTPPlayPacket p)
         {
             this.basetime = p.baseTime;
-            DateTime sendts = p.Now;
             Log.Verbose("Received " + LibUtil.Util.FormatDate(basetime) + " as the base time stamp.");
-            Log.Verbose("Received " + LibUtil.Util.FormatDate(p.Now) + " as the sending time stamp.");
-            /* we calculate the difference between our local clock and controller clock (using the sending timestamp) and adjust basetime by this. */
-            int msdiff = (int)(DateTime.UtcNow - sendts).TotalMilliseconds;
-            Log.Verbose("Calculated timediff as " + msdiff + "ms");
-            this.basetime = basetime.AddMilliseconds(msdiff);
-            Log.Verbose("Actual basetime is now " + LibUtil.Util.FormatDate(basetime));
         }
 
         private void BufferPacket(RTPPacket p)
