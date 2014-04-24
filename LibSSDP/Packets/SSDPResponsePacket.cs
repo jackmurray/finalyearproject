@@ -10,12 +10,13 @@ namespace LibSSDP
 {
     public class SSDPResponsePacket : SSDPSignedPacket
     {
-        internal SSDPResponsePacket()
+        public SSDPResponsePacket()
         {
             Setup();
         }
 
-        internal SSDPResponsePacket(KeyManager key, CertManager cert) : base(key, cert)
+        public SSDPResponsePacket(KeyManager key, CertManager cert)
+            : base(key, cert)
         {
             Setup();
         }

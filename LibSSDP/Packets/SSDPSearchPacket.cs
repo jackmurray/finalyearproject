@@ -7,7 +7,7 @@ namespace LibSSDP
 {
     public class SSDPSearchPacket : SSDPPacket
     {
-        internal SSDPSearchPacket()
+        public SSDPSearchPacket()
         {
             Method = LibSSDP.Method.Search;
         }

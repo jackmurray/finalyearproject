@@ -10,12 +10,12 @@ namespace LibSSDP
 {
     public class SSDPAnnouncePacket : SSDPSignedPacket
     {
-        internal SSDPAnnouncePacket()
+        public SSDPAnnouncePacket()
         {
             Setup();
         }
 
-        internal SSDPAnnouncePacket(KeyManager key, CertManager cert) : base(key, cert)
+        public SSDPAnnouncePacket(KeyManager key, CertManager cert) : base(key, cert)
         {
             Setup();
         }

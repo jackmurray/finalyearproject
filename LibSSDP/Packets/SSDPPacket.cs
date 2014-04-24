@@ -23,7 +23,7 @@ namespace LibSSDP
             c.Send(data, data.Length, RemoteEndpoint);
         }
 
-        protected byte[] Serialize()
+        public byte[] Serialize()
         {
             return Encoding.ASCII.GetBytes(this.ToString());
         }
