@@ -27,7 +27,7 @@ namespace LibTransport
         public event StreamingCompletedHandler StreamingCompleted;
         private bool continueStreaming = true;
 
-        private bool rotateKeyRequested = false; //Has a rotation been requested?
+        private volatile bool rotateKeyRequested = false; //Has a rotation been requested?
         private bool rotateKeyWaiting = false; //Are we now waiting until the correct time to perform the rotation?
         private double rotateKeyTime;
 
