@@ -12,11 +12,12 @@ namespace LibConfig
 {
     public static class TrustedKeys
     {
-        private static List<string> KeyList = new List<string>();
+        private static List<string> KeyList;
         private static string Path = Util.ResolvePath(Config.Get(Config.CRYPTO_PATH), "trustedKeys");
 
         public static void Load(XmlNodeList data)
         {
+            KeyList = new List<string>();
             foreach (XmlNode n in data)
                 KeyList.Add(n.InnerText);
         }

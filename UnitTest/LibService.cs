@@ -61,15 +61,9 @@ Host: example
         [TestMethod]
         public void TestSSLConnection()
         {
-            var key = KeyManager.GetKey();
-            var cert = CertManager.GetCert(key);
-            TrustedKeys.Add(cert.ToDotNetPublicCert()); //make sure we trust ourselves
-            SslServer s = new SslServer(cert.ToDotNetCert(key));
-            s.Listen(10451);
-
-            SslClient c = new SslClient(cert.ToDotNetCert(key));
-            c.Connect(new System.Net.IPEndPoint(IPAddress.Loopback, 10451));
-
+            SslServer s = TestUtil.GetSSLServer();
+            SslClient c = TestUtil.GetSSLClient();
+            //nothing to be done as the util methods already connected everything
             c.Close();
             s.Stop();
         }

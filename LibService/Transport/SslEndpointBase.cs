@@ -56,5 +56,10 @@ namespace LibService
             Log.Information((isServer ? "Server" : "Client") + " cert: " + certificate.GetCertHashString());
             return true;
         }
+
+        public string GetFingerprint()
+        {
+            return _cert.GetCertHashString();
+        }
     }
 }
