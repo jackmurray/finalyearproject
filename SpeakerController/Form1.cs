@@ -16,7 +16,6 @@ using System.Windows.Forms;
 using LibAudio;
 using LibCommon;
 using LibConfig;
-using LibSSDP;
 using LibSecurity;
 using LibService;
 using LibTransport;
@@ -31,7 +30,7 @@ namespace SpeakerController
         private CertManager cert;
         private List<Receiver> Receivers = new List<Receiver>(); //list of all receivers discovered by SSDP
         private Trace Log;
-        private SSDPClient ssdpc;
+        private LibSSDP.SSDPClient ssdpc;
         private IAudioFormat audio;
         private RTPOutputStream stream;
         private bool firstRun = true;
@@ -76,14 +75,14 @@ namespace SpeakerController
         {
             lstDevicesAvail.Items.Clear();
             Receivers.Clear();
-            ssdpc = new SSDPClient();
+            ssdpc = new LibSSDP.SSDPClient();
             ssdpc.OnResponsePacketReceived += c_OnResponsePacketReceived;
             ssdpc.OnAnnouncePacketReceived += c_OnResponsePacketReceived;
             ssdpc.StartDiscovery();
         }
 
         //this is called by the receiver thread, hence the Invoke().
-        void c_OnResponsePacketReceived(object sender, ResponsePacketReceivedArgs args)
+        void c_OnResponsePacketReceived(object sender, LibSSDP.ResponsePacketReceivedArgs args)
         {
             string val = string.Format("{0} - {1}", args.Packet.friendlyName, args.Source.ToString());
             Color c;
@@ -94,8 +93,7 @@ namespace SpeakerController
             }
             else
             {
-                Verifier v = new Verifier(TrustedKeys.Get(args.Packet.fingerprint));
-                bool result = v.Verify(args.StrippedPacket, Util.Base64ToByteArray(args.Packet.signature));
+                bool result = LibSSDP.Util.CheckSignature(args.Packet, args.StrippedPacket);
                 if (result)
                 {
                     TimeSpan diff = DateTime.UtcNow - args.Packet.Date;

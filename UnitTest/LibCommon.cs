@@ -16,7 +16,7 @@ namespace UnitTest
             Device d = new Receiver(new System.Net.IPEndPoint(IPAddress.Loopback, 10451), s.GetFingerprint());
 
             d.GetSsl(TestUtil.GetCert(TestUtil.GetKey()), TestUtil.GetKey()).Close();
-            
+            s.Stop();
         }
     }
 }

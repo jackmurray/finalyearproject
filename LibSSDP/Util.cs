@@ -7,10 +7,12 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using LibConfig;
+using LibSecurity;
+using LibTrace;
 
 namespace LibSSDP
 {
-    static class Util
+    public static class Util
     {
         public static UdpClient GetClient()
         {
@@ -37,7 +39,7 @@ namespace LibSSDP
         private static int GetNetIFIndex()
         {
             NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();
-            string wantedIP = LibConfig.Config.Get(LibConfig.Config.IP_ADDRESS);
+            string wantedIP = Config.Get(Config.IP_ADDRESS);
             foreach (NetworkInterface iface in nics)
             {
                 var props = iface.GetIPProperties();
@@ -54,11 +56,11 @@ namespace LibSSDP
                 var addrs = props.UnicastAddresses;
                 bool found = addrs.Any(addr => addr.Address.ToString() == wantedIP);
                 if (!found) continue;
-                LibTrace.Trace.GetInstance("LibSSDP").Verbose("IFACE Index: " + ip4.Index + ", ADDR=" + wantedIP);
+                Trace.GetInstance("LibSSDP").Verbose("IFACE Index: " + ip4.Index + ", ADDR=" + wantedIP);
                 return IPAddress.HostToNetworkOrder(ip4.Index);
             }
 
-            LibTrace.Trace.GetInstance("LibSSDP").Error("Unable to find preferred interface. Using default.");
+            Trace.GetInstance("LibSSDP").Error("Unable to find preferred interface. Using default.");
             return -1;
         }
 
@@ -90,6 +92,22 @@ namespace LibSSDP
                 default:
                     throw new ArgumentOutOfRangeException();
             } 
+        }
+
+        public static string StripPacket(byte[] data)
+        {
+            string stripped = Encoding.ASCII.GetString(data);
+            int pos = stripped.IndexOf("USN: fingerprint");
+            //TODO: do this properly (i.e. remove the headers and serialise the packet rather than just hacking the end of the string off).
+            stripped = stripped.Remove(pos);
+            return stripped;
+        }
+
+        public static bool CheckSignature(SSDPSignedPacket p, byte[] Stripped)
+        {
+            Verifier v = new Verifier(TrustedKeys.Get(p.fingerprint));
+            bool result = v.Verify(Stripped, LibUtil.Util.Base64ToByteArray(p.signature));
+            return result;
         }
     }
 }

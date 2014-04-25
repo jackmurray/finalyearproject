@@ -82,9 +82,7 @@ namespace LibSSDP
             {
                 if (p.Method == Method.Respond || p.Method == Method.Announce)
                 {
-                    string stripped = Encoding.ASCII.GetString(data);
-                    int pos = stripped.IndexOf("USN: fingerprint"); //TODO: do this properly (i.e. remove the headers and serialise the packet rather than just hacking the end of the string off).
-                    stripped = stripped.Remove(pos);
+                    var stripped = Util.StripPacket(data);
                     Log.Verbose("Stripped response: " + stripped);
 
                     var args = new ResponsePacketReceivedArgs()
@@ -106,6 +104,8 @@ namespace LibSSDP
                 }
             }
         }
+
+        
 
         public void Stop()
         {

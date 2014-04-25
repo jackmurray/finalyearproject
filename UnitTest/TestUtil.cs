@@ -14,6 +14,7 @@ namespace UnitTest
     {
         public static SslServer GetSSLServer()
         {
+            Config.LoadTrustedKeys();
             var key = GetKey();
             var cert = GetCert(key);
             TrustedKeys.Add(cert.ToDotNetPublicCert()); //make sure we trust ourselves

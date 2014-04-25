@@ -32,7 +32,8 @@ namespace LibSSDP
         {
             StringBuilder packet = new StringBuilder();
             packet.AppendFormat("{0}\r\n", Method.ToPacketString());
-            packet.AppendFormat("Date: {0}\r\n", LibUtil.Util.FormatDate(DateTime.Now));
+            Date = DateTime.UtcNow;
+            packet.AppendFormat("Date: {0}\r\n", LibUtil.Util.FormatDate(Date));
             
 
             return packet.ToString();

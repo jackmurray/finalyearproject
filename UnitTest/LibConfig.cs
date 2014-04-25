@@ -13,6 +13,7 @@ namespace UnitTest
         [TestMethod]
         public void TestTrustDatabaseAdd()
         {
+            Config.LoadTrustedKeys();
             ClearTrustDatabase();
             X509Certificate cert = TestUtil.GetCert(TestUtil.GetKey()).ToDotNetPublicCert();
             Assert.IsFalse(TrustedKeys.Contains(cert.GetCertHashString()));
