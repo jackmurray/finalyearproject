@@ -103,8 +103,8 @@ namespace LibTrace
 
         private string FormatMessage(string message)
         {
-            DateTime dt = DateTime.Now;
-            return String.Format("[{0}:{1:000}] {2}", dt.ToString(), dt.Millisecond, message);
+            DateTime dt = DateTime.UtcNow;
+            return String.Format("[{0}.{1:000}] {2}", dt.ToString(), dt.Millisecond, message);
         }
 
         private TraceListener GetTraceListener(string sourceName)
