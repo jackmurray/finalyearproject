@@ -164,7 +164,7 @@ namespace LibTransport
             this.Send(this.BuildPlayPacket());
             Log.Verbose("Base timestamp: " + basetimestamp + ":" + basetimestamp.Millisecond);
             var t = new Thread(StreamThreadProc);
-            t.Priority = ThreadPriority.Highest;
+            t.Priority = ThreadPriority.AboveNormal;
             t.Start();
 
             State = StreamState.Started;
@@ -264,6 +264,7 @@ namespace LibTransport
                 if (seekToStart) audio.SeekToStart();
                 seq = 0;
                 encryption_ctr = 0;
+                State = StreamState.Stopped;
             }
         }
 

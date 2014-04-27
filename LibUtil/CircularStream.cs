@@ -10,7 +10,7 @@ namespace LibUtil
     {
         public byte[] Buffer { get; private set; }
         private long head = 0, tail = 0;
-        private int capacity;
+        public int capacity;
 
         public CircularStream(int capacity = 1048576) //default = 1MiB
         {
@@ -25,6 +25,7 @@ namespace LibUtil
 
         public override long Seek(long offset, SeekOrigin origin)
         {
+            Console.WriteLine("Seek to " + offset + " from " + origin);
             switch (origin)
             {
                 case SeekOrigin.Begin:
@@ -57,6 +58,7 @@ namespace LibUtil
 
         public override int Read(byte[] dest, int offset, int count)
         {
+            Console.WriteLine("Read at " + head + " for " + count);
             for (int i = 0; i < count; i++, offset++, head++)
             {
                 if (head == capacity)
@@ -69,11 +71,22 @@ namespace LibUtil
 
         public override void Write(byte[] source, int offset, int count)
         {
-            for (int i = 0; i < count; i++, offset++, tail++)
+            Console.WriteLine("Write at " + tail + " for " + count);
+            if ((capacity - tail) > count)
             {
-                if (tail == capacity)
-                    tail = 0;
-                Buffer[tail] = source[offset];
+                Array.Copy(source, offset, Buffer, tail, count);
+                tail += count;
+            }
+            else
+            {
+                for (int i = 0; i < count; i++, offset++, tail++)
+                {
+                    if (tail == capacity)
+                    {
+                        tail = 0;
+                    }
+                    Buffer[tail] = source[offset];
+                }
             }
         }
 
@@ -97,6 +110,8 @@ namespace LibUtil
             get { return capacity; } //not really meaningful, but NAudio's WaveFileWriter will try and update the RIFF/WAVE headers when it's closed, and we don't want it to crash (even though what it writes is meaningless for us).
         }
 
-        public override long Position { get { return head; } set { head = value; } }
+        public override long Position { get { return head; } set { head = value;
+            Console.WriteLine("Jumping to " + value);
+        } }
     }
 }

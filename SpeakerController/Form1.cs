@@ -461,10 +461,7 @@ namespace SpeakerController
             try
             {
                 circbuf = new CircularStream();
-                this.loopback = new LoopbackWavCapture(circbuf);
-                Thread.Sleep(5); //wait for a little while for the first bit of data to come in
-                this.audio = SupportedAudio.FindReaderForFile(new AudioStreamReader(circbuf));
-                btnStream_Click(this, null);
+                this.loopback = new LoopbackWavCapture(circbuf, circbuf.capacity / 2, callback);
             }
             catch (ArgumentException ex)
             {
@@ -472,6 +469,12 @@ namespace SpeakerController
                     MessageBox.Show(
                         "The current speaker configuration is unsupported. Change to one with fewer channels or lower sample rate.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void callback()
+        {
+            this.audio = SupportedAudio.FindReaderForFile(new AudioStreamReader(circbuf));
+            btnStream_Click(this, null);
         }
 
         private void UpdateButtonState()
