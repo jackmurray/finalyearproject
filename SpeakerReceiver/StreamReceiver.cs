@@ -146,13 +146,11 @@ namespace SpeakerReceiver
                             }
                             else if (s.State == StreamState.Paused)
                             {
-                                SetBaseTime(playPacket);
-                                shouldStartPlaying = true;
+                                ResetStreamStateForPlayback(playPacket);
                             }
                             else
                             {
-                                SetBaseTime(playPacket);
-                                shouldStartPlaying = true;
+                                ResetStreamStateForPlayback(playPacket);
                                 shouldRunPlayer = true;
 
                                 this.SamplesPerFrame = playPacket.SamplesPerFrame;
@@ -164,12 +162,7 @@ namespace SpeakerReceiver
                                 double ratefrac = (double)LibConfig.Config.GetInt(LibConfig.Config.STREAM_BUFFER_TIME)/1000; //fraction of 1 second we want to buffer
                                 double framefrac = Frequency/((double)SamplesPerFrame/Channels); //num of frames to make 1 s
                                 minBufPackets = (int)Math.Ceiling(framefrac*ratefrac) - 1; //-1 so we start a little early
-
-                                lock (syncLock)
-                                {
-                                    i = (ushort) (playPacket.SequenceNumber + 1); //start the callback fetching data from the next packet after this.
-                                }
-
+                                
                                 if (playPacket.Format == SupportedFormats.WAV)
                                     player.Setup(this.Callback, Frequency, Channels, BitsPerSample);
                                 else if (playPacket.Format == SupportedFormats.MP3)
@@ -243,10 +236,18 @@ namespace SpeakerReceiver
             }
         }
 
-        private void SetBaseTime(RTPPlayPacket p)
+        private void ResetStreamStateForPlayback(RTPPlayPacket p)
         {
             this.basetime = p.baseTime;
-            Log.Verbose("Received " + LibUtil.Util.FormatDate(basetime) + " as the base time stamp.");
+            shouldStartPlaying = true;
+            lock (syncLock)
+            {
+                i = (ushort)(p.SequenceNumber + 1); //start the callback fetching data from the next packet after this.
+            }
+            Buffer.Clear(); //a play packet is the start of a stream (or a restart of one) so ditch everything we have so far because it's no good now.
+            dataPacketsBuffered = 0;
+
+            Log.Verbose("Received " + LibUtil.Util.FormatDate(basetime) + " as the base time stamp from packet " + p.SequenceNumber);
         }
 
         private void BufferPacket(RTPPacket p)
@@ -348,9 +349,9 @@ namespace SpeakerReceiver
                         Array.Clear(managedbuf, managedbufptr, needed);
                         managedbufptr += needed;
                         length -= needed;
+                        Log.Verbose("Packet " + i + " not available. Zero-filling " + needed);
                         i++;
                         packetPos = 0;
-                        Log.Verbose("Zero-filling " + needed);
                     }
                 }
             }
