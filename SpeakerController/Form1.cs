@@ -461,7 +461,7 @@ namespace SpeakerController
             try
             {
                 circbuf = new CircularStream();
-                this.loopback = new LoopbackWavCapture(circbuf, circbuf.capacity / 2, callback);
+                this.loopback = new LoopbackWavCapture(circbuf, 500000, callback);
             }
             catch (ArgumentException ex)
             {

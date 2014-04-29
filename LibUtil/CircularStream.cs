@@ -58,36 +58,39 @@ namespace LibUtil
 
         public override int Read(byte[] dest, int offset, int count)
         {
+            int totalread = 0;
             Console.WriteLine("Read at " + head + " for " + count);
-            for (int i = 0; i < count; i++, offset++, head++)
+            int canread = ((capacity - head) > int.MaxValue ? int.MaxValue : (int)(capacity - head));
+            int willread = Math.Min(canread, count);
+            Array.Copy(Buffer, head, dest, 0, willread);
+            head += willread;
+            totalread += willread;
+            count -= willread;
+
+            if (count > 0)
             {
-                if (head == capacity)
-                    head = 0;
-                dest[offset] = Buffer[head];
+                head = 0;
+                Array.Copy(Buffer, head, dest, offset + totalread, count); //and if there's any left copy that too
             }
 
-            return count;
+            return totalread;
         }
 
         public override void Write(byte[] source, int offset, int count)
         {
             Console.WriteLine("Write at " + tail + " for " + count);
-            if ((capacity - tail) > count)
+            int canwrite = ((capacity - tail) > int.MaxValue ? int.MaxValue : (int) (capacity - tail));
+            int willwrite = Math.Min(canwrite, count);
+            Array.Copy(source, offset, Buffer, tail, willwrite);
+            tail += willwrite;
+            count -= willwrite; //copy all that we can
+            
+            if (count > 0)
             {
-                Array.Copy(source, offset, Buffer, tail, count);
-                tail += count;
+                tail = 0;
+                Array.Copy(source, offset + canwrite, Buffer, tail, count); //and if there's any left copy that too
             }
-            else
-            {
-                for (int i = 0; i < count; i++, offset++, tail++)
-                {
-                    if (tail == capacity)
-                    {
-                        tail = 0;
-                    }
-                    Buffer[tail] = source[offset];
-                }
-            }
+            
         }
 
         public override bool CanRead
