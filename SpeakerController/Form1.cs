@@ -460,7 +460,7 @@ namespace SpeakerController
         {
             try
             {
-                circbuf = new CircularStream();
+                circbuf = new CircularStream(WAVFormat.FRAME_LENGTH_TARGET);
                 this.loopback = new LoopbackWavCapture(circbuf, 500000, callback);
             }
             catch (ArgumentException ex)
@@ -473,7 +473,11 @@ namespace SpeakerController
 
         private void callback()
         {
-            this.audio = SupportedAudio.FindReaderForFile(new AudioStreamReader(circbuf));
+            //this.audio = SupportedAudio.FindReaderForFile(new AudioStreamReader(circbuf));
+            WAVFormat wav = new WAVFormat(new AudioStreamReader(circbuf));
+            wav.Set(loopback.bitspersample, loopback.channels, loopback.freq);
+            this.audio = wav;
+            
             btnStream_Click(this, null);
         }
 

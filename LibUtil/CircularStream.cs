@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace LibUtil
 {
@@ -10,12 +11,14 @@ namespace LibUtil
     {
         public byte[] Buffer { get; private set; }
         private long head = 0, tail = 0;
-        public int capacity;
+        private Queue<byte[]> buffer = new Queue<byte[]>();
+        private int targetsize;
+        private byte[] leftover = new byte[0];
+        private byte[] workingarr = new byte[100000];
 
-        public CircularStream(int capacity = 1048576) //default = 1MiB
+        public CircularStream(int targetsize)
         {
-            this.capacity = capacity;
-            Buffer = new byte[capacity];
+            this.targetsize = targetsize;
         }
 
         public override void Flush()
@@ -25,30 +28,7 @@ namespace LibUtil
 
         public override long Seek(long offset, SeekOrigin origin)
         {
-            Console.WriteLine("Seek to " + offset + " from " + origin);
-            switch (origin)
-            {
-                case SeekOrigin.Begin:
-                    if (offset < 0 || offset > capacity)
-                        throw new ArgumentOutOfRangeException();
-                    
-                    head = offset;
-                    break;
-                case SeekOrigin.Current:
-                    if ((head + offset > capacity) || (head + offset < 0))
-                        throw new ArgumentOutOfRangeException();
-
-                    head += offset;
-                    break;
-                case SeekOrigin.End:
-                    if ((head - offset < 0) || (head - offset > capacity))
-                        throw new ArgumentOutOfRangeException();
-
-                    head = capacity - offset;
-                    break;
-            }
-
-            return head;
+            throw new NotImplementedException();
         }
 
         public override void SetLength(long value)
@@ -58,39 +38,34 @@ namespace LibUtil
 
         public override int Read(byte[] dest, int offset, int count)
         {
-            int totalread = 0;
-            Console.WriteLine("Read at " + head + " for " + count);
-            int canread = ((capacity - head) > int.MaxValue ? int.MaxValue : (int)(capacity - head));
-            int willread = Math.Min(canread, count);
-            Array.Copy(Buffer, head, dest, 0, willread);
-            head += willread;
-            totalread += willread;
-            count -= willread;
-
-            if (count > 0)
+            while (buffer.Count == 0)
             {
-                head = 0;
-                Array.Copy(Buffer, head, dest, offset + totalread, count); //and if there's any left copy that too
+                Console.WriteLine("circbuf empty");
+                Thread.Sleep(1);                
             }
 
-            return totalread;
+            byte[] b;
+            lock (buffer)
+            {
+                b = buffer.Dequeue();
+            }
+            Array.Copy(b, dest, targetsize);
+            return targetsize;
         }
 
         public override void Write(byte[] source, int offset, int count)
         {
-            Console.WriteLine("Write at " + tail + " for " + count);
-            int canwrite = ((capacity - tail) > int.MaxValue ? int.MaxValue : (int) (capacity - tail));
-            int willwrite = Math.Min(canwrite, count);
-            Array.Copy(source, offset, Buffer, tail, willwrite);
-            tail += willwrite;
-            count -= willwrite; //copy all that we can
-            
-            if (count > 0)
+            Array.Copy(leftover, workingarr, leftover.Length);
+            Array.Copy(source, offset, workingarr, leftover.Length, count);
+            int actualcount = count + leftover.Length;
+
+            lock (buffer)
             {
-                tail = 0;
-                Array.Copy(source, offset + canwrite, Buffer, tail, count); //and if there's any left copy that too
+                for (int i = 0; i < actualcount / targetsize; i++)
+                    buffer.Enqueue(source.Skip(i*targetsize).Take(targetsize).ToArray());
             }
-            
+
+            leftover = workingarr.Skip(actualcount / targetsize).Take(actualcount % targetsize).ToArray();
         }
 
         public override bool CanRead
@@ -110,7 +85,7 @@ namespace LibUtil
 
         public override long Length
         {
-            get { return capacity; } //not really meaningful, but NAudio's WaveFileWriter will try and update the RIFF/WAVE headers when it's closed, and we don't want it to crash (even though what it writes is meaningless for us).
+            get { return 0; } //not really meaningful, but NAudio's WaveFileWriter will try and update the RIFF/WAVE headers when it's closed, and we don't want it to crash (even though what it writes is meaningless for us).
         }
 
         public override long Position { get { return head; } set { head = value;

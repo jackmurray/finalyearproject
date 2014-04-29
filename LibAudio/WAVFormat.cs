@@ -14,7 +14,7 @@ namespace LibAudio
         /// and pretend that that's a frame instead. The actual frame size is determined during Parse()
         /// once we know the Frequency and Sample Size.
         /// </summary>
-        private const ushort FRAME_LENGTH_TARGET = 1384;
+        public const ushort FRAME_LENGTH_TARGET = 1384;
 
         public SupportedFormats Format { get { return SupportedFormats.WAV; } }
 
@@ -34,6 +34,13 @@ namespace LibAudio
         {
             this.s = s;
         }
+
+        public void Set(ushort size, ushort chan, ushort freq)
+        {
+            this.FmtHeader = new WavFmtHeader() {NumChannels = chan, BitsPerSample = size, SampleRate = freq};
+            calc();
+        }
+
 
         public void Parse()
         {
@@ -73,14 +80,21 @@ namespace LibAudio
             s.Skip(4); //after this the stream points at the start of the data.
             this.DataStartPos = (int)s.Position;
 
+            calc();
+        }
+
+        private void calc()
+        {
             SamplesPerFrame = (ushort) (FRAME_LENGTH_TARGET/(FmtHeader.BitsPerSample/8));
-            ActualFrameLength = (ushort)(SamplesPerFrame * (FmtHeader.BitsPerSample / 8));
+            ActualFrameLength = (ushort) (SamplesPerFrame*(FmtHeader.BitsPerSample/8));
 
             var Log = LibTrace.Trace.GetInstance("LibAudio");
-            Log.Verbose(String.Format("Audio format: {0}-bit WAV {1}kHz {2}CH.", FmtHeader.BitsPerSample, FmtHeader.SampleRate, FmtHeader.NumChannels));
-            Log.Verbose(String.Format("{0} samples/frame ({1} bytes). Duration {2}ms", SamplesPerFrame, ActualFrameLength, GetFrameLength()));
+            Log.Verbose(String.Format("Audio format: {0}-bit WAV {1}kHz {2}CH.", FmtHeader.BitsPerSample, FmtHeader.SampleRate,
+                                      FmtHeader.NumChannels));
+            Log.Verbose(String.Format("{0} samples/frame ({1} bytes). Duration {2}ms", SamplesPerFrame, ActualFrameLength,
+                                      GetFrameLength()));
             Log.Verbose(String.Format("Target buffer size: {0} packets.",
-                                          Config.GetInt(Config.STREAM_BUFFER_TIME) / GetFrameLength()));
+                                      Config.GetInt(Config.STREAM_BUFFER_TIME)/GetFrameLength()));
         }
 
         /// <summary>

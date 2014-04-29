@@ -153,7 +153,6 @@ namespace LibTransport
         public void Stream(IAudioFormat audio)
         {
             this.audio = audio;
-            this.audioHeader = audio.GetHeader();
             StartStream();
         }
 
@@ -176,6 +175,12 @@ namespace LibTransport
             {
                 this.Send(this.BuildPlayPacket());
             }
+        }
+
+        private void LiveStreamThreadProc()
+        {
+            while (continueStreaming)
+                TimerTick();
         }
 
         private void StreamThreadProc()

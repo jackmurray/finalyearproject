@@ -13,22 +13,27 @@ namespace LibAudio
     public class LoopbackWavCapture
     {
         private WasapiLoopbackCapture loopback;
-        private WaveFileWriter w;
         private Stream basestream;
         public bool Playing { get; protected set; }
         bool firstRun = true;
         private int bytesWritten = 0, startBytes = 0;
         public delegate void startcallback();
 
+        public ushort bitspersample, channels, freq;
+
         private startcallback thecallback;
 
         public LoopbackWavCapture(Stream s, int startBytes, startcallback cb)
         {
             loopback = new WasapiLoopbackCapture();
+
+            bitspersample = (ushort) loopback.WaveFormat.BitsPerSample;
+            channels = (ushort) loopback.WaveFormat.Channels;
+            freq = (ushort) loopback.WaveFormat.SampleRate;
+
             basestream = s;
             thecallback = cb;
             this.startBytes = startBytes;
-            w = new WaveFileWriter(s, loopback.WaveFormat);
             loopback.DataAvailable += LoopbackOnDataAvailable;
             loopback.StartRecording();
             Playing = true;
@@ -42,7 +47,7 @@ namespace LibAudio
                 firstRun = false;
             }
 
-            w.Write(waveInEventArgs.Buffer, 0, waveInEventArgs.BytesRecorded);
+            basestream.Write(waveInEventArgs.Buffer, 0, waveInEventArgs.BytesRecorded);
             bytesWritten += waveInEventArgs.BytesRecorded;
 
             if (startBytes != 0 && bytesWritten >= startBytes)
@@ -57,7 +62,7 @@ namespace LibAudio
             loopback.StopRecording();
             loopback.DataAvailable -= LoopbackOnDataAvailable;
             Playing = false;
-            w.Close();
+            basestream.Close();
         }
     }
 }
