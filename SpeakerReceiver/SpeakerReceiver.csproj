@@ -99,8 +99,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>robocopy /fft /njh /njs /nfl "$(TargetDir)\" \\10.0.1.2\deploy\receiver *.dll *.exe *.config
-exit 0</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>del /Q $(TargetDir)logs\*.log
