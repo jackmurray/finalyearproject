@@ -160,8 +160,10 @@ namespace LibService
                 }
 
                 ms.Write(buffer, 0, bytesRead); //Add what we just read to the full buffer;
-                i = FindByteSequence(CRLFCRLF, buffer, 0);
-                if (i != -1) break;
+                i = FindByteSequence(CRLFCRLF, ms.ToArray(), 0);
+                if (i != -1)
+                    break;
+                
             }
             
 
